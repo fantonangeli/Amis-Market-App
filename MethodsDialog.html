@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<base target="_top">
+	<!--------------------------------------------------------------------------------------------- -->
+	<!-- JQUERY AND BOOSTRAP IMPORT -->
+	<!--------------------------------------------------------------------------------------------- -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<!--------------------------------------------------------------------------------------------- -->
+	<!-- END JQUERY AND BOOSTRAP IMPORT -->
+	<!--------------------------------------------------------------------------------------------- -->
+	<style>
+		.funkyradio div {
+			clear: both;
+			overflow: hidden;
+		}
+
+		.funkyradio label {
+			width: 100%;
+			border-radius: 3px;
+			border: 1px solid #D1D3D4;
+			font-weight: normal;
+		}
+
+		.funkyradio input[type="radio"]:empty,
+		.funkyradio input[type="checkbox"]:empty {
+			display: none;
+		}
+
+		.funkyradio input[type="radio"]:empty~label,
+		.funkyradio input[type="checkbox"]:empty~label {
+			position: relative;
+			line-height: 2.5em;
+			text-indent: 3.25em;
+			margin-top: 0.2em;
+			cursor: pointer;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}
+
+		.funkyradio input[type="radio"]:empty~label:before,
+		.funkyradio input[type="checkbox"]:empty~label:before {
+			position: absolute;
+			display: block;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			content: '';
+			width: 2.5em;
+			background: #D1D3D4;
+			border-radius: 3px 0 0 3px;
+		}
+
+		.funkyradio input[type="radio"]:hover:not(:checked)~label,
+		.funkyradio input[type="checkbox"]:hover:not(:checked)~label {
+			color: #888;
+		}
+
+		.funkyradio input[type="radio"]:hover:not(:checked)~label:before,
+		.funkyradio input[type="checkbox"]:hover:not(:checked)~label:before {
+			content: '\2714';
+			text-indent: .9em;
+			color: #C2C2C2;
+		}
+
+		.funkyradio input[type="radio"]:checked~label,
+		.funkyradio input[type="checkbox"]:checked~label {
+			color: #777;
+		}
+
+		.funkyradio input[type="radio"]:checked~label:before,
+		.funkyradio input[type="checkbox"]:checked~label:before {
+			content: '\2714';
+			text-indent: .9em;
+			color: #333;
+			background-color: #ccc;
+		}
+
+		.funkyradio input[type="radio"]:focus~label:before,
+		.funkyradio input[type="checkbox"]:focus~label:before {
+			box-shadow: 0 0 0 3px #999;
+		}
+
+		.funkyradio-default input[type="radio"]:checked~label:before,
+		.funkyradio-default input[type="checkbox"]:checked~label:before {
+			color: #333;
+			background-color: #ccc;
+		}
+
+		.funkyradio-primary input[type="radio"]:checked~label:before,
+		.funkyradio-primary input[type="checkbox"]:checked~label:before {
+			color: #fff;
+			background-color: #337ab7;
+		}
+
+		.funkyradio-success input[type="radio"]:checked~label:before,
+		.funkyradio-success input[type="checkbox"]:checked~label:before {
+			color: #fff;
+			background-color: #5cb85c;
+		}
+
+		.funkyradio-danger input[type="radio"]:checked~label:before,
+		.funkyradio-danger input[type="checkbox"]:checked~label:before {
+			color: #fff;
+			background-color: #d9534f;
+		}
+
+		.funkyradio-warning input[type="radio"]:checked~label:before,
+		.funkyradio-warning input[type="checkbox"]:checked~label:before {
+			color: #fff;
+			background-color: #f0ad4e;
+		}
+
+		.funkyradio-info input[type="radio"]:checked~label:before,
+		.funkyradio-info input[type="checkbox"]:checked~label:before {
+			color: #fff;
+			background-color: #5bc0de;
+		}
+	</style>
+</head>
+
+<body>
+	<h1>Forecasting  Methodology error</h1>
+	<p>Please, choose one or more methods from the list below</p>
+	<br />
+	<div class="col-sm-12" id="FMCB_wrapper">
+		<div class="col-sm-6">
+			<div class="funkyradio">
+				<div class="funkyradio-primary">
+					<input type="checkbox" name="checkbox" id="checkbox_C" value="C" />
+					<label for="checkbox_C">Automatically calculated</label>
+				</div>
+			</div>
+			<div class="funkyradio">
+				<div class="funkyradio-primary">
+					<input type="checkbox" name="checkbox" id="checkbox_R" value="R" />
+					<label for="checkbox_R">Repeated</label>
+				</div>
+			</div>
+			<div class="funkyradio">
+				<div class="funkyradio-danger">
+					<input type="checkbox" name="checkbox" id="checkbox_G" value="G" />
+					<label for="checkbox_G">Administrative records</label>
+				</div>
+			</div>
+			<div class="funkyradio">
+				<div class="funkyradio-primary">
+					<input type="checkbox" name="checkbox" id="checkbox_T" value="T" />
+					<label for="checkbox_T">Trend</label>
+				</div>
+			</div>
+			<div class="funkyradio">
+				<div class="funkyradio-primary">
+					<input type="checkbox" name="checkbox" id="checkbox_S" value="S" />
+					<label for="checkbox_S">Survey</label>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-6">
+			<div class="funkyradio">
+				<div class="funkyradio-primary">
+					<input type="checkbox" name="checkbox" id="checkbox_I" value="I" />
+					<label for="checkbox_I">Satellite imagery</label>
+				</div>
+			</div>
+			<div class="funkyradio">
+				<div class="funkyradio-primary">
+					<input type="checkbox" name="checkbox" id="checkbox_M" value="M" />
+					<label for="checkbox_M">Models</label>
+				</div>
+			</div>
+			<div class="funkyradio">
+				<div class="funkyradio-primary">
+					<input type="checkbox" name="checkbox" id="checkbox_F" value="F" />
+					<label for="checkbox_F">Formula using fixing coefficients</label>
+				</div>
+			</div>
+			<div class="funkyradio">
+				<div class="funkyradio-primary">
+					<input type="checkbox" name="checkbox" id="checkbox_B" value="B" />
+					<label for="checkbox_B">Balancing element</label>
+				</div>
+			</div>
+			<div class="funkyradio">
+				<div class="funkyradio-primary">
+					<input type="checkbox" name="checkbox" id="checkbox_O" value="O" />
+					<label for="checkbox_O">Other methodologies</label>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		$(document).ready(function() {
+              var currCellValue=<?= currCellValue ?>;
+              var vr;
+
+              //set checkbox state---------------------
+              vr = currCellValue.split(",").map(function(e) {
+                  return e.trim().toUpperCase();
+              });
+
+              $('#FMCB_wrapper :checkbox').each(function() {
+                  $(this).prop("checked", ~vr.indexOf(this.value));
+              });
+              
+              
+              //set cell value---------------------------
+		      $('#FMCB_wrapper :checkbox').click(function(){
+		        var val = [];
+		        $('#FMCB_wrapper :checkbox:checked').each(function(i){
+		          val[i] = $(this).val();
+		        });
+                
+				google.script.run.LIB_FUNC("AmisMarketApp.ForecastingMethodologies.setCellValue", "<?= currCellNotation ?>", val.join(","));
+		      });
+		});
+	</script>
+</body>
+
+</html>
