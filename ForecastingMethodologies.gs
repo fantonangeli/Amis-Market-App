@@ -57,7 +57,7 @@ ForecastingMethodologies={
 	onEdit:function(e){
 		  var activeCell=e.range;
 		  var activeCellVal=activeCell.getValue();
-		Logger.log("fmoe");
+		  Logger.log("edit");
 
 		  //check if the active cell is in the forecast range
 		  if(Utility.isInRange("AB11:AB32", activeCell)){
