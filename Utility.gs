@@ -8,35 +8,102 @@ var Utility=new (function(){
       Logger.log('The data-validation rule is %s %s', criteria, args);
     } else {
       Logger.log('The cell does not have a data-validation rule.')
-    } 
-  }
-  
-  //----------------------------------------------------------------------------------------------------------------- 
+    }
+};
+
+    /**
+     * returns a character from the specified ASCII value
+     * used from numToChar()
+     * @param  {number} codePt ASCII value
+     * @return {string}        character
+     */
+    var chr = function (codePt) {
+        if (codePt > 0xFFFF) {
+            codePt -= 0x10000;
+            return String.fromCharCode(0xD800 + (codePt >> 10), 0xDC00 + (codePt & 0x3FF));
+        }
+        return String.fromCharCode(codePt);
+    };
+
+
   /**
-   * FIND A VALUE INTO A ROW OF A SPECIFIC RANGE 
-   * @param  {string} stringToBeFound
+   * converts column letter to column number
+   * @param  {string} letter eg. A, AB
+   * @return {number}        the number of the column (column A is 1)
+   */
+   this.charToNum = function(alpha) {
+           var index = 0;
+           for(var i = 0, j = 1; i < j; i++, j++)  {
+               if(alpha == numToChar(i))   {
+                   index = i;
+                   j = i;
+               }
+           }
+           console.log(index);
+       };
+
+   /**
+    * converts column number to column letter
+    * @param  {number} number the number of the column (column A is 1)
+    * @return {string}        the letter of the column (column A is 1)
+    */
+   this.numToChar = function(number)    {
+           var numeric = (number - 1) % 26;
+           var letter = chr(65 + numeric);
+           var number2 = parseInt((number - 1) / 26);
+           if (number2 > 0) {
+               return numToChar(number2) + letter;
+           } else {
+               return letter;
+           }
+       };
+  //-----------------------------------------------------------------------------------------------------------------
+  /**
+   * FIND A VALUE INTO A ROW OF A SPECIFIC RANGE
+   * @param  {string} value
    * @param  {range}  range of the row where search
    * @return {string} number of column containing the string
    */
   //------------------------------------------------------------------------------------------------------------------
-  this.findValueIntoRow = function(stringToBeFound,range){  
+  this.findValueIntoRow = function(value,range){
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-        
+
     var data = sheet.getRange(range).getValues();
-    
-    
+
+
     for(var i = 0; i<data[0].length;i++){
-      if(data[0][i] == stringToBeFound){                        
-        return i+1;      
+      if(data[0][i] == value){
+        return i+1;
       }
     }
-  }
+   };
   //------------------------------------------------------------------------------------------------------------------
-  //END  -- THIS FIND A VALUE INTO A ROW OF A SPECIFIC RANGE 
+  //END  -- THIS FIND A VALUE INTO A ROW OF A SPECIFIC RANGE
   //------------------------------------------------------------------------------------------------------------------
-  
-  
-  //------------------------------------------------------------------------------------------------------------------  
+
+  /**
+   * EVALUATE A REGEXP TO ANY COLUMN INTO A ROW OF A SPECIFIC RANGE. IT DOESN'T STOPS ON THE FIRST OCCURANCE
+   * @param  {RegExp} regexp the regexp to be evaluated
+   * @param  {range}  range of the row where search
+   * @return {array}  array of number of column containing the string
+   */
+  this.regexEvalIntoRow = function(regexp,range){
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+
+    var data = sheet.getRange(range).getValues();
+
+    var result=[];
+
+    for(var i = 0; i<data[0].length;i++){
+      if(regexp.test(data[0][i])){
+        result.push(i+1);
+      }
+    }
+
+    return result;
+   };
+
+  //------------------------------------------------------------------------------------------------------------------
   /**
    * TODO -- deprecated ?THIS MOVE THE VALUE USED TO FIND FORECAST TO OTHER CELL
    * @param  {string}  cell to be deleted
@@ -46,8 +113,8 @@ var Utility=new (function(){
   //------------------------------------------------------------------------------------------------------------------
   this.moveNewForecastFinder = function (cellFrom,cellTo,stringValue){
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-    
-    //blanks the old position  
+
+    //blanks the old position
     cellFrom.setValue('');
     //set new value on other column
     cellTo.setValue(stringValue);
@@ -55,52 +122,52 @@ var Utility=new (function(){
   //------------------------------------------------------------------------------------------------------------------
   //END -- THIS MOVE THE VALUE USED TO FIND FORECAST TO OTHER CELL
   //------------------------------------------------------------------------------------------------------------------
-  
+
   //------------------------------------------------------------------------------------------------------------------
   /**
    * SET LAST DATE WHEN UPDATING A CELL
    * @param  {event}  you must call it from OnEdit function and pass 'e' event object
    */
   //------------------------------------------------------------------------------------------------------------------
-  this.onEditSetLastUpdateDate = function(e){     
-    
+  this.onEditSetLastUpdateDate = function(e){
+
     //TODO they must come from firebase
     var rowsToWriteUpdateDate = [10,34,39,47];
     var rowToUpdate;
-    
+
     var thisRow = e.range.getRow();
     var thisCol = e.range.getColumn();
-        
+
     var ss = e.range.getSheet();
-    
+
     var configRow = ss.getRange(thisRow,1).getValues()[0][0];
-    var configColumn = ss.getRange(1,thisCol).getValues()[0][0];  
-    
+    var configColumn = ss.getRange(1,thisCol).getValues()[0][0];
+
     //TODO _ nu --- must come by firebase
     // if the cell is NU --- NO UPDATE DATE
     if(configRow == 'nu' || configColumn == 'nu' )
       return;
-    
-    //else 
-    
+
+    //else
+
     for (i = 0; i < rowsToWriteUpdateDate.length; i++) {
-      
+
       //at the first loop I simple assign rowToUpdate
       if(i==0)
-        rowToUpdate=rowsToWriteUpdateDate[i];    
-      
+        rowToUpdate=rowsToWriteUpdateDate[i];
+
       //found the 'distance' between the label row and the active cell
       var sub = thisRow - rowsToWriteUpdateDate[i];
-      
+
       //if the 'distance' is positive I'll take the minus 'distance'
       if(sub > 0  && ( (thisRow - rowToUpdate) >= sub))
       rowToUpdate = rowsToWriteUpdateDate[i];
     }
     Logger.log(rowToUpdate);
-    
-    //TODO put this value under firebase config and retrive the row number  
+
+    //TODO put this value under firebase config and retrive the row number
     var cell = ss.getRange(rowToUpdate, thisCol);
-    
+
     //update the cell putting last date editing
     cell.setValue(new Date());
     cell.setFontWeight("bold");
@@ -108,7 +175,7 @@ var Utility=new (function(){
   //------------------------------------------------------------------------------------------------------------------
   //END -- SET LAST DATE WHEN UPDATING A CELL
   //------------------------------------------------------------------------------------------------------------------
-  
+
   //------------------------------------------------------------------------------------------------------------------
   /**
    * make a toast on the screen
@@ -123,14 +190,14 @@ var Utility=new (function(){
   //------------------------------------------------------------------------------------------------------------------
   // END -- make a toast
   //------------------------------------------------------------------------------------------------------------------
-  
-  //------------------------------------------------------------------------------------------------------------------  
+
+  //------------------------------------------------------------------------------------------------------------------
   /**
-   * open amis Sidebar   
+   * open amis Sidebar
    */
   //------------------------------------------------------------------------------------------------------------------
   this.openSidebar = function(){
-    
+
   var html = HtmlService.createHtmlOutputFromFile('amisMenu')
       .setTitle('Amis')
       .setWidth(500)
@@ -139,16 +206,16 @@ var Utility=new (function(){
       .showSidebar(html);
   }
   //------------------------------------------------------------------------------------------------------------------
-  // END --  open amis Sidebar   
+  // END --  open amis Sidebar
   //------------------------------------------------------------------------------------------------------------------
-  
-  //------------------------------------------------------------------------------------------------------------------  
+
+  //------------------------------------------------------------------------------------------------------------------
   /**
    * create Amisi menu
    */
   //------------------------------------------------------------------------------------------------------------------
   this.createAmisMenu = function(){
-    
+
     //create the menu voice
     SpreadsheetApp.getUi()
     .createMenu('AMIS Menu')
@@ -156,20 +223,20 @@ var Utility=new (function(){
     .addToUi()
   }
   //------------------------------------------------------------------------------------------------------------------
-  // END --  create Amisi menu   
+  // END --  create Amisi menu
   //------------------------------------------------------------------------------------------------------------------
-  
-  
+
+
   this.noNegativeValue=function(){
     //Get the currently active sheet
     var sheet = SpreadsheetApp.getActiveSheet()
-    //select a range to be validated 
+    //select a range to be validated
     var newRange = sheet.getRange('Maize!R10:AA26');
-    // Set the data validation for cells to require any value that does not include "-". 
+    // Set the data validation for cells to require any value that does not include "-".
     var rule = SpreadsheetApp.newDataValidation().requireTextDoesNotContain('-').setAllowInvalid(false).build();
     newRange.setDataValidation(rule);
   }
-  
+
   /**
    * check if a given cell is in a range
    * @param  {string} range the range eg. "AD11:AD19"
@@ -178,14 +245,14 @@ var Utility=new (function(){
    */
   this.isInRange = function(range, cell) {
         var range = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange(range);
-    
-        var editRange = { 
+
+        var editRange = {
             top: range.getRow(),
             bottom: range.getRow()+range.getNumRows(),
             left: range.getColumn(),
             right: range.getLastColumn()
         };
-    
+
 
         // Exit if we're out of range
         var thisRow = cell.getRow();
@@ -193,7 +260,7 @@ var Utility=new (function(){
 
         var thisCol = cell.getColumn();
         if (thisCol < editRange.left || thisCol > editRange.right) return false;
-    
+
         return true;
 
     };
@@ -210,27 +277,27 @@ var Utility=new (function(){
   /**
   * workaround that allows you to call any library function if you paste in this one generic wrapper function. Then you can call this from the spreadsheet.
   * For example, if I had a library called MyLib with a function add(x, y) (pretend x is in cell A1 and y is in cell A2) I could call it like this: =LIB_FUNC("MyLib", "add", A1, A2).
-  * @param       {string} functionName 
+  * @param       {string} functionName
   * @constructor
   */
   this.LIB_FUNC=function(functionName) {
     var currFn=this;
     var extraArgs = [];
     var fnArr=functionName.split(".");
-    
+
     var fnArr_length=fnArr.length;
     for (var i = 0; i<fnArr_length; i++) {
       currFn=currFn[fnArr[i]];
-      
+
       if(!currFn) throw "No such function: " + fnArr[i];
     }
-    
+
     if (arguments.length > 1) {
       extraArgs = Array.apply(null, arguments).slice(1);
     }
-    
+
     return currFn.apply(this, extraArgs);
   };
-  
-  
+
+
 });

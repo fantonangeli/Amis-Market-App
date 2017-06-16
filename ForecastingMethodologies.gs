@@ -57,7 +57,9 @@ ForecastingMethodologies={
 	onEdit:function(e){
 		  var activeCell=e.range;
 		  var activeCellVal=activeCell.getValue();
-		  Logger.log("edit");
+
+
+		  Logger.log(Utility.regexEvalIntoRow(/\d{4}\.FM/, "9:9"));
 
 		  //check if the active cell is in the forecast range
 		  if(Utility.isInRange("AB11:AB32", activeCell)){
