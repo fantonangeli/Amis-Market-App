@@ -68,7 +68,7 @@ var ForecastingMethodologies=new (function(){
 		  	(11 <= activeCellIndex) && (activeCellIndex >= 31) ||
 			(35 <= activeCellIndex) && (activeCellIndex >= 36) ||
 			(40 <= activeCellIndex) && (activeCellIndex >= 45) ||
-			(48 <= activeCellIndex) && (activeCellIndex >= 53) ||
+			(48 <= activeCellIndex) && (activeCellIndex >= 53)
 	  ){
 		activeCellVal=activeCell.getValue();
 		if(!ForecastingMethodologies.isValid(activeCellVal)){
