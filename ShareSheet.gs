@@ -9,8 +9,8 @@ var ShareSheet=new function(){
 	 */
   //---------------------------------------------------------
   this.createSheet=function(countryName,countryAccount) {
-	  var newFile = cloneSheet(countryName);
-	  shareSheet(newFile,countryAccount);
+	  var newFile = ShareSheet.cloneSheet(countryName);
+	  ShareSheet.shareSheet(newFile,countryAccount);
   }
   //---------------------------------------------------------
   // END  CREATE A NEW GOOGLE SHEET
@@ -59,7 +59,9 @@ var ShareSheet=new function(){
 	  newfile.addEditor(countryAccount);
 	  
 	  //share the Amis Market Api TODO _ get it from firebase
-	  DriveApp.getFileById('1OJQBydtovPhuO5-PwYdmzIe6977jVqcRuk3d3ZfvHCNWWWaLjpB8kLeg').addViewer(countryAccount);
+	  //DriveApp.getFileById('1OJQBydtovPhuO5-PwYdmzIe6977jVqcRuk3d3ZfvHCNWWWaLjpB8kLeg').addViewer(countryAccount);
+	  //my version of AMIS MARKET APP API
+    DriveApp.getFileById('1N2dpVYeE8nmYNQg4KPz2nSkdyKb9Pl1SEw78VXte6p1dU5CrakltRB1d').addViewer(countryAccount);
   }
   //---------------------------------------------------------
   // END -- SHARE SHEET
