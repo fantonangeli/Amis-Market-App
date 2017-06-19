@@ -77,10 +77,23 @@
             <div id="icon-login-msg"></div>
          </div>
         
-         <input id="countryName" class="form-control" type="text" placeholder="Country Name" required>
-         <input id="account" class="form-control" type="text" placeholder="Account" required>
+         <!-- <input id="countryName" class="form-control" type="text" placeholder="Country Name" required> -->
+         <select class="form-control" id="countryName">
+                <option value="">Choose a Country</option>
+                <option value="Argentina">Argentina</option>
+                <option value="Brazil">Brazil</option>
+                <option value="India">India</option>                
+            </select>
+            <br/>
+         <!-- <input id="account" class="form-control" type="text" placeholder="Account" required> -->
+         <select class="form-control" id="account">
+                 <option value="">Choose an Account</option>
+                <option value="sabbadini.misael@gmail.com">sabbadini.misael@gmail.com</option>
+                <option value="karl.morteo@gmail.com">karl.morteo@gmail.com</option>                
+            </select>
       </div>
       <div class="">
+      <br/>
          <div>
             <button type="submit" class="btn btn-primary btn-lg btn-block">Create Sheet</button>
          </div>
