@@ -66,6 +66,27 @@
       </div>
    </form>
    <!-- End # Login Form -->
+   
+   <br/>
+   <!-- Begin # create sheet form -->
+   <form id="create-sheet-form" hidden>
+   <h4>CREATE A NEW COUNTRY SHEET</h4>      
+      <br/>
+      <div class="">
+         <div id="div-login-msg">
+            <div id="icon-login-msg"></div>
+         </div>
+        
+         <input id="countryName" class="form-control" type="text" placeholder="Country Name" required>
+         <input id="account" class="form-control" type="text" placeholder="Account" required>
+      </div>
+      <div class="">
+         <div>
+            <button type="submit" class="btn btn-primary btn-lg btn-block">Create Sheet</button>
+         </div>
+      </div>
+   </form>
+   <!-- End # Login Form -->
 </html>
 <script>      
        //-----------------------------------------------------------------
@@ -85,6 +106,16 @@
 	   //-----------------------------------------------------------------
    
    $(document).ready(function() {
+     //submit of create sheet
+     $("#create-sheet-form").submit(function() {       
+       
+       var countryName = $("#countryName").val();
+       var account = $("#account").val();
+       //prevent redirect actions
+       //google.script.run.createSheet(countryName,account);
+       google.script.run.LIB_FUNC("AmisMarketApp.ShareSheet.createSheet",countryName,account);
+       return false;
+     });
      
      //submit login form function
      $("#login-form").submit(function() {  
@@ -105,14 +136,24 @@
       //hide form show menu logged in
       //----------------------------------
       //google.script.run.hideShow();
-      $("#userActionsDiv").show();
+      if(user.uid== 'LqyEUjd3j7hGdgZy02C8ao2V48F2'){
+        //show create country sheet
+        $("#create-sheet-form").show();
+      }
+      else{
+        //show normal menu
+        $("#userActionsDiv").show();
+      }
+      
       //set user name into label  
       $("#userLabel").text(user.email);
       $("#login-form").hide();
+      
       //----------------------------------
       //END --hide form show menu logged in
       //----------------------------------
-		
+		console.info('user',user.uid);
+        sessionStorage.setItem("userUid", user.uid);
        //.then is used to get the token value
        user.getToken().then(function(data) {
 		   console.log('token',data);
@@ -154,7 +195,11 @@
      
      //if auth is already done
      if(sessionStorage.getItem("tokenFireBase")){
-      $("#userActionsDiv").show();
+      if(sessionStorage.getItem("userUid") == 'LqyEUjd3j7hGdgZy02C8ao2V48F2')
+         $("#create-sheet-form").show();
+      else
+         $("#userActionsDiv").show();
+         
       //set user name into label  
       $("#userLabel").text(sessionStorage.getItem("emailFireBase"));
       $("#login-form").hide();
