@@ -172,10 +172,15 @@
         sessionStorage.setItem("userUid", user.uid);
        //.then is used to get the token value
        user.getToken().then(function(data) {
-		   console.log('token',data);
+		   
+           //after login fetch automatically data from firebase
+           google.script.run.LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",data);
+           
+           console.log('token',data);
            // Store in session the token
            sessionStorage.setItem("tokenFireBase", data);            
-           sessionStorage.setItem("emailFireBase", user.email); 
+           sessionStorage.setItem("emailFireBase", user.email);
+           
 		   //binding SAVE function with AMIS MARKET API
 		   $("#buttonSave").bind( "click", function() {       
 			  //google.script.run.startSync(data);

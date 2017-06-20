@@ -7,6 +7,38 @@ var SyncMasterSheet=new function(){
 		 */
 	  //---------------------------------------------------------
 	  this.startFetch=function(userToken) {
+	    	    
+        //Get the currently active sheet
+        var sheet = SpreadsheetApp.getActiveSheet();    
+        
+        //TODO _ node must come from firebase
+        var rangeFromConfig=JSON.parse(FirebaseConnector.getFireBaseData('config/rangeToBeStored/argentina',userToken));                 	    
+    
+       //loop all the ranges stored in firebase
+       for (var singleRange in rangeFromConfig) {
+         
+         //get Firebase node name to be fetch
+         var fireBaseNodeData= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/' + JSON.parse(SyncMasterSheet.getNodeToWriteData(userToken)).dataSheetNode+ '/' + singleRange;                        
+         
+         var fireBaseValues = JSON.parse(FirebaseConnector.getFireBaseData(fireBaseNodeData,userToken));	    	    
+         
+         //set value into cells
+         sheet.getRange(singleRange).setValues(fireBaseValues);               
+       }            
+        
+        
+        Utility.toastInfo('Data Fetched', 'DATA FETCHED');       
+	    
+	  }
+	  //---------------------------------------------------------
+	  // END Saving Sheet Data function
+	  //--------------------------------------------------------- 	
+      
+      
+      //---------------------------------------------------------
+	  //TODO _ delete	
+	  //---------------------------------------------------------
+	  this.startFetch_OLD=function(userToken) {
 	    
 	    //Get the currently active sheet
 	    var sheet = SpreadsheetApp.getActiveSheet();
@@ -55,6 +87,54 @@ var SyncMasterSheet=new function(){
   this.startSync=function(userToken) {
     
     //Get the currently active sheet
+    var sheet = SpreadsheetApp.getActiveSheet();    
+    
+    //TODO _ node must come from firebase
+    var rangeFromConfig=JSON.parse(FirebaseConnector.getFireBaseData('config/rangeToBeStored/argentina',userToken));         
+    
+    //loop all the ranges stored in firebase
+    for (var singleRange in rangeFromConfig) {
+      
+      var dataToBeStored = sheet.getRange(singleRange).getValues();
+      
+      //TODO put it into function -- store data to firebase
+      for (i = 0, len = dataToBeStored.length; i < len; i++) {	    	
+          //Logger.log(fireBaseValues[9][5]);
+          for (j = 0, len2 = dataToBeStored[i].length; j < len2; j++){
+            Logger.log(dataToBeStored[i][j]);
+            if(Object.prototype.toString.call(dataToBeStored[i][j]) === '[object Date]'){
+              var monthNames = [
+                "January", "February", "March",
+                "April", "May", "June", "July",
+                "August", "September", "October",
+                "November", "December"
+              ];
+              
+              var day = dataToBeStored[i][j].getDate();
+              var monthIndex = dataToBeStored[i][j].getMonth();
+              var year = dataToBeStored[i][j].getFullYear();
+              dataToBeStored[i][j]=dataToBeStored + ' ' + monthNames[monthIndex] + ' ' + year;
+            }
+          }
+	    }
+        //store node for data in firebase -- it contains the rangeDefinition
+        var saveNode= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/' + JSON.parse(SyncMasterSheet.getNodeToWriteData(userToken)).dataSheetNode+ '/' + singleRange;
+        SyncMasterSheet.syncMasterSheet(dataToBeStored,userToken,saveNode);
+      
+    }
+    Utility.toastInfo('Data Saved', 'data');
+  }
+  //---------------------------------------------------------
+  // END Saving Sheet Data function
+  //---------------------------------------------------------
+  
+  
+  //---------------------------------------------------------
+  //TODO _ delete	
+  //---------------------------------------------------------
+  this.startSync_OLD=function(userToken) {
+    
+    //Get the currently active sheet
     var sheet = SpreadsheetApp.getActiveSheet();
     //Get the number of rows and columns which contain some content
     var [rows, columns] = [sheet.getLastRow(), sheet.getLastColumn()];
@@ -93,6 +173,7 @@ var SyncMasterSheet=new function(){
   //---------------------------------------------------------
   
   
+  
   //---------------------------------------------------------   
    /**
 	 * logic for saving Excel on firebase
@@ -123,9 +204,6 @@ var SyncMasterSheet=new function(){
     //hide all the last forecast -- this.findeValueIntoRow(lastForeCast) is called again because moveNewForecastFinder moves that value
     ForecastUtility.hideOldForecasts(firstForecastColumnPosition, newForecastColumnPosition,2 );
     //-------------------------------------------------------------------------------------------------
-    
-    
-    Utility.toastInfo('Data Saved', 'data');
     
    }
   //---------------------------------------------------------
