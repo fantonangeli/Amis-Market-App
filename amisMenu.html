@@ -45,6 +45,8 @@
        </div>      
       <br/><br/><br/>
       <button id="buttonSave"   class="btn btn-primary btn-lg btn-block">SAVE DATA</button>      
+      <br/>
+      <button id="buttonFetch"   class="btn btn-primary btn-lg btn-block">FETCH DATA</button>       
    </div>
    <!-- END hidden part -->
    <br/>
@@ -178,8 +180,13 @@
 		   $("#buttonSave").bind( "click", function() {       
 			  //google.script.run.startSync(data);
               google.script.run.LIB_FUNC("AmisMarketApp.SyncMasterSheet.startSync",data);
+             // google.script.run.LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",data);
               //disable the button himself              
               $("#addFrc").prop("disabled",false);
+		   });
+           //binding FETCH function with AMIS MARKET API
+		   $("#buttonFetch").bind( "click", function() {       			  
+              google.script.run.LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",data);             
 		   });
             $("#addFrc").bind( "click", function() {       
 			  //google.script.run.addForecast(data);
@@ -221,7 +228,11 @@
        $("#buttonSave").bind( "click", function() {       
 	  	  //google.script.run.startSync(sessionStorage.getItem("tokenFireBase"));
           google.script.run.LIB_FUNC("AmisMarketApp.SyncMasterSheet.startSync",sessionStorage.getItem("tokenFireBase"));
+          //google.script.run.LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",sessionStorage.getItem("tokenFireBase"));
           $("#addFrc").prop("disabled",false);
+	   });
+       $("#buttonFetch").bind( "click", function() {       	  	  
+          google.script.run.LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",sessionStorage.getItem("tokenFireBase"));          
 	   });
        $("#addFrc").bind( "click", function() {       
 			  //google.script.run.addForecast(sessionStorage.getItem("tokenFireBase"));                           
