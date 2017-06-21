@@ -174,7 +174,7 @@
        user.getToken().then(function(data) {
 		   
            //after login fetch automatically data from firebase
-           google.script.run.LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",data);
+           //google.script.run.LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",data);
            
            console.log('token',data);
            // Store in session the token
