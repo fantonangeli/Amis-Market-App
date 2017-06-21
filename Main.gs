@@ -4,7 +4,7 @@ function onOpen() {
   Utility.createAmisMenu();
   
   //create Amis sidebar
-  Utility.openSidebar(); 
+  //Utility.openSidebar(); 
    
 }
 
