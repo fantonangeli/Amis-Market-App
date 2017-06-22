@@ -2,17 +2,15 @@ var FirebaseConnector=new function(){
 
 
     /**
-     * firebase token
-     * @type {string}
-     */
-    this.token=null;
-
-    /**
      * setter for the firebase token
      * @param  {string} token
      */
     this.setToken = function( token ) {
-    	this.token = token;
+        PropertiesService.getUserProperties().setProperty("tokenFireBase", token);
+    };
+
+    this.getToken = function(  ) {
+        PropertiesService.getUserProperties().getProperty("tokenFireBase", token);
     };
 
 
