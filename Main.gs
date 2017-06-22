@@ -1,5 +1,6 @@
 
 function onOpen() {
+  FirebaseConnector.setToken(null);
 
   //create Amis menu
   Utility.createAmisMenu();
