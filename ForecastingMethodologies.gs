@@ -56,19 +56,18 @@ var ForecastingMethodologies=new (function(){
 	 * @param  {object} activeCell current edited cell
 	 */
 	var isInFMColumn = function(colNum,activeCell) {
-	  var activeCellVal, colLt, activeCellIndex;
+	  var activeCellVal, activeCellIndex;
 
 	  if(colNum!==activeCell.getColumn()) return;
 
-	  colLt = Utility.numToChar(colNum);
 	  activeCellIndex=activeCell.getRowIndex();
 
 	  //check if the active cell is in the forecast range
 	  if(
-		  	(11 <= activeCellIndex) && (activeCellIndex >= 31) ||
-			(35 <= activeCellIndex) && (activeCellIndex >= 36) ||
-			(40 <= activeCellIndex) && (activeCellIndex >= 45) ||
-			(48 <= activeCellIndex) && (activeCellIndex >= 53)
+		  	((11 <= activeCellIndex) && (activeCellIndex <= 31)) ||
+			((36 <= activeCellIndex) && (activeCellIndex <= 37)) ||
+			((41 <= activeCellIndex) && (activeCellIndex <= 45)) ||
+			((46 <= activeCellIndex) && (activeCellIndex <= 54))
 	  ){
 		activeCellVal=activeCell.getValue();
 		if(!ForecastingMethodologies.isValid(activeCellVal)){
