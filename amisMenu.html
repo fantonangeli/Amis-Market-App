@@ -82,9 +82,9 @@
          <!-- <input id="countryName" class="form-control" type="text" placeholder="Country Name" required> -->
          <select class="form-control" id="countryName">
                 <option value="">Choose a Country</option>
-                <option value="Argentina">Argentina</option>
-                <option value="Brazil">Brazil</option>
-                <option value="India">India</option>                
+                <option value="argentina">Argentina</option>
+                <option value="brazil">Brazil</option>
+                <option value="india">India</option>                
             </select>
             <br/>
          <!-- <input id="account" class="form-control" type="text" placeholder="Account" required> -->
@@ -97,7 +97,7 @@
       <div class="">
       <br/>
          <div>
-            <button type="submit" class="btn btn-primary btn-lg btn-block">Create Sheet</button>
+            <button id="createSheetButton" class="btn btn-primary btn-lg btn-block">Create Sheet</button>
          </div>
       </div>
    </form>
@@ -122,16 +122,16 @@
    
    $(document).ready(function() {
      //submit of create sheet
-     $("#create-sheet-form").submit(function() {       
+//      $("#create-sheet-form").submit(function() {       
        
     	 
-       var countryName = $("#countryName").val();
-       var account = $("#account").val();
-       //prevent redirect actions
-       //google.script.run.createSheet(countryName,account);
-       google.script.run.LIB_FUNC("AmisMarketApp.ShareSheet.createSheet",countryName,account);
-       return false;
-     });
+//        var countryName = $("#countryName").val();
+//        var account = $("#account").val();
+//        //prevent redirect actions
+//        //google.script.run.createSheet(countryName,account);
+//        google.script.run.LIB_FUNC("AmisMarketApp.ShareSheet.createSheet",countryName,account);
+//        return false;
+//      });
      
      //submit login form function
      $("#login-form").submit(function() {  
@@ -199,6 +199,16 @@
               //disable the button himself              
                $("#addFrc").prop("disabled",true);
 		   });
+           //bind create google sheet function
+            $("#createSheetButton").bind( "click", function() {       
+            	var countryName = $("#countryName").val();
+                var account = $("#account").val();
+                //prevent redirect actions
+                //google.script.run.createSheet(countryName,account);
+                google.script.run.LIB_FUNC("AmisMarketApp.ShareSheet.createSheet",countryName,account,data);
+                return false;
+  		   });
+            
        });
       
         
@@ -244,6 +254,15 @@
               google.script.run.LIB_FUNC("AmisMarketApp.ForecastUtility.addForecast",sessionStorage.getItem("tokenFireBase") );
               //disable the button himself              
                $("#addFrc").prop("disabled",true);
+		   });
+       //bind create google sheet function
+       $("#createSheetButton").bind( "click", function() {       
+       	var countryName = $("#countryName").val();
+           var account = $("#account").val();
+           //prevent redirect actions
+           //google.script.run.createSheet(countryName,account);
+           google.script.run.LIB_FUNC("AmisMarketApp.ShareSheet.createSheet",countryName,account,sessionStorage.getItem("tokenFireBase"));
+           return false;
 		   });
      }
      
