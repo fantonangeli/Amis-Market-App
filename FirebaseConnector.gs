@@ -10,7 +10,7 @@ var FirebaseConnector=new function(){
     };
 
     this.getToken = function(  ) {
-        PropertiesService.getUserProperties().getProperty("tokenFireBase", token);
+        return PropertiesService.getUserProperties().getProperty("tokenFireBase");
     };
 
 
