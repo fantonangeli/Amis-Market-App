@@ -103,9 +103,11 @@ var ForecastingMethodologies=new (function(){
 		  var activeCell=e.range;
 		  var fmRanges;
 
-		  for (var i = fmColNums.length; i--;) {
-			isInFMColumn(fmColNums[i], activeCell)
-		  }
+		  Browser.msgBox(AmisMarketApp.FirebaseConnector.token)
+
+		//   for (var i = fmColNums.length; i--;) {
+		// 	isInFMColumn(fmColNums[i], activeCell)
+		//   }
 	};
 
 

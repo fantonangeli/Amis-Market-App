@@ -116,7 +116,7 @@
        //.then is used to get the token value
        user.getToken().then(function(data) {
 		   console.log('token',data);
-           google.script.run.LIB_FUNC("AmisMarketApp.setTokenFireBase",data);
+           google.script.run.LIB_FUNC("AmisMarketApp.FirebaseConnector.setToken",data);
            // Store in session the token
            sessionStorage.setItem("tokenFireBase", data);
            sessionStorage.setItem("emailFireBase", user.email);
