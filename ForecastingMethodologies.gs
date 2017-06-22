@@ -79,13 +79,29 @@ var ForecastingMethodologies=new (function(){
 	  }
 	};
 
+
+	/**
+	 * reads the forecasting Methodology ranges from firebase
+	 * @return {array} array of ranges
+	 */
+	this.getFMRanges=function getFMRanges(){
+		var tokenFireBase=sessionStorage.getItem("tokenFireBase");
+
+		if(!tokenFireBase){
+			Browser.msgBox("You must be logged to use this functionality!");
+		}
+
+		return FirebaseConnector.getFireBaseData("config/forecastingMethodologies/argentina/maize/ranges",userToken);
+
+	};
+
 	/**
 	 * function to attach on the onEdit event
 	 * @param  {Object} e
 	 */
 	this.onEdit=function(e){
 		  var activeCell=e.range;
-		  var fmColNums=Utility.regexEvalIntoRow(/\d{4}\.FM/, "1:1");
+		  var fmRanges;
 
 		  for (var i = fmColNums.length; i--;) {
 			isInFMColumn(fmColNums[i], activeCell)

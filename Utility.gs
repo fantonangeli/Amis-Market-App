@@ -299,5 +299,4 @@ var Utility=new (function(){
     return currFn.apply(this, extraArgs);
   };
 
-
 });

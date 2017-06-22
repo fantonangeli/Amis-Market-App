@@ -1,3 +1,10 @@
+/**
+ * firebase token
+ * @type {string}
+ */
+this.tokenFireBase=null;
+
+
 function onOpen() {
 
   //create Amis menu
@@ -23,4 +30,12 @@ function onEdit(e){
 
 
   ForecastingMethodologies.onEdit(e);
+}
+
+/**
+ * setter for the firebase token
+ * @param  {string} token
+ */
+function setTokenFireBase(token) {
+  this.tokenFireBase = token;
 }

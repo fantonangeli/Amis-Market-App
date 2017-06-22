@@ -4,13 +4,13 @@
       <base target="_top">
 	  <!--------------------------------------------------------------------------------------------- -->
 	  <!-- JQUERY AND BOOSTRAP IMPORT -->
-	  <!--------------------------------------------------------------------------------------------- -->		
-		  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">		
+	  <!--------------------------------------------------------------------------------------------- -->
+		  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 		  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
       <!--------------------------------------------------------------------------------------------- -->
 	  <!-- END JQUERY AND BOOSTRAP IMPORT -->
 	  <!--------------------------------------------------------------------------------------------- -->
-	  
+
 	  <!--------------------------------------------------------------------------------------------- -->
 	  <!-- FIREBASE IMPORT -->
 	  <!--------------------------------------------------------------------------------------------- -->
@@ -18,33 +18,33 @@
 		<script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
 	  <!--------------------------------------------------------------------------------------------- -->
 	  <!-- END FIREBASE IMPORT -->
-	  <!--------------------------------------------------------------------------------------------- -->      
+	  <!--------------------------------------------------------------------------------------------- -->
    </head>
-   
+
    <body>
 	  <!-- AMIS LOGO -->
-      <img src="http://www.amis-outlook.org/fileadmin/templates/AMIS/images/amis_logo.jpg">	  
+      <img src="http://www.amis-outlook.org/fileadmin/templates/AMIS/images/amis_logo.jpg">
    </body>
    <br/>
-   <br/>    
-   <!-- hidden part --> 
+   <br/>
+   <!-- hidden part -->
    <div id="userActionsDiv" hidden>
       <p id="tokenContainer"></p>
       <h4>WELCOME TO AMIS</h4>
       <p id="userLabel"></p>
       <br/>
       <h4>Create a new forecast for</h4>
-      
+
         <div class="btn-group">
-      
-            <button id="addFrc"   style="margin-right:10px;" class="btn btn-primary btn-lg btn-inl">2016/17</button>      
-      
-      
-            <button   class="btn btn-primary btn-lg btn-inl">2017/18</button>      
-      
-       </div>      
+
+            <button id="addFrc"   style="margin-right:10px;" class="btn btn-primary btn-lg btn-inl">2016/17</button>
+
+
+            <button   class="btn btn-primary btn-lg btn-inl">2017/18</button>
+
+       </div>
       <br/><br/><br/>
-      <button id="buttonSave"   class="btn btn-primary btn-lg btn-block">SAVE DATA</button>      
+      <button id="buttonSave"   class="btn btn-primary btn-lg btn-block">SAVE DATA</button>
    </div>
    <!-- END hidden part -->
    <br/>
@@ -55,7 +55,7 @@
          <div id="div-login-msg">
             <div id="icon-login-msg"></div>
          </div>
-        
+
          <input id="login_username" class="form-control" type="text" placeholder="Username" required>
          <input id="login_password" class="form-control" type="password" placeholder="Password" required>
       </div>
@@ -67,9 +67,9 @@
    </form>
    <!-- End # Login Form -->
 </html>
-<script>      
+<script>
        //-----------------------------------------------------------------
-	   // Initialize Firebase    
+	   // Initialize Firebase
 	   //-----------------------------------------------------------------
        var config = {
          apiKey: "AIzaSyA3aklD6VK81sc6ui_vjf1IceAi_Zgtjqo",
@@ -81,97 +81,98 @@
        };
        firebase.initializeApp(config);
 	   //-----------------------------------------------------------------
-	   // END Initialize Firebase    
+	   // END Initialize Firebase
 	   //-----------------------------------------------------------------
-   
+
    $(document).ready(function() {
-     
+
      //submit login form function
-     $("#login-form").submit(function() {  
+     $("#login-form").submit(function() {
      var user = $("#login_username").val();
      var pswd = $("#login_password").val();
-     
+
      //do fire base auth
      var fireBaseLogin = firebase.auth().signInWithEmailAndPassword(user, pswd).then(function(user) {
-     
-      // user signed CALLBACK FUNCTION 
-      
-      console.log('user logged', user);      
-      
+
+      // user signed CALLBACK FUNCTION
+
+      console.log('user logged', user);
+
       //change the sidebarmenu
       //google.script.run.changeSidebar();
-      
+
       //----------------------------------
       //hide form show menu logged in
       //----------------------------------
       //google.script.run.hideShow();
       $("#userActionsDiv").show();
-      //set user name into label  
+      //set user name into label
       $("#userLabel").text(user.email);
       $("#login-form").hide();
       //----------------------------------
       //END --hide form show menu logged in
       //----------------------------------
-		
+
        //.then is used to get the token value
        user.getToken().then(function(data) {
 		   console.log('token',data);
+           google.script.run.LIB_FUNC("AmisMarketApp.setTokenFireBase",data);
            // Store in session the token
-           sessionStorage.setItem("tokenFireBase", data);            
-           sessionStorage.setItem("emailFireBase", user.email); 
+           sessionStorage.setItem("tokenFireBase", data);
+           sessionStorage.setItem("emailFireBase", user.email);
 		   //binding SAVE function with AMIS MARKET API
-		   $("#buttonSave").bind( "click", function() {       
+		   $("#buttonSave").bind( "click", function() {
 			  //google.script.run.startSync(data);
               google.script.run.LIB_FUNC("AmisMarketApp.SyncMasterSheet.startSync",data);
-              //disable the button himself              
+              //disable the button himself
               $("#addFrc").prop("disabled",false);
 		   });
-            $("#addFrc").bind( "click", function() {       
+            $("#addFrc").bind( "click", function() {
 			  //google.script.run.addForecast(data);
               google.script.run.LIB_FUNC("AmisMarketApp.ForecastUtility.addForecast",data);
-              //disable the button himself              
+              //disable the button himself
                $("#addFrc").prop("disabled",true);
 		   });
        });
-      
-        
-      
+
+
+
    }).catch(function(error) {
        //wrong auth CALLBACK FUNCTION
        var errorCode = error.code;
        var errorMessage = error.message;
-   
+
        if (errorCode === 'auth/wrong-password') {
            alert('Wrong password.');
        } else {
-           alert(errorMessage);         
+           alert(errorMessage);
        }
-       console.log(error);     
+       console.log(error);
    });
      //prevent redirect actions
-     return false;   
+     return false;
      })
-     
+
      //if auth is already done
      if(sessionStorage.getItem("tokenFireBase")){
       $("#userActionsDiv").show();
-      //set user name into label  
+      //set user name into label
       $("#userLabel").text(sessionStorage.getItem("emailFireBase"));
       $("#login-form").hide();
       //binding SAVE function with AMIS MARKET API
-       $("#buttonSave").bind( "click", function() {       
+       $("#buttonSave").bind( "click", function() {
 	  	  //google.script.run.startSync(sessionStorage.getItem("tokenFireBase"));
           google.script.run.LIB_FUNC("AmisMarketApp.SyncMasterSheet.startSync",sessionStorage.getItem("tokenFireBase"));
           $("#addFrc").prop("disabled",false);
 	   });
-       $("#addFrc").bind( "click", function() {       
-			  //google.script.run.addForecast(sessionStorage.getItem("tokenFireBase"));                           
+       $("#addFrc").bind( "click", function() {
+			  //google.script.run.addForecast(sessionStorage.getItem("tokenFireBase"));
               google.script.run.LIB_FUNC("AmisMarketApp.ForecastUtility.addForecast",sessionStorage.getItem("tokenFireBase") );
-              //disable the button himself              
+              //disable the button himself
                $("#addFrc").prop("disabled",true);
 		   });
      }
-     
-     
+
+
    })
 </script>
