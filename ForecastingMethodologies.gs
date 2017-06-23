@@ -63,10 +63,13 @@ var ForecastingMethodologies=new (function(){
 		  var fmRanges=getFMRanges();
 
 		  if(!fmRanges) return;
+      
+          fmRanges=JSON.parse(fmRanges);
 
 		  var r;
 		  for (var i = fmRanges.length; i--;) {
 		  	r=fmRanges[i];
+            
 			//check if is in a FM range
 		  	if(Utility.isInRange(r, activeCell)){
 				activeCellVal=activeCell.getValue();

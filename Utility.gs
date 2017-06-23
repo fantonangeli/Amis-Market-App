@@ -244,7 +244,7 @@ var Utility=new (function(){
    * @return {bool}       true if the cell is in the range, false otherwise
    */
   this.isInRange = function(range, cell) {
-        var range = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange(range);
+        range = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange(range);
 
         var editRange = {
             top: range.getRow(),
@@ -252,7 +252,6 @@ var Utility=new (function(){
             left: range.getColumn(),
             right: range.getLastColumn()
         };
-
 
         // Exit if we're out of range
         var thisRow = cell.getRow();
