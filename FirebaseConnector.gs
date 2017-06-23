@@ -1,6 +1,19 @@
-var FirebaseConnector=new function(){  
-  
-  
+var FirebaseConnector=new function(){
+
+
+    /**
+     * setter for the firebase token
+     * @param  {string} token
+     */
+    this.setToken = function( token ) {
+        PropertiesService.getUserProperties().setProperty("tokenFireBase", token);
+    };
+
+    this.getToken = function(  ) {
+        return PropertiesService.getUserProperties().getProperty("tokenFireBase");
+    };
+
+
   //---------------------------------------------------------
   /**
 	 * return firebase url to be update/fetched
@@ -19,9 +32,9 @@ var FirebaseConnector=new function(){
   //---------------------------------------------------------
   // END  return firebase url to be update/fetched
   //---------------------------------------------------------
-  
-  
-  //---------------------------------------------------------  
+
+
+  //---------------------------------------------------------
   /**
 	 * write data on firebase
 	 * @param  {string} data to save
@@ -36,27 +49,27 @@ var FirebaseConnector=new function(){
       'payload': JSON.stringify(data),
      'muteHttpExceptions' : true
     };
-    
+
     var fireBaseUrl = this.getFirebaseUrl(saveNode,userToken);
-    
+
     UrlFetchApp.fetch(fireBaseUrl, options);
-    
+
   }
   //---------------------------------------------------------
   // END  write data on firebase
   //---------------------------------------------------------
-      
- 
-  //---------------------------------------------------------  
+
+
+  //---------------------------------------------------------
   /**
-	 * fetch data from Firebase	 
+	 * fetch data from Firebase
      * @param  {string} firebase note where to fetch
      * @param  {string} auth token
      * @return {json}   data fetched
 	 */
   //---------------------------------------------------------
-  this.getFireBaseData= function(node,userToken) {   
-   var fireBaseUrl = this.getFirebaseUrl(node,userToken);   
+  this.getFireBaseData= function(node,userToken) {
+   var fireBaseUrl = this.getFirebaseUrl(node,userToken);
    var ft= UrlFetchApp.fetch(fireBaseUrl);
    return ft.toString();
   }
@@ -64,5 +77,5 @@ var FirebaseConnector=new function(){
   // END fetch data from Firebase
   //---------------------------------------------------------
 
-  
+
 }

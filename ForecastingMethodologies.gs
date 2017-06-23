@@ -1,30 +1,30 @@
 /**
  * class to manage Forecasting Methodologies
  */
-ForecastingMethodologies={
+var ForecastingMethodologies=new (function(){
 
 	/**
 	 * do the format operations of each element of the Forecasting Methodologies
 	 * @param  {string} val cell value
 	 * @return {string}    the value without any space
 	 */
-	formatValue:function(val){
+	this.formatValue=function(val){
 		return val.toUpperCase().replace(/ /g, "").split(",").filter(function(e){return e;}).join(",");
-	},
+	};
 
 	/**
 	 * check if a given string is a valid Forecasting  Methodology
 	 * @param  {string} value the string to validate
 	 * @return {bool}       true if valid, false otherwise
 	 */
-	isValid:function(value){
+	this.isValid=function(value){
 		return /^((\s?[CRGTSIMFBO]\s?(,\s?[CRGTSIMFBO]\s?)*)|\s*)$/i.test(value);
-	},
+	};
 
 	/**
 	 * show the Forecasting  Methodology's dialog
 	 */
-	showMethodsDialog:function(currCell) {
+	this.showMethodsDialog=function(currCell) {
       currCellNotation=currCell.getA1Notation();
       currCellValue=currCell.getValue();
 
@@ -35,40 +35,89 @@ ForecastingMethodologies={
 		SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
 			.showModalDialog( html, 'Forecasting Methodologies' );
       return true;
-  },
+  };
+
 
 	/**
-	 * sets the value of the current cell
-	 * @param  {string} value the value to set
+	 * reads the forecasting Methodology ranges from firebase
+	 * @return {array} array of ranges, null otherwise
 	 */
-	setCellValue:function(range, value){
-      Logger.log("range "+range);
-        var cell=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange(range);
+	function getFMRanges(){
+		var tokenFireBase=FirebaseConnector.getToken();
 
-		if(!cell) return;
+		if(!tokenFireBase){
+			Browser.msgBox("You must be logged to use this functionality!");
+			return null;
+		}
 
-		cell.setValue(value);
-	},
+		return FirebaseConnector.getFireBaseData("config/forecastingMethodologies/argentina/maize/ranges",tokenFireBase);
+
+	};
+
+	/**
+	 * move FM column in Firebase
+	 * @param  {string} range range in A1 notation
+	 * @return {bool}       true if ok, false otherwise
+	 */
+	this.moveFMCols=function(range){
+	  var movedColNum, newFmRanges=[];
+	  var fmRanges=getFMRanges();
+	  range=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange(range);
+	  movedColNum=range.getColumn();
+
+	  if(!fmRanges) return;
+
+	  fmRanges=JSON.parse(fmRanges);
+
+	  var r;
+	  for (var i = fmRanges.length; i--;) {
+	  	r=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange(fmRanges[i]);
+
+		if(r.getColumn()>=movedColNum){
+			r=r.offset(0,1);
+		}
+
+		newFmRanges.unshift(r.getA1Notation());
+	  }
+
+
+	  FirebaseConnector.writeOnFirebase(
+          newFmRanges,
+		  "config/forecastingMethodologies/argentina/maize/ranges",
+		  FirebaseConnector.getToken()
+	  );
+	};
 
 	/**
 	 * function to attach on the onEdit event
 	 * @param  {Object} e
 	 */
-	onEdit:function(e){
-		  var activeCell=e.range;
-		  var activeCellVal=activeCell.getValue();
-		Logger.log("fmoe");
+	this.onEdit=function(e){
+		  var activeCell=e.range,activeCellVal;
+		  var fmRanges=getFMRanges();
 
-		  //check if the active cell is in the forecast range
-		  if(Utility.isInRange("AB11:AB32", activeCell)){
-		    if(!ForecastingMethodologies.isValid(activeCellVal)){
-				ForecastingMethodologies.showMethodsDialog(activeCell);
-		        activeCell.setValue("");
-		    }else{
-				activeCell.setValue(ForecastingMethodologies.formatValue(activeCellVal));
+		  if(!fmRanges) return;
+
+          fmRanges=JSON.parse(fmRanges);
+
+		  var r;
+		  for (var i = fmRanges.length; i--;) {
+		  	r=fmRanges[i];
+
+			//check if is in a FM range
+		  	if(Utility.isInRange(r, activeCell)){
+				activeCellVal=activeCell.getValue();
+
+				//check if cell is not valid and is to open the dialog
+				if(!ForecastingMethodologies.isValid(activeCellVal)){
+					ForecastingMethodologies.showMethodsDialog(activeCell);
+					activeCell.setValue("");
+				}else{
+					activeCell.setValue(ForecastingMethodologies.formatValue(activeCellVal));
+				}
 			}
 		  }
-	}
+	};
 
 
-};
+});
