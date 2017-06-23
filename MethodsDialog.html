@@ -208,16 +208,16 @@
               $('#FMCB_wrapper :checkbox').each(function() {
                   $(this).prop("checked", ~vr.indexOf(this.value));
               });
-              
-              
+
+
               //set cell value---------------------------
 		      $('#FMCB_wrapper :checkbox').click(function(){
 		        var val = [];
 		        $('#FMCB_wrapper :checkbox:checked').each(function(i){
 		          val[i] = $(this).val();
 		        });
-                
-				google.script.run.LIB_FUNC("AmisMarketApp.ForecastingMethodologies.setCellValue", "<?= currCellNotation ?>", val.join(","));
+
+				google.script.run.LIB_FUNC("AmisMarketApp.Utility.setCellValue", "<?= currCellNotation ?>", val.join(","));
 		      });
 		});
 	</script>

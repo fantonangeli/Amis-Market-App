@@ -37,61 +37,20 @@ var ForecastingMethodologies=new (function(){
       return true;
   };
 
-	/**
-	 * sets the value of the current cell
-	 * @param  {string} value the value to set
-	 */
-	this.setCellValue=function(range, value){
-      Logger.log("range "+range);
-        var cell=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange(range);
-
-		if(!cell) return;
-
-		cell.setValue(value);
-	};
-
-	/**
-	 * check if the active cell is in the forecast column
-	 * @param  {number} colNum column number
-	 * @param  {object} activeCell current edited cell
-	 */
-	var isInFMColumn = function(colNum,activeCell) {
-	  var activeCellVal, activeCellIndex;
-
-	  if(colNum!==activeCell.getColumn()) return;
-
-	  activeCellIndex=activeCell.getRowIndex();
-
-	  //check if the active cell is in the forecast range
-	  if(
-		  	((11 <= activeCellIndex) && (activeCellIndex <= 31)) ||
-			((36 <= activeCellIndex) && (activeCellIndex <= 37)) ||
-			((41 <= activeCellIndex) && (activeCellIndex <= 45)) ||
-			((46 <= activeCellIndex) && (activeCellIndex <= 54))
-	  ){
-		activeCellVal=activeCell.getValue();
-		if(!ForecastingMethodologies.isValid(activeCellVal)){
-			ForecastingMethodologies.showMethodsDialog(activeCell);
-			activeCell.setValue("");
-		}else{
-			activeCell.setValue(ForecastingMethodologies.formatValue(activeCellVal));
-		}
-	  }
-	};
-
 
 	/**
 	 * reads the forecasting Methodology ranges from firebase
-	 * @return {array} array of ranges
+	 * @return {array} array of ranges, null otherwise
 	 */
-	this.getFMRanges=function getFMRanges(){
-		var tokenFireBase=sessionStorage.getItem("tokenFireBase");
+	function getFMRanges(){
+		var tokenFireBase=FirebaseConnector.getToken();
 
 		if(!tokenFireBase){
 			Browser.msgBox("You must be logged to use this functionality!");
+			return null;
 		}
 
-		return FirebaseConnector.getFireBaseData("config/forecastingMethodologies/argentina/maize/ranges",userToken);
+		return FirebaseConnector.getFireBaseData("config/forecastingMethodologies/argentina/maize/ranges",tokenFireBase);
 
 	};
 
@@ -100,14 +59,27 @@ var ForecastingMethodologies=new (function(){
 	 * @param  {Object} e
 	 */
 	this.onEdit=function(e){
-		  var activeCell=e.range;
-		  var fmRanges;
+		  var activeCell=e.range,activeCellVal;
+		  var fmRanges=getFMRanges();
 
-		  Browser.msgBox(AmisMarketApp.FirebaseConnector.getToken())
+		  if(!fmRanges) return;
 
-		//   for (var i = fmColNums.length; i--;) {
-		// 	isInFMColumn(fmColNums[i], activeCell)
-		//   }
+		  var r;
+		  for (var i = fmRanges.length; i--;) {
+		  	r=fmRanges[i];
+			//check if is in a FM range
+		  	if(Utility.isInRange(r, activeCell)){
+				activeCellVal=activeCell.getValue();
+
+				//check if cell is not valid and is to open the dialog
+				if(!ForecastingMethodologies.isValid(activeCellVal)){
+					ForecastingMethodologies.showMethodsDialog(activeCell);
+					activeCell.setValue("");
+				}else{
+					activeCell.setValue(ForecastingMethodologies.formatValue(activeCellVal));
+				}
+			}
+		  }
 	};
 
 

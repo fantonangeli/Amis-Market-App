@@ -299,4 +299,16 @@ var Utility=new (function(){
     return currFn.apply(this, extraArgs);
   };
 
+  /**
+   * sets the value of the current cell
+   * @param  {string} value the value to set
+   */
+  this.setCellValue=function(range, value){
+      var cell=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange(range);
+
+      if(!cell) return;
+
+      cell.setValue(value);
+  };
+
 });
