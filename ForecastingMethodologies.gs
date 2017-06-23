@@ -74,14 +74,15 @@ var ForecastingMethodologies=new (function(){
 	  	r=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange(fmRanges[i]);
 
 		if(r.getColumn()>=movedColNum){
-			r.offset(0,1);
+			r=r.offset(0,1);
 		}
 
-		newFmRanges.unshift(r.getA1Notation());			
+		newFmRanges.unshift(r.getA1Notation());
 	  }
 
+
 	  FirebaseConnector.writeOnFirebase(
-		  JSON.stringify(newFmRanges),
+          newFmRanges,
 		  "config/forecastingMethodologies/argentina/maize/ranges",
 		  FirebaseConnector.getToken()
 	  );
