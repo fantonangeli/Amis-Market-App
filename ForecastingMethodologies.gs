@@ -55,6 +55,39 @@ var ForecastingMethodologies=new (function(){
 	};
 
 	/**
+	 * move FM column in Firebase
+	 * @param  {string} range range in A1 notation
+	 * @return {bool}       true if ok, false otherwise
+	 */
+	this.moveFMCols=function(range){
+	  var movedColNum, newFmRanges=[];
+	  var fmRanges=getFMRanges();
+	  range=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange(range);
+	  movedColNum=range.getColumn();
+
+	  if(!fmRanges) return;
+
+	  fmRanges=JSON.parse(fmRanges);
+
+	  var r;
+	  for (var i = fmRanges.length; i--;) {
+	  	r=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange(fmRanges[i]);
+
+		if(r.getColumn()>=movedColNum){
+			r.offset(0,1);
+		}
+
+		newFmRanges.unshift(r.getA1Notation());			
+	  }
+
+	  FirebaseConnector.writeOnFirebase(
+		  JSON.stringify(newFmRanges),
+		  "config/forecastingMethodologies/argentina/maize/ranges",
+		  FirebaseConnector.getToken()
+	  );
+	};
+
+	/**
 	 * function to attach on the onEdit event
 	 * @param  {Object} e
 	 */
@@ -63,13 +96,13 @@ var ForecastingMethodologies=new (function(){
 		  var fmRanges=getFMRanges();
 
 		  if(!fmRanges) return;
-      
+
           fmRanges=JSON.parse(fmRanges);
 
 		  var r;
 		  for (var i = fmRanges.length; i--;) {
 		  	r=fmRanges[i];
-            
+
 			//check if is in a FM range
 		  	if(Utility.isInRange(r, activeCell)){
 				activeCellVal=activeCell.getValue();
