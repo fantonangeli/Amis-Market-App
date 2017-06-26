@@ -120,6 +120,7 @@
            // Store in session the token
            sessionStorage.setItem("tokenFireBase", data);
            sessionStorage.setItem("emailFireBase", user.email);
+           google.script.run.LIB_FUNC("AmisMarketApp.onLogin");
 		   //binding SAVE function with AMIS MARKET API
 		   $("#buttonSave").bind( "click", function() {
 			  //google.script.run.startSync(data);

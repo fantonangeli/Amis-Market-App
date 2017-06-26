@@ -7,7 +7,7 @@ var ForecastingMethodologies = new( function() {
 	 * path firebase where configuration is stored
 	 * @type {String}
 	 */
-	var fbPath = "config/forecastingMethodologies/argentina/maize/ranges";
+	var fbPath = "config/forecastingMethodologies/argentina";
 
 	/**
 	 * get the path firebase where configuration is stored
@@ -55,12 +55,41 @@ var ForecastingMethodologies = new( function() {
 		return true;
 	};
 
+	/**
+	 * get the firebase configuration for the Forecasting Methodologies
+	 * @param  {bool} refresh (default false) true to force cache renew
+	 * @return {Object}         the configuration
+	 */
+	this.getConfig = function( refresh ) {
+		var data, t;
+		var fbConfig=PropertiesService.getUserProperties().getProperty("ForecastingMethodologies.config");
+		refresh=(refresh || false);
+
+		if ( ( fbConfig !== null ) && !refresh ) {
+			return JSON.parse(fbConfig);
+		}
+
+		t = FirebaseConnector.getToken();
+		if ( !t ) {
+			return null;
+		}
+		data = FirebaseConnector.getFireBaseData( getFbConfigPath(), t );
+		if ( !data ) {
+			return null;
+		}
+
+		PropertiesService.getUserProperties().setProperty("ForecastingMethodologies.config",data);
+
+		return JSON.parse( data );
+	};
+
 
 	/**
 	 * reads the forecasting Methodology ranges from firebase
 	 * @return {array} array of ranges, null otherwise
 	 */
-	function getFMRanges() {
+	var getFMRanges=function() {
+		var config;
 		var tokenFireBase = FirebaseConnector.getToken();
 
 		if ( !tokenFireBase ) {
@@ -68,7 +97,11 @@ var ForecastingMethodologies = new( function() {
 			return null;
 		}
 
-		return FirebaseConnector.getFireBaseData( "config/forecastingMethodologies/argentina/maize/ranges", tokenFireBase );
+		config=ForecastingMethodologies.getConfig();
+
+		if(!config) return null;
+
+		return config.maize.ranges;
 
 	};
 
@@ -107,31 +140,6 @@ var ForecastingMethodologies = new( function() {
 	};
 
 	/**
-	 * get the firebase configuration for the Forecasting Methodologies
-	 * @param  {bool} refresh (default false) true to force cache renew
-	 * @return {Object}         the configuration
-	 */
-	this.getConfig = function( refresh ) {
-		var data, t;
-		var fbConfig=PropertiesService.getUserProperties().getProperty("ForecastingMethodologies.config");
-		refresh=(refresh || false);
-
-		if ( ( fbConfig !== null ) && !refresh ) {
-			return fbConfig;
-		}
-
-		t = FirebaseConnector.getToken();
-		if ( !t ) {
-			return null;
-		}
-		data = FirebaseConnector.getFireBaseData( getFbConfigPath(), t );
-		if ( !data ) {
-			return null;
-		}
-		return JSON.parse( data );
-	};
-
-	/**
 	 * function to attach on the onEdit event
 	 * @param  {Object} e
 	 */
@@ -141,8 +149,6 @@ var ForecastingMethodologies = new( function() {
 		var fmRanges = getFMRanges();
 
 		if ( !fmRanges ) return;
-
-		fmRanges = JSON.parse( fmRanges );
 
 		var r;
 		for ( var i = fmRanges.length; i--; ) {
