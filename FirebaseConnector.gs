@@ -1,5 +1,15 @@
 var FirebaseConnector=new function(){  
-  
+  /**
+     * setter for the firebase token
+     * @param  {string} token
+     */
+    this.setToken = function( token ) {
+        PropertiesService.getUserProperties().setProperty("tokenFireBase", token);
+    };
+
+    this.getToken = function(  ) {
+        return PropertiesService.getUserProperties().getProperty("tokenFireBase");
+    };
   
   //---------------------------------------------------------
   /**
@@ -37,7 +47,7 @@ var FirebaseConnector=new function(){
      'muteHttpExceptions' : true
     };
     
-    var fireBaseUrl = this.getFirebaseUrl(saveNode,userToken);
+    var fireBaseUrl = FirebaseConnector.getFirebaseUrl(saveNode,userToken);
     
     UrlFetchApp.fetch(fireBaseUrl, options);
     
@@ -56,7 +66,7 @@ var FirebaseConnector=new function(){
 	 */
   //---------------------------------------------------------
   this.getFireBaseData= function(node,userToken) {   
-   var fireBaseUrl = this.getFirebaseUrl(node,userToken);   
+   var fireBaseUrl = FirebaseConnector.getFirebaseUrl(node,userToken);   
    var ft= UrlFetchApp.fetch(fireBaseUrl);
    return ft.toString();
   }
