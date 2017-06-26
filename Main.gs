@@ -26,3 +26,10 @@ function onEdit(e){
 
   ForecastingMethodologies.onEdit(e);
 }
+
+/**
+ * onLogin  event
+ */
+function onLogin(){
+    ForecastingMethodologies.getConfig(true);
+}
