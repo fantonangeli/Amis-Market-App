@@ -85,6 +85,9 @@ var SyncMasterSheet=new function(){
       
     }
     Utility.toastInfo('Data Saved', 'data');
+    
+    //protect again the sheet
+    ProtectRanges.protectCell(userToken);
   }
   //---------------------------------------------------------
   // END Saving Sheet Data function
