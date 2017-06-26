@@ -153,6 +153,7 @@
       //----------------------------------
       //END --hide form show menu logged in
       //----------------------------------
+
 		console.info('user',user.uid);
         sessionStorage.setItem("userUid", user.uid);
        //.then is used to get the token value
@@ -162,6 +163,7 @@
            // Store in session the token
            sessionStorage.setItem("tokenFireBase", data);            
            sessionStorage.setItem("emailFireBase", user.email); 
+           google.script.run.LIB_FUNC("AmisMarketApp.onLogin");
 		   //binding SAVE function with AMIS MARKET API
 		   $("#buttonSave").bind( "click", function() {       
 			  //google.script.run.startSync(data);
