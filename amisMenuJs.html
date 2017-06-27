@@ -1,0 +1,142 @@
+<script>
+       //-----------------------------------------------------------------
+       // Initialize Firebase
+       //-----------------------------------------------------------------
+       var config = {
+       	apiKey: "AIzaSyA3aklD6VK81sc6ui_vjf1IceAi_Zgtjqo",
+       	authDomain: "amis-9189b.firebaseapp.com",
+       	databaseURL: "https://amis-9189b.firebaseio.com",
+       	projectId: "amis-9189b",
+       	storageBucket: "amis-9189b.appspot.com",
+       	messagingSenderId: "924659512730"
+       };
+       firebase.initializeApp( config );
+       //-----------------------------------------------------------------
+       // END Initialize Firebase
+       //-----------------------------------------------------------------
+
+       /**
+        * onLogged events
+        * @param  {object} user The signed-in user info
+        */
+       function onLoggedState(user){
+           console.log( 'user logged', user );
+
+           //change the sidebarmenu
+           //google.script.run.changeSidebar();
+
+           //----------------------------------
+           //hide form show menu logged in
+           //----------------------------------
+           //google.script.run.hideShow();
+           firebase.database().ref('/users_data/' + user.uid).once('value').then(function(snapshot) {
+             var user_data = snapshot.val();
+
+             if(!user_data){
+                 alert("User "+user.email+" is not authorized!");
+                 return;
+             }
+             console.log('USER_DATA', user_data);
+
+             if ( user_data.type==="admin" ) {
+                 //show create country sheet
+                 $( "#create-sheet-form" ).show();
+             } else {
+                 //show normal menu
+                 $( "#userActionsDiv" ).show();
+             }
+
+             //set user name into label
+             $( "#userLabel" ).text( user.email );
+             $( "#loading" ).hide();
+
+             //----------------------------------
+             //END --hide form show menu logged in
+             //----------------------------------
+
+             console.info( 'user', user.uid );
+             //.then is used to get the token value
+             user.getToken().then( function( data ) {
+                 console.log( 'gettoken', data );
+                 google.script.run.LIB_FUNC( "AmisMarketApp.FirebaseConnector.setToken", data );
+                 // Store in session the token
+                 google.script.run.LIB_FUNC( "AmisMarketApp.onLogin" );
+                 //binding SAVE function with AMIS MARKET API
+                 $( "#buttonSave" ).bind( "click", function() {
+                     //google.script.run.startSync(data);
+                     google.script.run.LIB_FUNC( "AmisMarketApp.SyncMasterSheet.startSync", data );
+                     //disable the button himself
+                     $( "#addFrc" ).prop( "disabled", false );
+                 } );
+                 $( "#addFrc" ).bind( "click", function() {
+                     //google.script.run.addForecast(data);
+                     google.script.run.LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast", data );
+                     //disable the button himself
+                     $( "#addFrc" ).prop( "disabled", true );
+                 } );
+             } );
+         });
+       }
+
+       /**
+        * show a popup with the google login
+        */
+       function loginWithGoogle() {
+       	var provider = new firebase.auth.GoogleAuthProvider();
+       	firebase.auth().signInWithPopup( provider ).then( function( result ) {
+            onLoggedState(result.user);
+       	} ).catch( function( error ) {
+            console.log('ERROR', error);
+       		alert("User "+error.email+" is not authorized!");
+       		// Handle Errors here.
+       		var errorCode = error.code;
+       		var errorMessage = error.message;
+       		// The email of the user's account used.
+       		var email = error.email;
+       		// The firebase.auth.AuthCredential type that was used.
+       		var credential = error.credential;
+       		// ...
+       	} );
+       }
+
+
+
+       /**
+        * not used in the code, just for use in the browser console
+        */
+       function logout(){
+           firebase.auth().signOut()
+       }
+
+
+
+
+       $( document ).ready( function() {
+           var unsubOnAuthStateChanged=firebase.auth().onAuthStateChanged(function(user) {
+             unsubOnAuthStateChanged();
+             if (user) {
+                 console.log('USER authenticated', user);
+                onLoggedState(user);
+             } else {
+                loginWithGoogle();
+             }
+           });
+
+
+       	//submit of create sheet
+       	$( "#create-sheet-form" ).submit( function() {
+
+
+       		var countryName = $( "#countryName" ).val();
+       		var account = $( "#account" ).val();
+       		//prevent redirect actions
+       		//google.script.run.createSheet(countryName,account);
+       		google.script.run.LIB_FUNC( "AmisMarketApp.ShareSheet.createSheet", countryName, account );
+       		return false;
+       	} );
+
+
+
+
+       } )
+</script>

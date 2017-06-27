@@ -4,13 +4,13 @@
       <base target="_top">
 	  <!--------------------------------------------------------------------------------------------- -->
 	  <!-- JQUERY AND BOOSTRAP IMPORT -->
-	  <!--------------------------------------------------------------------------------------------- -->		
-		  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">		
+	  <!--------------------------------------------------------------------------------------------- -->
+		  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 		  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
       <!--------------------------------------------------------------------------------------------- -->
 	  <!-- END JQUERY AND BOOSTRAP IMPORT -->
 	  <!--------------------------------------------------------------------------------------------- -->
-	  
+
 	  <!--------------------------------------------------------------------------------------------- -->
 	  <!-- FIREBASE IMPORT -->
 	  <!--------------------------------------------------------------------------------------------- -->
@@ -18,65 +18,111 @@
 		<script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
 	  <!--------------------------------------------------------------------------------------------- -->
 	  <!-- END FIREBASE IMPORT -->
-	  <!--------------------------------------------------------------------------------------------- -->      
+	  <!--------------------------------------------------------------------------------------------- -->
+
+      <style>
+        /*----------------------------------------Loading styles---------------------------------------*/
+          .animationload {
+              background-color: #fff;
+              height: 100%;
+              left: 0;
+              position: fixed;
+              top: 0;
+              width: 100%;
+              z-index: 10000;
+          }
+          .osahanloading {
+              animation: 1.5s linear 0s normal none infinite running osahanloading;
+              background: #fed37f none repeat scroll 0 0;
+              border-radius: 50px;
+              height: 50px;
+              left: 50%;
+              margin-left: -25px;
+              margin-top: -25px;
+              position: absolute;
+              top: 50%;
+              width: 50px;
+          }
+          .osahanloading::after {
+              animation: 1.5s linear 0s normal none infinite running osahanloading_after;
+              border-color: #85d6de transparent;
+              border-radius: 80px;
+              border-style: solid;
+              border-width: 10px;
+              content: "";
+              height: 80px;
+              left: -15px;
+              position: absolute;
+              top: -15px;
+              width: 80px;
+          }
+          @keyframes osahanloading {
+          0% {
+              transform: rotate(0deg);
+          }
+          50% {
+              background: #85d6de none repeat scroll 0 0;
+              transform: rotate(180deg);
+          }
+          100% {
+              transform: rotate(360deg);
+          }
+          }
+
+      </style>
+
    </head>
-   
+
    <body>
 	  <!-- AMIS LOGO -->
-      <img src="http://www.amis-outlook.org/fileadmin/templates/AMIS/images/amis_logo.jpg">	  
+      <img src="http://www.amis-outlook.org/fileadmin/templates/AMIS/images/amis_logo.jpg">
    </body>
    <br/>
-   <br/>    
-   <!-- hidden part --> 
+   <br/>
+   <!-- hidden part -->
    <div id="userActionsDiv" hidden>
       <p id="tokenContainer"></p>
       <h4>WELCOME TO AMIS</h4>
       <p id="userLabel"></p>
       <br/>
       <h4>Create a new forecast for</h4>
-      
+
         <div class="btn-group">
-      
-            <button id="addFrc"   style="margin-right:10px;" class="btn btn-primary btn-lg btn-inl">2016/17</button>      
-      
-      
-            <button   class="btn btn-primary btn-lg btn-inl">2017/18</button>      
-      
-       </div>      
+
+            <button id="addFrc"   style="margin-right:10px;" class="btn btn-primary btn-lg btn-inl">2016/17</button>
+
+
+            <button   class="btn btn-primary btn-lg btn-inl">2017/18</button>
+
+       </div>
       <br/><br/><br/>
-      <button id="buttonSave"   class="btn btn-primary btn-lg btn-block">SAVE DATA</button>      
+      <button id="buttonSave"   class="btn btn-primary btn-lg btn-block">SAVE DATA</button>
    </div>
    <!-- END hidden part -->
    <br/>
    <br/>
-   <!-- Begin # Login Form -->
-   <form id="login-form">
-      <div class="">
-         <div id="div-login-msg">
-            <div id="icon-login-msg"></div>
-         </div>
-        
-         <input id="login_username" class="form-control" type="text" placeholder="Username" required>
-         <input id="login_password" class="form-control" type="password" placeholder="Password" required>
-      </div>
-      <div class="">
-         <div>
-            <button type="submit" class="btn btn-primary btn-lg btn-block">Login</button>
-         </div>
-      </div>
-   </form>
-   <!-- End # Login Form -->
-   
+
+   <div class="container" id="loading">
+   	<div class="row">
+   		<div class="text-center">
+               <h2>Loading</h2>
+           </div>
+           <div class="animationload">
+               <div class="osahanloading"></div>
+           </div>
+   	</div>
+   </div>
+
    <br/>
    <!-- Begin # create sheet form -->
    <form id="create-sheet-form" hidden>
-   <h4>CREATE A NEW COUNTRY SHEET</h4>      
+   <h4>CREATE A NEW COUNTRY SHEET</h4>
       <br/>
       <div class="">
          <div id="div-login-msg">
             <div id="icon-login-msg"></div>
          </div>
-        
+
          <input id="countryName" class="form-control" type="text" placeholder="Country Name" required>
          <input id="account" class="form-control" type="text" placeholder="Account" required>
       </div>
@@ -87,140 +133,7 @@
       </div>
    </form>
    <!-- End # Login Form -->
+
+   <?!= Utility.include('amisMenuJs'); ?>
+
 </html>
-<script>      
-       //-----------------------------------------------------------------
-	   // Initialize Firebase    
-	   //-----------------------------------------------------------------
-       var config = {
-         apiKey: "AIzaSyA3aklD6VK81sc6ui_vjf1IceAi_Zgtjqo",
-         authDomain: "amis-9189b.firebaseapp.com",
-         databaseURL: "https://amis-9189b.firebaseio.com",
-         projectId: "amis-9189b",
-         storageBucket: "amis-9189b.appspot.com",
-         messagingSenderId: "924659512730"
-       };
-       firebase.initializeApp(config);
-	   //-----------------------------------------------------------------
-	   // END Initialize Firebase    
-	   //-----------------------------------------------------------------
-   
-   $(document).ready(function() {
-     //submit of create sheet
-     $("#create-sheet-form").submit(function() {       
-
-    	 
-       var countryName = $("#countryName").val();
-       var account = $("#account").val();
-       //prevent redirect actions
-       //google.script.run.createSheet(countryName,account);
-       google.script.run.LIB_FUNC("AmisMarketApp.ShareSheet.createSheet",countryName,account);
-       return false;
-     });
-     
-     //submit login form function
-     $("#login-form").submit(function() {  
-     var user = $("#login_username").val();
-     var pswd = $("#login_password").val();
-     
-     //do fire base auth
-     var fireBaseLogin = firebase.auth().signInWithEmailAndPassword(user, pswd).then(function(user) {
-     
-      // user signed CALLBACK FUNCTION 
-      
-      console.log('user logged', user);      
-      
-      //change the sidebarmenu
-      //google.script.run.changeSidebar();
-      
-      //----------------------------------
-      //hide form show menu logged in
-      //----------------------------------
-      //google.script.run.hideShow();
-      if(user.uid== 'LqyEUjd3j7hGdgZy02C8ao2V48F2'){
-        //show create country sheet
-        $("#create-sheet-form").show();
-      }
-      else{
-        //show normal menu
-        $("#userActionsDiv").show();
-      }
-      
-      //set user name into label  
-      $("#userLabel").text(user.email);
-      $("#login-form").hide();
-      
-      //----------------------------------
-      //END --hide form show menu logged in
-      //----------------------------------
-
-		console.info('user',user.uid);
-        sessionStorage.setItem("userUid", user.uid);
-       //.then is used to get the token value
-       user.getToken().then(function(data) {
-		   console.log('token',data);
-           google.script.run.LIB_FUNC("AmisMarketApp.FirebaseConnector.setToken",data);
-           // Store in session the token
-           sessionStorage.setItem("tokenFireBase", data);            
-           sessionStorage.setItem("emailFireBase", user.email); 
-           google.script.run.LIB_FUNC("AmisMarketApp.onLogin");
-		   //binding SAVE function with AMIS MARKET API
-		   $("#buttonSave").bind( "click", function() {       
-			  //google.script.run.startSync(data);
-              google.script.run.LIB_FUNC("AmisMarketApp.SyncMasterSheet.startSync",data);
-              //disable the button himself              
-              $("#addFrc").prop("disabled",false);
-		   });
-            $("#addFrc").bind( "click", function() {       
-			  //google.script.run.addForecast(data);
-              google.script.run.LIB_FUNC("AmisMarketApp.ForecastUtility.addForecast",data);
-              //disable the button himself              
-               $("#addFrc").prop("disabled",true);
-		   });
-       });
-      
-        
-      
-   }).catch(function(error) {
-       //wrong auth CALLBACK FUNCTION
-       var errorCode = error.code;
-       var errorMessage = error.message;
-   
-       if (errorCode === 'auth/wrong-password') {
-           alert('Wrong password.');
-       } else {
-           alert(errorMessage);         
-       }
-       console.log(error);     
-   });
-     //prevent redirect actions
-     return false;   
-     })
-     
-     //if auth is already done
-     if(sessionStorage.getItem("tokenFireBase")){
-      if(sessionStorage.getItem("userUid") == 'LqyEUjd3j7hGdgZy02C8ao2V48F2')
-         $("#create-sheet-form").show();
-      else
-         $("#userActionsDiv").show();
-         
-      //set user name into label  
-      $("#userLabel").text(sessionStorage.getItem("emailFireBase"));
-      $("#login-form").hide();
-      //binding SAVE function with AMIS MARKET API
-       $("#buttonSave").bind( "click", function() {       
-	  	  //google.script.run.startSync(sessionStorage.getItem("tokenFireBase"));
-          google.script.run.LIB_FUNC("AmisMarketApp.SyncMasterSheet.startSync",sessionStorage.getItem("tokenFireBase"));
-          $("#addFrc").prop("disabled",false);
-	   });
-       $("#addFrc").bind( "click", function() {       
-			  //google.script.run.addForecast(sessionStorage.getItem("tokenFireBase"));                           
-              google.script.run.LIB_FUNC("AmisMarketApp.ForecastUtility.addForecast",sessionStorage.getItem("tokenFireBase") );
-              //disable the button himself              
-               $("#addFrc").prop("disabled",true);
-		   });
-     }
-     
-     
-   })
-</script>

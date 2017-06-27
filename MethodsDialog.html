@@ -194,6 +194,10 @@
 			</div>
 		</div>
 	</div>
+	  <div class="col-sm-12 text-center">
+		<br />
+	    <button type="button" class="btn btn-default" id="closeBtn">Close</button>
+	  </div>
 
 	<script>
 		$(document).ready(function() {
@@ -219,6 +223,10 @@
 
 				google.script.run.LIB_FUNC("AmisMarketApp.Utility.setCellValue", "<?= currCellNotation ?>", val.join(","));
 		      });
+
+			  $("#closeBtn").click(function(){
+			  	google.script.host.close();
+			  });
 		});
 	</script>
 </body>

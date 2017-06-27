@@ -198,7 +198,8 @@ var Utility=new (function(){
   //------------------------------------------------------------------------------------------------------------------
   this.openSidebar = function(){
 
-  var html = HtmlService.createHtmlOutputFromFile('amisMenu')
+  var html = HtmlService.createTemplateFromFile('amisMenu')
+      .evaluate()
       .setTitle('Amis')
       .setWidth(500)
       .setSandboxMode(HtmlService.SandboxMode.IFRAME);
@@ -308,6 +309,16 @@ var Utility=new (function(){
       if(!cell) return;
 
       cell.setValue(value);
+  };
+
+  /**
+   * includes html files into an html
+   * @param  {string} filename
+   * @return {string}          the content
+   */
+  this.include=function(filename) {
+    return HtmlService.createHtmlOutputFromFile(filename)
+        .getContent();
   };
 
 });
