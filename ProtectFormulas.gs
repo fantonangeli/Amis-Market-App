@@ -3,6 +3,7 @@ var ProtectFormulas=new function(){
   //---------------------------------------------------------  
   /**
 	 * GET RANGES TO BE PROTECED NODE  
+     * @params  {string} user token
      * @return  {string} Firebase node of Ranges to be protected  
 	 */
   //---------------------------------------------------------
@@ -19,8 +20,8 @@ var ProtectFormulas=new function(){
 	
  //------------------------------------------------------------------------------------------------------------------
   /**
-   * SET LAST DATE WHEN UPDATING A CELL
-   * @param  {event}  you must call it from OnEdit function and pass 'e' event object
+   * 
+   * 
    */
   //------------------------------------------------------------------------------------------------------------------
     this.protectCell = function(userToken){ 	        
@@ -35,7 +36,7 @@ var ProtectFormulas=new function(){
       
     }
   //------------------------------------------------------------------------------------------------------------------
-  //END -- SET LAST DATE WHEN UPDATING A CELL
+  //END -- 
   //------------------------------------------------------------------------------------------------------------------	  
   
   this.storeLocalValuesFromRanges = function(rangesProteced){
@@ -65,6 +66,8 @@ var ProtectFormulas=new function(){
     //Browser.msgBox('1');
     var sheet = SpreadsheetApp.getActiveSpreadsheet();
     var activeCell=e.range;
+    
+    
     //loop all the ranges stored in firebase
     for (var singleRange in JSON.parse(PropertiesService.getUserProperties().getProperty("formulasProtected"))) {             
       //Browser.msgBox(singleRange);
@@ -81,17 +84,16 @@ var ProtectFormulas=new function(){
         
         //Browser.msgBox(oldValuesBck);
         
+        //set background cell
         sheet.getRange(singleRange).setBackgrounds(oldValuesBck);
-        
-        //prevent a google sheet bug: if the cell is empty formulas are not applied
-        sheet.getRange(singleRange).setValue('0');        
-        
+                
         
 
         
-        //restore old values
+        //restore old formulas
         sheet.getRange(singleRange).setFormulas(oldValues);        
-         //Browser.msgBox('Error', 'you can\'t edit this cell', Browser.Buttons.OK);
+         
+        //Browser.msgBox('Error', 'you can\'t edit this cell', Browser.Buttons.OK);
       }
       
     }
