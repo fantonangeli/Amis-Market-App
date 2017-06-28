@@ -105,12 +105,14 @@ var ForecastingMethodologies = new( function() {
 
 	};
 
-	/**
-	 * move FM column in Firebase
-	 * @param  {string} range range in A1 notation
-	 * @return {bool}       true if ok, false otherwise
-	 */
-	this.moveFMCols = function( range ) {
+
+	 /**
+ 	 * move FM column in Firebase
+ 	 * @param  {string} range range in A1 notation
+	 * @param  {number} columnOffset   number of columns right from the range's top-left cell; negative values represent columns left from the range's top-left cell
+ 	 * @return {bool}       true if ok, false otherwise
+ 	 */
+	this.moveFMCols = function( range, columnOffset ) {
 		var movedColNum, newFmRanges = [];
 		var fmRanges = getFMRanges();
 		range = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( range );
@@ -118,19 +120,16 @@ var ForecastingMethodologies = new( function() {
 
 		if ( !fmRanges ) return;
 
-		fmRanges = JSON.parse( fmRanges );
-
 		var r;
 		for ( var i = fmRanges.length; i--; ) {
 			r = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( fmRanges[ i ] );
 
 			if ( r.getColumn() >= movedColNum ) {
-				r = r.offset( 0, 1 );
+				r = r.offset( 0, columnOffset );
 			}
 
 			newFmRanges.unshift( r.getA1Notation() );
 		}
-
 
 		FirebaseConnector.writeOnFirebase(
 			newFmRanges,
