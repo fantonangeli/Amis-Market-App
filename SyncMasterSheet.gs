@@ -11,8 +11,6 @@ var SyncMasterSheet=new function(){
         //Get the currently active sheet
         var sheet = SpreadsheetApp.getActiveSheet();    
         
-        //TODO _ node must come from firebase
-        //var rangeFromConfig=JSON.parse(FirebaseConnector.getFireBaseData('config/rangeToBeStored/argentina',userToken));
         var rangeFromConfig=JSON.parse(FirebaseConnector.getFireBaseData(SyncMasterSheet.getRangeToBeStoredNode(userToken),userToken));
     
        //loop all the ranges stored in firebase
@@ -48,8 +46,6 @@ var SyncMasterSheet=new function(){
     
     var baseOfSaveNode='';
     
-    //TODO _ node must come from firebase
-    //var rangeFromConfig=JSON.parse(FirebaseConnector.getFireBaseData('config/rangeToBeStored/argentina',userToken));
     var rangeFromConfig=JSON.parse(FirebaseConnector.getFireBaseData(SyncMasterSheet.getRangeToBeStoredNode(userToken),userToken));
     
     //loop all the ranges stored in firebase
