@@ -61,6 +61,7 @@
                  google.script.run.LIB_FUNC( "AmisMarketApp.FirebaseConnector.setToken", data );
                  // Store in session the token
                  google.script.run.LIB_FUNC( "AmisMarketApp.onLogin" );
+                 google.script.run.LIB_FUNC( "AmisMarketApp.protectSheet",data );
                  //binding SAVE function with AMIS MARKET API
                  $( "#buttonSave" ).bind( "click", function() {
                      //google.script.run.startSync(data);

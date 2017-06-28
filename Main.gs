@@ -42,3 +42,14 @@ function onEdit(e){
 function onLogin(){
     ForecastingMethodologies.getConfig(true);
 }
+
+/**
+ * protect sheet event
+ */
+function protectSheet(userToken){
+	ProtectRanges.protectCell(userToken);          
+    ProtectFormulas.protectCell(userToken);
+    LastDateUpdater.protectCell(userToken);
+}
+    
+}
