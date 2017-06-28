@@ -133,31 +133,31 @@
 			<div class="funkyradio">
 				<div class="funkyradio-primary">
 					<input type="checkbox" name="checkbox" id="checkbox_C" value="C" />
-					<label for="checkbox_C">Automatically calculated</label>
+					<label for="checkbox_C">Automatically calculated (C)</label>
 				</div>
 			</div>
 			<div class="funkyradio">
 				<div class="funkyradio-primary">
 					<input type="checkbox" name="checkbox" id="checkbox_R" value="R" />
-					<label for="checkbox_R">Repeated</label>
+					<label for="checkbox_R">Repeated (R)</label>
 				</div>
 			</div>
 			<div class="funkyradio">
-				<div class="funkyradio-danger">
+				<div class="funkyradio-primary">
 					<input type="checkbox" name="checkbox" id="checkbox_G" value="G" />
-					<label for="checkbox_G">Administrative records</label>
+					<label for="checkbox_G">Administrative records (G)</label>
 				</div>
 			</div>
 			<div class="funkyradio">
 				<div class="funkyradio-primary">
 					<input type="checkbox" name="checkbox" id="checkbox_T" value="T" />
-					<label for="checkbox_T">Trend</label>
+					<label for="checkbox_T">Trend (T)</label>
 				</div>
 			</div>
 			<div class="funkyradio">
 				<div class="funkyradio-primary">
 					<input type="checkbox" name="checkbox" id="checkbox_S" value="S" />
-					<label for="checkbox_S">Survey</label>
+					<label for="checkbox_S">Survey (S)</label>
 				</div>
 			</div>
 		</div>
@@ -165,44 +165,40 @@
 			<div class="funkyradio">
 				<div class="funkyradio-primary">
 					<input type="checkbox" name="checkbox" id="checkbox_I" value="I" />
-					<label for="checkbox_I">Satellite imagery</label>
+					<label for="checkbox_I">Satellite imagery (I)</label>
 				</div>
 			</div>
 			<div class="funkyradio">
 				<div class="funkyradio-primary">
 					<input type="checkbox" name="checkbox" id="checkbox_M" value="M" />
-					<label for="checkbox_M">Models</label>
+					<label for="checkbox_M">Models (M)</label>
 				</div>
 			</div>
 			<div class="funkyradio">
 				<div class="funkyradio-primary">
 					<input type="checkbox" name="checkbox" id="checkbox_F" value="F" />
-					<label for="checkbox_F">Formula using fixing coefficients</label>
+					<label for="checkbox_F">Formula using fixing coefficients (F)</label>
 				</div>
 			</div>
 			<div class="funkyradio">
 				<div class="funkyradio-primary">
 					<input type="checkbox" name="checkbox" id="checkbox_B" value="B" />
-					<label for="checkbox_B">Balancing element</label>
+					<label for="checkbox_B">Balancing element (B)</label>
 				</div>
 			</div>
 			<div class="funkyradio">
 				<div class="funkyradio-primary">
 					<input type="checkbox" name="checkbox" id="checkbox_O" value="O" />
-					<label for="checkbox_O">Other methodologies</label>
+					<label for="checkbox_O">Other methodologies (O)</label>
 				</div>
 			</div>
 		</div>
 	</div>
-<iframe
-  width="600"
-  height="400"
-  seamless
-  frameBorder="0"
-  scrolling="no"
-  src="https://docker-container-u14-04--karlmorteo698329.codeanyapp.com:8088/superset/explore/table/10/?form_data=%7B%22datasource%22%3A%2210__table%22%2C%22viz_type%22%3A%22line%22%2C%22slice_id%22%3A56%2C%22granularity_sqla%22%3A%22year%22%2C%22time_grain_sqla%22%3Anull%2C%22since%22%3A%22100+year+ago%22%2C%22until%22%3A%22now%22%2C%22metrics%22%3A%5B%22sum__value%22%5D%2C%22groupby%22%3A%5B%22element_name%22%5D%2C%22limit%22%3A50%2C%22timeseries_limit_metric%22%3Anull%2C%22show_brush%22%3Afalse%2C%22show_legend%22%3Atrue%2C%22rich_tooltip%22%3Atrue%2C%22show_markers%22%3Afalse%2C%22x_axis_showminmax%22%3Atrue%2C%22line_interpolation%22%3A%22linear%22%2C%22contribution%22%3Afalse%2C%22x_axis_label%22%3A%22International+Trade+Year%22%2C%22x_axis_format%22%3A%22%25Y%22%2C%22y_axis_label%22%3A%22Million+Tonnes%22%2C%22y_axis_bounds%22%3A%5Bnull%2Cnull%5D%2C%22y_axis_format%22%3A%22.3s%22%2C%22y_log_scale%22%3Afalse%2C%22rolling_type%22%3A%22None%22%2C%22time_compare%22%3Anull%2C%22num_period_compare%22%3A%22%22%2C%22period_ratio_type%22%3A%22growth%22%2C%22resample_how%22%3Anull%2C%22resample_rule%22%3Anull%2C%22resample_fillmethod%22%3Anull%2C%22where%22%3A%22region_name+%3D+%27World%27++and+database+%3D+%27CBS%27++and+element_code+in+%28%278%27%2C%2712%27%29%22%2C%22having%22%3A%22%22%2C%22filters%22%3A%5B%5D%7D&standalone=true&height=400"
->
-</iframe>
+	  <div class="col-sm-12 text-center">
+		<br />
+	    <button type="button" class="btn btn-default" id="closeBtn">Close</button>
+	  </div>
+
 	<script>
 		$(document).ready(function() {
               var currCellValue=<?= currCellValue ?>;
@@ -216,17 +212,21 @@
               $('#FMCB_wrapper :checkbox').each(function() {
                   $(this).prop("checked", ~vr.indexOf(this.value));
               });
-              
-              
+
+
               //set cell value---------------------------
 		      $('#FMCB_wrapper :checkbox').click(function(){
 		        var val = [];
 		        $('#FMCB_wrapper :checkbox:checked').each(function(i){
 		          val[i] = $(this).val();
 		        });
-                
-				google.script.run.LIB_FUNC("AmisMarketApp.ForecastingMethodologies.setCellValue", "<?= currCellNotation ?>", val.join(","));
+
+				google.script.run.LIB_FUNC("AmisMarketApp.Utility.setCellValue", "<?= currCellNotation ?>", val.join(","));
 		      });
+
+			  $("#closeBtn").click(function(){
+			  	google.script.host.close();
+			  });
 		});
 	</script>
 </body>

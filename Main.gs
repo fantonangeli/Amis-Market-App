@@ -1,26 +1,36 @@
-function onOpen() {     
-  
+
+function onOpen() {
+  FirebaseConnector.setToken("");
+
   //alert for amis menu
   Browser.msgBox('Please CLICK ON AMIS MENU from the top menu');
   
   //create Amis menu
   Utility.createAmisMenu();
-  
+
   //create Amis sidebar
   //Utility.openSidebar();       
 }
 
 
 
-function openSidebar(){  
+function openSidebar(){
   //create sidebar
   Utility.openSidebar();  
 }
 
-function onEdit(e){   
+function onEdit(e){
   //it set the last date when updating particular column (data entry column)
   Utility.onEditSetLastUpdateDate(e);
-  
-  ForecastingMethodologies.onEdit(e);   
-  ProtectRanges.checkIfValueIsNotProtected(e);
+
+
+
+  ForecastingMethodologies.onEdit(e);
+}
+
+/**
+ * onLogin  event
+ */
+function onLogin(){
+    ForecastingMethodologies.getConfig(true);
 }
