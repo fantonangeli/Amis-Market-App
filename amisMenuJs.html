@@ -38,14 +38,12 @@
              }
              console.log('USER_DATA', user_data);
 
-             if ( user_data.type==="admin_" ) {
+             if ( user_data.type==="admin" ) {
                  //show create country sheet
                  $( "#create-sheet-form" ).show();
              } else {
                  //show normal menu
-                 $( "#userActionsDiv" ).show();
-                 //automatic fetch for operative users
-                 google.script.run.LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",data);
+                 $( "#userActionsDiv" ).show();                
              }
 
              //set user name into label
@@ -59,6 +57,11 @@
              console.info( 'user', user.uid );
              //.then is used to get the token value
              user.getToken().then( function( data ) {
+             
+             if ( user_data.type!="admin" ) {
+                //automatic fetch for operative users
+                google.script.run.LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",data);
+             }
                  console.log( 'gettoken', data );
                  google.script.run.LIB_FUNC( "AmisMarketApp.FirebaseConnector.setToken", data );
                  // Store in session the token
@@ -81,6 +84,17 @@
                  $("#buttonFetch").bind( "click", function() {       			  
                      google.script.run.LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",data);             
                  });
+                 //bind create google sheet function
+                 $("#createSheetButton").bind( "click", function() {       
+                 var countryName = $("#countryName").val();
+                 var account = $("#account").val();
+                 //prevent redirect actions
+                 //google.script.run.createSheet(countryName,account);
+                 google.script.run.LIB_FUNC("AmisMarketApp.ShareSheet.createSheet",countryName,account,data);
+                 return false;
+                 });
+                 
+                 
              } );
          });
        }
@@ -129,18 +143,6 @@
              }
            });
 
-
-       	//submit of create sheet
-       	$( "#create-sheet-form" ).submit( function() {
-
-
-       		var countryName = $( "#countryName" ).val();
-       		var account = $( "#account" ).val();
-       		//prevent redirect actions
-       		//google.script.run.createSheet(countryName,account);
-       		google.script.run.LIB_FUNC( "AmisMarketApp.ShareSheet.createSheet", countryName, account );
-       		return false;
-       	} );
 
 
 
