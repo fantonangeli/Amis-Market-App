@@ -10,12 +10,12 @@ var ForecastUtility=new function(){
     var sheet = SpreadsheetApp.getActiveSpreadsheet();
     
     //datanode from firebase
-    var lastForeCast = 'config/lastForecast16_17';
+    var lastForeCast = 'config/addForecast/argentina/lastForecast16_17';
     
     var newForecastColumnPosition = parseInt(FirebaseConnector.getFireBaseData(lastForeCast,userToken));
     
     //datanode from firebase
-    var beginForeCast = 'config/firstForecast16_17';
+    var beginForeCast = 'config/addForecast/argentina/firstForecast16_17';
     
     var firstForecastColumnPosition = parseInt(FirebaseConnector.getFireBaseData(beginForeCast,userToken));     
     
@@ -74,7 +74,7 @@ var ForecastUtility=new function(){
   this.preventUndoConflictForNewForecast = function (newForecastColumnPosition,lastForeCastNode, userToken){
   
     //datanode from firebase
-    var labelRowNumber = 'config/labelRowNumber';
+    var labelRowNumber = 'config/addForecast/argentina/labelRowNumber';
   
     //retrive the row containing 'Forecasting  Methodology'. IT MUST BE next the last forecast.
     var forecastingMethodologyRange = FirebaseConnector.getFireBaseData(labelRowNumber,userToken);

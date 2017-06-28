@@ -108,12 +108,12 @@ var SyncMasterSheet=new function(){
     
     //-------------------------------------------------------------------------------------------------
     //data from firebase
-    var lastForeCast = 'config/lastForecast16_17';
+    var lastForeCast = 'config/addForecast/argentina/lastForecast16_17';
    
     var newForecastColumnPosition = parseInt(FirebaseConnector.getFireBaseData(lastForeCast,userToken));
    
     //data from firebase
-    var beginForeCast = 'config/firstForecast16_17';
+    var beginForeCast = 'config/addForecast/argentina/firstForecast16_17';
     
     var firstForecastColumnPosition = parseInt(FirebaseConnector.getFireBaseData(beginForeCast,userToken));
     
