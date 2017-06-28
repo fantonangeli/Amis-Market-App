@@ -4,13 +4,13 @@
       <base target="_top">
 	  <!--------------------------------------------------------------------------------------------- -->
 	  <!-- JQUERY AND BOOSTRAP IMPORT -->
-	  <!--------------------------------------------------------------------------------------------- -->		
-		  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">		
+	  <!--------------------------------------------------------------------------------------------- -->
+		  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 		  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
       <!--------------------------------------------------------------------------------------------- -->
 	  <!-- END JQUERY AND BOOSTRAP IMPORT -->
 	  <!--------------------------------------------------------------------------------------------- -->
-	  
+
 	  <!--------------------------------------------------------------------------------------------- -->
 	  <!-- FIREBASE IMPORT -->
 	  <!--------------------------------------------------------------------------------------------- -->
@@ -18,67 +18,113 @@
 		<script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
 	  <!--------------------------------------------------------------------------------------------- -->
 	  <!-- END FIREBASE IMPORT -->
-	  <!--------------------------------------------------------------------------------------------- -->      
+	  <!--------------------------------------------------------------------------------------------- -->
+
+      <style>
+        /*----------------------------------------Loading styles---------------------------------------*/
+          .animationload {
+              background-color: #fff;
+              height: 100%;
+              left: 0;
+              position: fixed;
+              top: 0;
+              width: 100%;
+              z-index: 10000;
+          }
+          .osahanloading {
+              animation: 1.5s linear 0s normal none infinite running osahanloading;
+              background: #fed37f none repeat scroll 0 0;
+              border-radius: 50px;
+              height: 50px;
+              left: 50%;
+              margin-left: -25px;
+              margin-top: -25px;
+              position: absolute;
+              top: 50%;
+              width: 50px;
+          }
+          .osahanloading::after {
+              animation: 1.5s linear 0s normal none infinite running osahanloading_after;
+              border-color: #85d6de transparent;
+              border-radius: 80px;
+              border-style: solid;
+              border-width: 10px;
+              content: "";
+              height: 80px;
+              left: -15px;
+              position: absolute;
+              top: -15px;
+              width: 80px;
+          }
+          @keyframes osahanloading {
+          0% {
+              transform: rotate(0deg);
+          }
+          50% {
+              background: #85d6de none repeat scroll 0 0;
+              transform: rotate(180deg);
+          }
+          100% {
+              transform: rotate(360deg);
+          }
+          }
+
+      </style>
+
    </head>
-   
+
    <body>
 	  <!-- AMIS LOGO -->
-      <img src="http://www.amis-outlook.org/fileadmin/templates/AMIS/images/amis_logo.jpg">	  
+      <img src="http://www.amis-outlook.org/fileadmin/templates/AMIS/images/amis_logo.jpg">
    </body>
    <br/>
-   <br/>    
-   <!-- hidden part --> 
+   <br/>
+   <!-- hidden part -->
    <div id="userActionsDiv" hidden>
       <p id="tokenContainer"></p>
       <h4>WELCOME TO AMIS</h4>
       <p id="userLabel"></p>
       <br/>
       <h4>Create a new forecast for</h4>
-      
+
         <div class="btn-group">
-      
-            <button id="addFrc"   style="margin-right:10px;" class="btn btn-primary btn-lg btn-inl">2016/17</button>      
-      
-      
-            <button id="utilRem"  class="btn btn-primary btn-lg btn-inl">2017/18</button>      
-      
-       </div>      
+
+            <button id="addFrc"   style="margin-right:10px;" class="btn btn-primary btn-lg btn-inl">2016/17</button>
+
+
+            <button   class="btn btn-primary btn-lg btn-inl">2017/18</button>
+
+       </div>
       <br/><br/><br/>
-      <button id="buttonSave"   class="btn btn-primary btn-lg btn-block">SAVE DATA</button>      
+      <button id="buttonSave"   class="btn btn-primary btn-lg btn-block">SAVE DATA</button>
       <br/>
       <button id="buttonFetch"   class="btn btn-primary btn-lg btn-block">FETCH DATA</button>       
    </div>
    <!-- END hidden part -->
    <br/>
    <br/>
-   <!-- Begin # Login Form -->
-   <form id="login-form">
-      <div class="">
-         <div id="div-login-msg">
-            <div id="icon-login-msg"></div>
-         </div>
-        
-         <input id="login_username" class="form-control" type="text" placeholder="Username" required>
-         <input id="login_password" class="form-control" type="password" placeholder="Password" required>
-      </div>
-      <div class="">
-         <div>
-            <button type="submit" class="btn btn-primary btn-lg btn-block">Login</button>
-         </div>
-      </div>
-   </form>
-   <!-- End # Login Form -->
-   
+
+   <div class="container" id="loading">
+   	<div class="row">
+   		<div class="text-center">
+               <h2>Loading</h2>
+           </div>
+           <div class="animationload">
+               <div class="osahanloading"></div>
+           </div>
+   	</div>
+   </div>
+
    <br/>
    <!-- Begin # create sheet form -->
    <form id="create-sheet-form" hidden>
-   <h4>CREATE A NEW COUNTRY SHEET</h4>      
+   <h4>CREATE A NEW COUNTRY SHEET</h4>
       <br/>
       <div class="">
          <div id="div-login-msg">
             <div id="icon-login-msg"></div>
          </div>
-        
+
          <!-- <input id="countryName" class="form-control" type="text" placeholder="Country Name" required> -->
          <select class="form-control" id="countryName">
                 <option value="">Choose a Country</option>
@@ -102,6 +148,9 @@
       </div>
    </form>
    <!-- End # Login Form -->
+
+   <?!= Utility.include('amisMenuJs'); ?>
+
 </html>
 <script>      
        //-----------------------------------------------------------------
@@ -207,9 +256,6 @@
               //disable the button himself              
                $("#addFrc").prop("disabled",true);
 		   });
-           $("#utilRem").bind( "click", function() {       
-			  google.script.run.LIB_FUNC("AmisMarketApp.ProtectFormulas.protectCell",data);
-		   });           
            //bind create google sheet function
             $("#createSheetButton").bind( "click", function() {       
             	var countryName = $("#countryName").val();
@@ -266,12 +312,8 @@
               //disable the button himself              
                $("#addFrc").prop("disabled",true);
 		   });
-       $("#utilRem").bind( "click", function() {       
-              google.script.run.LIB_FUNC("AmisMarketApp.ProtectRanges.protectCell",sessionStorage.getItem("tokenFireBase"));
-		   });
-           
        //bind create google sheet function
-       $("#createSheetButton").bind( "click", function() {        
+       $("#createSheetButton").bind( "click", function() {       
        	var countryName = $("#countryName").val();
            var account = $("#account").val();
            //prevent redirect actions
