@@ -21,7 +21,7 @@ function openSidebar(){
 
 function onEdit(e){
   //it set the last date when updating particular column (data entry column)
-  Utility.onEditSetLastUpdateDate(e);
+  //Utility.onEditSetLastUpdateDate(e);
 
 
 
@@ -41,5 +41,4 @@ function onEdit(e){
  */
 function onLogin(){
     ForecastingMethodologies.getConfig(true);
-    
 }
