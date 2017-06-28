@@ -129,49 +129,50 @@ var Utility=new (function(){
    * @param  {event}  you must call it from OnEdit function and pass 'e' event object
    */
   //------------------------------------------------------------------------------------------------------------------
-  this.onEditSetLastUpdateDate = function(e){
-
-    //TODO they must come from firebase
-    var rowsToWriteUpdateDate = [10,34,39,47];
-    var rowToUpdate;
-
-    var thisRow = e.range.getRow();
-    var thisCol = e.range.getColumn();
-
-    var ss = e.range.getSheet();
-
-    var configRow = ss.getRange(thisRow,1).getValues()[0][0];
-    var configColumn = ss.getRange(1,thisCol).getValues()[0][0];
-
-    //TODO _ nu --- must come by firebase
-    // if the cell is NU --- NO UPDATE DATE
-    if(configRow == 'nu' || configColumn == 'nu' )
-      return;
-
-    //else
-
-    for (i = 0; i < rowsToWriteUpdateDate.length; i++) {
-
-      //at the first loop I simple assign rowToUpdate
-      if(i==0)
-        rowToUpdate=rowsToWriteUpdateDate[i];
-
-      //found the 'distance' between the label row and the active cell
-      var sub = thisRow - rowsToWriteUpdateDate[i];
-
-      //if the 'distance' is positive I'll take the minus 'distance'
-      if(sub > 0  && ( (thisRow - rowToUpdate) >= sub))
-      rowToUpdate = rowsToWriteUpdateDate[i];
-    }
-    Logger.log(rowToUpdate);
-
-    //TODO put this value under firebase config and retrive the row number
-    var cell = ss.getRange(rowToUpdate, thisCol);
-
-    //update the cell putting last date editing
-    cell.setValue(new Date());
-    cell.setFontWeight("bold");
-  }
+//TODO REMOVE THIS METHOD
+//  this.onEditSetLastUpdateDate = function(e){
+//
+//    //TODO they must come from firebase
+//    var rowsToWriteUpdateDate = [10,34,39,47];
+//    var rowToUpdate;
+//
+//    var thisRow = e.range.getRow();
+//    var thisCol = e.range.getColumn();
+//
+//    var ss = e.range.getSheet();
+//
+//    var configRow = ss.getRange(thisRow,1).getValues()[0][0];
+//    var configColumn = ss.getRange(1,thisCol).getValues()[0][0];
+//
+//    //TODO _ nu --- must come by firebase
+//    // if the cell is NU --- NO UPDATE DATE
+//    if(configRow == 'nu' || configColumn == 'nu' )
+//      return;
+//
+//    //else
+//
+//    for (i = 0; i < rowsToWriteUpdateDate.length; i++) {
+//
+//      //at the first loop I simple assign rowToUpdate
+//      if(i==0)
+//        rowToUpdate=rowsToWriteUpdateDate[i];
+//
+//      //found the 'distance' between the label row and the active cell
+//      var sub = thisRow - rowsToWriteUpdateDate[i];
+//
+//      //if the 'distance' is positive I'll take the minus 'distance'
+//      if(sub > 0  && ( (thisRow - rowToUpdate) >= sub))
+//      rowToUpdate = rowsToWriteUpdateDate[i];
+//    }
+//    Logger.log(rowToUpdate);
+//
+//    //TODO put this value under firebase config and retrive the row number
+//    var cell = ss.getRange(rowToUpdate, thisCol);
+//
+//    //update the cell putting last date editing
+//    cell.setValue(new Date());
+//    cell.setFontWeight("bold");
+//  }
   //------------------------------------------------------------------------------------------------------------------
   //END -- SET LAST DATE WHEN UPDATING A CELL
   //------------------------------------------------------------------------------------------------------------------

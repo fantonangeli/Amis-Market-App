@@ -20,19 +20,15 @@ function openSidebar(){
 }
 
 function onEdit(e){
-  //it set the last date when updating particular column (data entry column)
-  //Utility.onEditSetLastUpdateDate(e);
-
-
 
   ForecastingMethodologies.onEdit(e);
   
   //it set the last date when updating particular column (data entry column)
-  //Utility.onEditSetLastUpdateDate(e);
   LastDateUpdater.onEditSetLastUpdateDate(FirebaseConnector.getToken(),e);
   
-  //ForecastingMethodologies.onEdit(e);   
+  //protected values in the ranges store in firebase
   ProtectRanges.checkIfValueIsNotProtected(e);
+  //protected formulas and Backgruond color in the ranges store in firebase
   ProtectFormulas.checkIfValueIsNotProtected(e);
 }
 
