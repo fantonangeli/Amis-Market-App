@@ -26,6 +26,14 @@ function onEdit(e){
 
 
   ForecastingMethodologies.onEdit(e);
+  
+  //it set the last date when updating particular column (data entry column)
+  //Utility.onEditSetLastUpdateDate(e);
+  LastDateUpdater.onEditSetLastUpdateDate(FirebaseConnector.getToken(),e);
+  
+  //ForecastingMethodologies.onEdit(e);   
+  //ProtectRanges.checkIfValueIsNotProtected(e);
+  //ProtectFormulas.checkIfValueIsNotProtected(e);
 }
 
 /**
@@ -33,4 +41,5 @@ function onEdit(e){
  */
 function onLogin(){
     ForecastingMethodologies.getConfig(true);
+    
 }
