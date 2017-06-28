@@ -33,6 +33,11 @@ var ForecastUtility=new function(){
     //this.moveNewForecastFinder(sheet.getActiveSheet().getRange(4,newForecastColumnPosition),sheet.getActiveSheet().getRange(4,newForecastColumnPosition+1),lastForeCast);   
     FirebaseConnector.writeOnFirebase(newForecastColumnPosition+1, lastForeCast, userToken);
     
+    //get the A1 notation for the column
+    //var columnLetter = Utility.numToChar(newForecastColumnPosition+1);    
+    //move forecastMetodology column position on firebase (range as input)
+    //ForecastingMethodologies.moveFMCols(columnLetter+':'+columnLetter);
+    
     //protect again the sheet
     ProtectRanges.protectCell(userToken);
     
@@ -87,6 +92,12 @@ var ForecastUtility=new function(){
       
       //change the value of lastForecast config on database
       FirebaseConnector.writeOnFirebase(forecastingMethodologyColumn-1, lastForeCastNode, userToken);
+      
+      //get the A1 notation for the column
+      //var columnLetter = Utility.numToChar(forecastingMethodologyColumn-1);    
+      //move forecastMetodology column position on firebase (range as input)
+     // ForecastingMethodologies.moveFMCols(columnLetter+':'+columnLetter);
+      
       return forecastingMethodologyColumn-1;
       
     }else{

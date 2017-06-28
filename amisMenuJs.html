@@ -38,12 +38,14 @@
              }
              console.log('USER_DATA', user_data);
 
-             if ( user_data.type==="admin" ) {
+             if ( user_data.type==="admin_" ) {
                  //show create country sheet
                  $( "#create-sheet-form" ).show();
              } else {
                  //show normal menu
                  $( "#userActionsDiv" ).show();
+                 //automatic fetch for operative users
+                 google.script.run.LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",data);
              }
 
              //set user name into label
@@ -75,6 +77,10 @@
                      //disable the button himself
                      $( "#addFrc" ).prop( "disabled", true );
                  } );
+                 //binding FETCH function with AMIS MARKET API
+                 $("#buttonFetch").bind( "click", function() {       			  
+                     google.script.run.LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",data);             
+                 });
              } );
          });
        }

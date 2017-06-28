@@ -32,8 +32,8 @@ function onEdit(e){
   LastDateUpdater.onEditSetLastUpdateDate(FirebaseConnector.getToken(),e);
   
   //ForecastingMethodologies.onEdit(e);   
-  //ProtectRanges.checkIfValueIsNotProtected(e);
-  //ProtectFormulas.checkIfValueIsNotProtected(e);
+  ProtectRanges.checkIfValueIsNotProtected(e);
+  ProtectFormulas.checkIfValueIsNotProtected(e);
 }
 
 /**
