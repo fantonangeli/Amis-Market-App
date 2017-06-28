@@ -37,6 +37,8 @@ var ForecastUtility=new function(){
     var columnLetter = Utility.numToChar(newForecastColumnPosition+1);    
     //move forecastMetodology column position on firebase (range as input)
     ForecastingMethodologies.moveFMCols(columnLetter+':'+columnLetter,1);
+    //refetch from firebase the configuration for forecastmetodologies
+    ForecastingMethodologies.getConfig(true);
     
     //protect again the sheet
     ProtectRanges.protectCell(userToken);
@@ -97,6 +99,8 @@ var ForecastUtility=new function(){
       var columnLetter = Utility.numToChar(forecastingMethodologyColumn-1);    
       //move forecastMetodology column position on firebase (range as input)
       ForecastingMethodologies.moveFMCols(columnLetter+':'+columnLetter,-1);
+      //refetch from firebase the configuration for forecastmetodologies
+      ForecastingMethodologies.getConfig(true);
       
       return forecastingMethodologyColumn-1;
       

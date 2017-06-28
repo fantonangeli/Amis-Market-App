@@ -133,7 +133,7 @@ var ForecastingMethodologies = new( function() {
 
 		FirebaseConnector.writeOnFirebase(
 			newFmRanges,
-			this.getFbConfigPath(),
+			getFbConfigPath()+'/maize/ranges',
 			FirebaseConnector.getToken()
 		);
 	};
