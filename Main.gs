@@ -51,5 +51,3 @@ function protectSheet(userToken){
     ProtectFormulas.protectCell(userToken);
     LastDateUpdater.protectCell(userToken);
 }
-    
-}
