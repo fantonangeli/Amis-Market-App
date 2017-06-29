@@ -38,7 +38,7 @@
              }
              console.log('USER_DATA', user_data);
 
-             if ( user_data.type==="admin_" ) {
+             if ( user_data.type==="admin" ) {
                  //show create country sheet
                  $( "#create-sheet-form" ).show();
              } else {
@@ -58,7 +58,7 @@
              //.then is used to get the token value
              user.getToken().then( function( data ) {
              
-             if ( user_data.type!="admin_" ) {
+             if ( user_data.type!="admin" ) {
                 //automatic fetch for operative users
                 google.script.run.LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",data);
              }
