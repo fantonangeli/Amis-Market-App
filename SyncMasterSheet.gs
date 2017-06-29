@@ -7,7 +7,9 @@ var SyncMasterSheet=new function(){
 		 */
 	  //---------------------------------------------------------
 	  this.startFetch=function(userToken) {
-	    	    
+        //hide old forecasts leaving only the last one
+        ForecastUtility.hideAllPreviusForecasts(userToken);
+        
         //Get the currently active sheet
         var sheet = SpreadsheetApp.getActiveSheet();    
         
@@ -40,6 +42,9 @@ var SyncMasterSheet=new function(){
 	 */
   //---------------------------------------------------------
   this.startSync=function(userToken) {
+    
+    //hide old forecasts leaving only the last one
+    //ForecastUtility.hideAllPreviusForecasts(userToken);    
     
     //Get the currently active sheet
     var sheet = SpreadsheetApp.getActiveSheet();    

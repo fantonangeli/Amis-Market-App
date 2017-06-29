@@ -8,12 +8,13 @@ var ForecastUtility=new function(){
   //------------------------------------------------------------------------------------------------------------------
   this.addForecast= function(userToken){
     var sheet = SpreadsheetApp.getActiveSpreadsheet();
-    
+    //TODO _ take from firebase
     //datanode from firebase
     var lastForeCast = 'config/addForecast/argentina/lastForecast16_17';
     
     var newForecastColumnPosition = parseInt(FirebaseConnector.getFireBaseData(lastForeCast,userToken));
     
+    //TODO _ take from firebase
     //datanode from firebase
     var beginForeCast = 'config/addForecast/argentina/firstForecast16_17';
     
@@ -79,7 +80,8 @@ var ForecastUtility=new function(){
 	 */
   //------------------------------------------------------------------------------------------------------------------
   this.preventUndoConflictForNewForecast = function (newForecastColumnPosition,lastForeCastNode, userToken){
-  
+    
+    //TODO _ take from firebase
     //datanode from firebase
     var labelRowNumber = 'config/addForecast/argentina/labelRowNumber';
   
@@ -114,5 +116,38 @@ var ForecastUtility=new function(){
   // END -- Solve CTRL+Z problems for 'add new forecast'
   //------------------------------------------------------------------------------------------------------------------
   
+  //------------------------------------------------------------------------------------------------------------------ 
+  /**
+	 * function called to hide all the forecast for previus year except the last one          
+	 */
+  //------------------------------------------------------------------------------------------------------------------
+  this.hideAllPreviusForecasts = function (userToken){
+
+    //get the google sheet
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    //TODO _ pay attention to multiple sheets
+    var sheet = ss.getSheets()[0];
+    
+    //TODO _ take from firebase
+    //datanode from firebase
+    var firstOldFrcFirebasePath = 'config/previusForecast/argentina/first';
+  
+    //retrive the row containing 'Forecasting  Methodology'. IT MUST BE next the last forecast.
+    var firstFrc = JSON.parse(FirebaseConnector.getFireBaseData(firstOldFrcFirebasePath,userToken));
+    
+    //TODO _ take from firebase
+    //datanode from firebase
+    var lastOldFrcFirebasePath = 'config/previusForecast/argentina/last';
+  
+    //retrive the row containing 'Forecasting  Methodology'. IT MUST BE next the last forecast.
+    var lastFrc = JSON.parse(FirebaseConnector.getFireBaseData(lastOldFrcFirebasePath,userToken));
+    
+    //with charToNum(letterOfTheColumn) I get the column number
+    ForecastUtility.hideOldForecasts(sheet.getRange(firstFrc).getColumn(),sheet.getRange(lastFrc).getColumn(),1);
+    
+  }
+  //------------------------------------------------------------------------------------------------------------------
+  // END -- function called to hide all the forecast for previus year except the last one          
+  //------------------------------------------------------------------------------------------------------------------
   
 }
