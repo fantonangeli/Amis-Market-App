@@ -8,13 +8,7 @@ var ShareSheet=new function(){
   * @param  {string} google account of the country (email address)
   */
   //---------------------------------------------------------
-  this.createSheet=function(countryName,countryAccount,userToken) {
-    //set the correct name country on the sheet and then clone
-    //var sheet = SpreadsheetApp.getActiveSheet();	  
-    //sheet.getRange('C2').setValue(countryName);
-    
-    //a little delay to permit the cell to be edited and then the sheet cloned
-    //Utilities.sleep(300);
+  this.createSheet=function(countryName,countryAccount,userToken) {    
     
     //datanode from firebase
     var countryRegisterNode = 'config/countryRegister/'+ countryName;
@@ -23,25 +17,29 @@ var ShareSheet=new function(){
     var countryRegister = JSON.parse(FirebaseConnector.getFireBaseData(countryRegisterNode,userToken));
 
     //if country google sheet id its FALSE... we have to create a google sheet for the country selected
-    if(countryRegister =='false'){
-      
+    if(countryRegister ==='false'){      
       var newFile = ShareSheet.cloneSheet(countryName);
 	  
 	  ShareSheet.storeSheetId(countryName, newFile.getId(), userToken)
 	  
 	  ShareSheet.shareSheet(newFile,countryAccount);
-	  
-	  //delete name country from master sheet
-	  //sheet.getRange('C2').setValue('');	  	  
+	  	  	  
     }else{
       //if it ALREADY EXISTS we simply have to share the existing google sheet
       
-      //retrive the existing file
-      var existingFileToBeShared = DriveApp.getFileById(countryRegister);
-      ShareSheet.shareSheet(existingFileToBeShared,countryAccount);
-    }
-    //finish operation
-	  Utility.toastInfo('Sheet created', 'Sheet created and shared');	  
+      try {
+        //retrive the existing file
+        var existingFileToBeShared = DriveApp.getFileById(countryRegister);
+        ShareSheet.shareSheet(existingFileToBeShared,countryAccount);
+        //finish operation 
+        Utility.toastInfo('Sheet created', 'Sheet created and shared');	  
+      }
+      catch(err) {
+        //FAIL operation
+        Utility.toastInfo('Share Failed', 'The file could be deleted');	  
+      }      
+      
+    }    
 	
 
   }
