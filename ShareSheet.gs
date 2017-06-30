@@ -3,30 +3,46 @@ var ShareSheet=new function(){
   
   //---------------------------------------------------------
   /**
-	 * CREATE A NEW GOOGLE SHEET
-	 * @param  {string} name of the new file
-     * @param  {string} google account of the country (email address)
-	 */
+  * CREATE A NEW GOOGLE SHEET
+  * @param  {string} name of the new file
+  * @param  {string} google account of the country (email address)
+  */
   //---------------------------------------------------------
   this.createSheet=function(countryName,countryAccount,userToken) {
-	  //set the correct name country on the sheet and then clone
-	  //var sheet = SpreadsheetApp.getActiveSheet();	  
-	  //sheet.getRange('C2').setValue(countryName);
-	  
-	  //a little delay to permit the cell to be edited and then the sheet cloned
-	  //Utilities.sleep(300);
-	  
-	  var newFile = ShareSheet.cloneSheet(countryName);
+    //set the correct name country on the sheet and then clone
+    //var sheet = SpreadsheetApp.getActiveSheet();	  
+    //sheet.getRange('C2').setValue(countryName);
+    
+    //a little delay to permit the cell to be edited and then the sheet cloned
+    //Utilities.sleep(300);
+    
+    //datanode from firebase
+    var countryRegisterNode = 'config/countryRegister/'+ countryName;
+    
+    //retrive the country google sheet id stored
+    var countryRegister = JSON.parse(FirebaseConnector.getFireBaseData(countryRegisterNode,userToken));
+
+    //if country google sheet id its FALSE... we have to create a google sheet for the country selected
+    if(countryRegister =='false'){
+      
+      var newFile = ShareSheet.cloneSheet(countryName);
 	  
 	  ShareSheet.storeSheetId(countryName, newFile.getId(), userToken)
 	  
 	  ShareSheet.shareSheet(newFile,countryAccount);
 	  
 	  //delete name country from master sheet
-	  //sheet.getRange('C2').setValue('');
-	  
-	  //finish operation
+	  //sheet.getRange('C2').setValue('');	  	  
+    }else{
+      //if it ALREADY EXISTS we simply have to share the existing google sheet
+      
+      //retrive the existing file
+      var existingFileToBeShared = DriveApp.getFileById(countryRegister);
+      ShareSheet.shareSheet(existingFileToBeShared,countryAccount);
+    }
+    //finish operation
 	  Utility.toastInfo('Sheet created', 'Sheet created and shared');	  
+	
 
   }
   //---------------------------------------------------------
