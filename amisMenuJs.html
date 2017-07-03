@@ -91,14 +91,22 @@
                      showLoading();
                      google.script.run.withSuccessHandler(hideLoading).LIB_FUNC( "AmisMarketApp.SyncMasterSheet.startSync", data );
                      //disable the button himself
-                     $( "#addFrc" ).prop( "disabled", false );
+                     $( "#addFrc16" ).prop( "disabled", false );
+                     $( "#addFrc17" ).prop( "disabled", false );
                  } );
-                 $( "#addFrc" ).bind( "click", function() {
+                 $( "#addFrc16" ).bind( "click", function() {
                      //google.script.run.addForecast(data);
                      showLoading();
-                     google.script.run.withSuccessHandler(hideLoading).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast", data );
+                     google.script.run.withSuccessHandler(hideLoading).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast", "16-17", data );
                      //disable the button himself
-                     $( "#addFrc" ).prop( "disabled", true );
+                     $( "#addFrc16" ).prop( "disabled", true );
+                 } );
+                 $( "#addFrc17" ).bind( "click", function() {
+                     //google.script.run.addForecast(data);
+                     showLoading();
+                     google.script.run.withSuccessHandler(hideLoading).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast", "17-18", data );
+                     //disable the button himself
+                     $( "#addFrc17" ).prop( "disabled", true );
                  } );
                  //binding FETCH function with AMIS MARKET API
                  $("#buttonFetch").bind( "click", function() {

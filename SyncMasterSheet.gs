@@ -108,21 +108,42 @@ var SyncMasterSheet=new function(){
     SyncMasterSheet.setLastUpdate();
     
     //-------------------------------------------------------------------------------------------------
-    //data from firebase
-    var lastForeCast = 'config/addForecast/argentina/lastForecast16_17';
-   
-    var newForecastColumnPosition = parseInt(FirebaseConnector.getFireBaseData(lastForeCast,userToken));
-   
-    //data from firebase
-    var beginForeCast = 'config/addForecast/argentina/firstForecast16_17';
+     //TODO _ move this logic out of here
+     
+     var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);
+
+     //datanode from firebase
+      var periodsNode = 'config/addForecast/'+countryName;
+     
+     var periodsData= JSON.parse(FirebaseConnector.getFireBaseData(periodsNode,userToken));
+     
+     for (var period in periodsData) {       
+       //datanode from firebase
+       var lastForeCast = 'config/addForecast/'+countryName+'/'+period+'/lastForecast';
+       
+       //var newForecastColumnPosition = parseInt(FirebaseConnector.getFireBaseData(lastForeCast,userToken));
+       var newForecastColumnPosition = JSON.parse(FirebaseConnector.getFireBaseData(lastForeCast,userToken));
+       newForecastColumnPosition = Utility.letterToColumn(newForecastColumnPosition);      
+       
+       //datanode from firebase
+       var beginForeCast = 'config/addForecast/'+countryName+'/'+period+'/firstForecast';
+       
+       //var firstForecastColumnPosition = parseInt(FirebaseConnector.getFireBaseData(beginForeCast,userToken));
+       var firstForecastColumnPosition = JSON.parse(FirebaseConnector.getFireBaseData(beginForeCast,userToken));
+       firstForecastColumnPosition = Utility.letterToColumn(firstForecastColumnPosition);
+       
+       //datanode from firebase
+       var orderInTheSheetNode = 'config/addForecast/'+countryName+'/'+period+'/orderInTheSheet';
+       
+       var orderInTheSheet = parseInt(FirebaseConnector.getFireBaseData(orderInTheSheetNode,userToken));
+       
+       //SOLVE CTRL+Z PROBLEMS. IF ANY and return the position where put the new column
+       newForecastColumnPosition =ForecastUtility.preventUndoConflictForNewForecast(newForecastColumnPosition,lastForeCast,userToken,orderInTheSheet);
+       
+       //hide all the last forecast -- this.findeValueIntoRow(lastForeCast) is called again because moveNewForecastFinder moves that value
+       ForecastUtility.hideOldForecasts(firstForecastColumnPosition, newForecastColumnPosition,2 );
+     }
     
-    var firstForecastColumnPosition = parseInt(FirebaseConnector.getFireBaseData(beginForeCast,userToken));
-    
-    //SOLVE CTRL+Z PROBLEMS. IF ANY and return the position where put the new column
-    newForecastColumnPosition =ForecastUtility.preventUndoConflictForNewForecast(newForecastColumnPosition,lastForeCast,userToken);
-    
-    //hide all the last forecast -- this.findeValueIntoRow(lastForeCast) is called again because moveNewForecastFinder moves that value
-    ForecastUtility.hideOldForecasts(firstForecastColumnPosition, newForecastColumnPosition,2 );
     //-------------------------------------------------------------------------------------------------
     
    }
