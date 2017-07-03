@@ -200,6 +200,8 @@ var Utility=new (function(){
   this.openSidebar = function(){
   dbName=Config.dbName;
   apiKey=Config.apiKey;
+  countryCell=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange(Config.countryCell).getValue();
+  datasourceCell=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange(Config.datasourceCell).getValue();
   var html = HtmlService.createTemplateFromFile('amisMenu')
       .evaluate()
       .setTitle('Amis')
@@ -332,14 +334,6 @@ var Utility=new (function(){
    */
   this.include=function(filename) {
     return HtmlService.createTemplateFromFile(filename).evaluate().getContent();
-  };
-
-  /**
-   * returns the Config object
-   * @return {object}
-   */
-  this.getConfig = function() {
-    return Config;
   };
 
 });
