@@ -198,7 +198,8 @@ var Utility=new (function(){
    */
   //------------------------------------------------------------------------------------------------------------------
   this.openSidebar = function(){
-
+  dbName=Config.dbName;
+  apiKey=Config.apiKey;
   var html = HtmlService.createTemplateFromFile('amisMenu')
       .evaluate()
       .setTitle('Amis')
@@ -220,27 +221,27 @@ var Utility=new (function(){
 
     //create the menu voice
     SpreadsheetApp.getUi()
-    .createMenu('AMIS Menu')
+    .createMenu('AMIS')
     .addItem('Open', 'AmisMarketApp.openSidebar')
     .addToUi()
   }
   //------------------------------------------------------------------------------------------------------------------
   // END --  create Amisi menu
   //------------------------------------------------------------------------------------------------------------------
-  
+
   //------------------------------------------------------------------------------------------------------------------
   /**
    * get GoogleSheetID
    * @return {string} GoogleSheetID
    */
-  //------------------------------------------------------------------------------------------------------------------  
+  //------------------------------------------------------------------------------------------------------------------
   this.getGoogleSheetID= function(){
-	  return SpreadsheetApp.getActive().getId(); //current spreadsheet	  
+	  return SpreadsheetApp.getActive().getId(); //current spreadsheet
   }
   //------------------------------------------------------------------------------------------------------------------
-  // END --  get GoogleSheetID  
+  // END --  get GoogleSheetID
   //------------------------------------------------------------------------------------------------------------------
-  
+
   this.noNegativeValue=function(){
     //Get the currently active sheet
     var sheet = SpreadsheetApp.getActiveSheet()
@@ -330,8 +331,15 @@ var Utility=new (function(){
    * @return {string}          the content
    */
   this.include=function(filename) {
-    return HtmlService.createHtmlOutputFromFile(filename)
-        .getContent();
+    return HtmlService.createTemplateFromFile(filename).evaluate().getContent();
+  };
+
+  /**
+   * returns the Config object
+   * @return {object}
+   */
+  this.getConfig = function() {
+    return Config;
   };
 
 });

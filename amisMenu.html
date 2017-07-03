@@ -6,6 +6,7 @@
 	  <!-- JQUERY AND BOOSTRAP IMPORT -->
 	  <!--------------------------------------------------------------------------------------------- -->
 		  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+          <link rel="stylesheet" href="//cdn.materialdesignicons.com/1.9.32/css/materialdesignicons.min.css">
 		  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
       <!--------------------------------------------------------------------------------------------- -->
 	  <!-- END JQUERY AND BOOSTRAP IMPORT -->
@@ -20,56 +21,7 @@
 	  <!-- END FIREBASE IMPORT -->
 	  <!--------------------------------------------------------------------------------------------- -->
 
-      <style>
-        /*----------------------------------------Loading styles---------------------------------------*/
-          .animationload {
-              background-color: #fff;
-              height: 100%;
-              left: 0;
-              position: fixed;
-              top: 0;
-              width: 100%;
-              z-index: 10000;
-          }
-          .osahanloading {
-              animation: 1.5s linear 0s normal none infinite running osahanloading;
-              background: #fed37f none repeat scroll 0 0;
-              border-radius: 50px;
-              height: 50px;
-              left: 50%;
-              margin-left: -25px;
-              margin-top: -25px;
-              position: absolute;
-              top: 50%;
-              width: 50px;
-          }
-          .osahanloading::after {
-              animation: 1.5s linear 0s normal none infinite running osahanloading_after;
-              border-color: #85d6de transparent;
-              border-radius: 80px;
-              border-style: solid;
-              border-width: 10px;
-              content: "";
-              height: 80px;
-              left: -15px;
-              position: absolute;
-              top: -15px;
-              width: 80px;
-          }
-          @keyframes osahanloading {
-          0% {
-              transform: rotate(0deg);
-          }
-          50% {
-              background: #85d6de none repeat scroll 0 0;
-              transform: rotate(180deg);
-          }
-          100% {
-              transform: rotate(360deg);
-          }
-          }
-
-      </style>
+      <?!= Utility.include('baseStyle'); ?>
 
    </head>
 
@@ -80,29 +32,58 @@
    <br/>
    <br/>
    <!-- hidden part -->
-   <div id="userActionsDiv" hidden>
-      <p id="tokenContainer"></p>
-      <h4>WELCOME TO AMIS</h4>
-      <p id="userLabel"></p>
-      <br/>
-      <h4>Create a new forecast for</h4>
+    <div id="userActionsDiv" hidden class="container">
 
-        <div class="btn-group">
+        <div class="row">
+            <div class="col-xs-12 text-left">
+                Load data from the AMIS database:
+            </div>
+        </div>
+        <br>
+        <div class="row">
+        	<div class="col-xs-12 text-right">
+                <button id="buttonFetch" class="btn btn-primary btn-lg">Load <i class="mdi mdi-cloud-download"></i></button>
+        	</div>
+        </div>
+        <br>
+        <br>
 
-            <button id="addFrc"   style="margin-right:10px;" class="btn btn-primary btn-lg btn-inl">2016/17</button>
+        <div class="row">
+            <div class="col-xs-12 text-left">
+                Save data to the AMIS database:
+            </div>
+        </div>
+        <br>
+        <div class="row">
+        	<div class="col-xs-12 text-right">
+                <button id="buttonSave" class="btn btn-primary btn-lg">Save <i class="mdi mdi-cloud-upload"></i></button>
+        	</div>
+        </div>
+        <br>
+        <br>
+
+        <div class="row">
+            <div class="col-xs-12 text-left">
+                Add a new Forecast:
+            </div>
+        </div>
+        <br>
+        <div class="row">
+        	<div class="col-xs-12 text-right">
+        		<button id="addFrc" class="btn btn-primary btn-lg btn-inl">2016/17 &nbsp; <i class="mdi mdi-table-column-plus-after"></i>
+                </button>
+        	</div>
+        </div>
 
 
-            <button   class="btn btn-primary btn-lg btn-inl">2017/18</button>
-
+        <div class="row" style="margin-top:10px">
+        	<div class="col-xs-12 text-right">
+        		<button class="btn btn-primary btn-lg btn-inl">2017/18 &nbsp; <i class="mdi mdi-table-column-plus-after"></i>
+                </button>
        </div>
-      <br/><br/><br/>
-      <button id="buttonSave"   class="btn btn-primary btn-lg btn-block">SAVE DATA</button>
-      <br/>
-      <button id="buttonFetch"   class="btn btn-primary btn-lg btn-block">FETCH DATA</button>       
    </div>
+    </div>
    <!-- END hidden part -->
-   <br/>
-   <br/>
 
    <div class="container" id="loading">
    	<div class="row">
@@ -115,11 +96,11 @@
    	</div>
    </div>
 
-   <br/>
+
    <!-- Begin # create sheet form -->
-   <form id="create-sheet-form" hidden>
-   <h4>CREATE A NEW COUNTRY SHEET</h4>
-      <br/>
+    <form id="create-sheet-form" hidden class="container">
+        <div class="row">
+            <div class="col-xs-12 text-center">
       <div class="">
          <div id="div-login-msg">
             <div id="icon-login-msg"></div>
@@ -140,12 +121,22 @@
 <!--                 <option value="karl.morteo@gmail.com">karl.morteo@gmail.com</option>                 -->
             </select>
       </div>
-      <div class="">
-      <br/>
-         <div>
-            <button id="createSheetButton" class="btn btn-primary btn-lg btn-block">Create Sheet</button>
          </div>
       </div>
+        <br>
+        <br>
+
+        <div class="row">
+            <div class="col-xs-12 text-left">
+                Create and share the sheet:
+            </div>
+        </div>
+        <br>
+        <div class="row">
+        	<div class="col-xs-12 text-right">
+                <button id="createSheetButton" class="btn btn-primary btn-lg">Create Sheet <span class="glyphicon glyphicon-share"></span></button>
+        	</div>
+        </div>
    </form>
    <!-- End # Login Form -->
 
