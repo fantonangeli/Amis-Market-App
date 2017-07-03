@@ -199,6 +199,7 @@ var Utility=new (function(){
   //------------------------------------------------------------------------------------------------------------------
   this.openSidebar = function(){
   dbName=Config.dbName;
+  apiKey=Config.apiKey;
   var html = HtmlService.createTemplateFromFile('amisMenu')
       .evaluate()
       .setTitle('Amis')
@@ -330,8 +331,7 @@ var Utility=new (function(){
    * @return {string}          the content
    */
   this.include=function(filename) {
-    return HtmlService.createHtmlOutputFromFile(filename)
-        .getContent();
+    return HtmlService.createTemplateFromFile(filename).evaluate().getContent();
   };
 
   /**
