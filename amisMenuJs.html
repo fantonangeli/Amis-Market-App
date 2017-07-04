@@ -51,7 +51,8 @@
              var user_data = snapshot.val();
 
              if(!user_data){
-                 alert("User "+user.email+" is not authorized!");
+                 //alert("User "+user.email+" is not authorized!");
+                 google.script.run.LIB_FUNC( "AmisMarketApp.Utility.popUpAlert");
                  return;
              }
              console.log('USER_DATA', user_data);
@@ -142,7 +143,8 @@
             onLoggedState(result.user);
        	} ).catch( function( error ) {
             console.log('ERROR', error);
-       		alert("User "+error.email+" is not authorized!");
+       		//alert("User "+error.email+" is not authorized!");
+            google.script.run.LIB_FUNC( "AmisMarketApp.Utility.popUpAlert");
        		// Handle Errors here.
        		var errorCode = error.code;
        		var errorMessage = error.message;

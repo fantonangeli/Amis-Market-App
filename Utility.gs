@@ -59,6 +59,10 @@ var Utility=new (function(){
        };
   
   
+  this.popUpAlert = function () {
+    Browser.msgBox('Please ensure that popup lock is DISABLED. Then try again.');  
+  }
+  
   //-----------------------------------------------------------------------------------------------------------------
   /**
    * converts column letter to column number
