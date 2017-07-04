@@ -26,9 +26,19 @@
    </head>
 
    <body>
+       <div class="row">
+           <div class="col-xs-4 text-center">
 	  <!-- AMIS LOGO -->
-      <img src="http://www.amis-outlook.org/fileadmin/templates/AMIS/images/amis_logo.jpg">
-   </body>
+               <?!= Utility.include('amisLogo'); ?>
+           </div>
+            <div class="col-xs-8">
+            	<br>
+            	<h4><b><?= countryCell ?></b></h4>
+            	<br><br>
+                <?= datasourceCell ?>
+            	<br>
+            </div>
+       </div>
    <br/>
    <br/>
    <!-- hidden part -->
@@ -141,5 +151,5 @@
    <!-- End # Login Form -->
 
    <?!= Utility.include('amisMenuJs'); ?>
-
+   </body>
 </html>

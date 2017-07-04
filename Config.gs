@@ -1,3 +1,7 @@
+/**
+ * app configuration
+ * @type {Object}
+ */
 var Config={
 	/**
 	 * dbName on firebase
@@ -9,6 +13,15 @@ var Config={
 	 * apiKey on firebase
 	 * @type {String}
 	 */
-	apiKey: "AIzaSyA3aklD6VK81sc6ui_vjf1IceAi_Zgtjqo"
+	apiKey: "AIzaSyA3aklD6VK81sc6ui_vjf1IceAi_Zgtjqo",
+
+	/**
+	 * spreadsheet config
+	 * @type {Object}
+	 */
+	Sheet:{
+		countryCell:"C2",
+		datasourceCell:"C4" 
+	}
 
 };
