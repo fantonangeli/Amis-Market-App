@@ -57,17 +57,10 @@ var ForecastingMethodologies = new( function() {
 
 	/**
 	 * get the firebase configuration for the Forecasting Methodologies
-	 * @param  {bool} refresh (default false) true to force cache renew
 	 * @return {Object}         the configuration
 	 */
-	this.getConfig = function( refresh ) {
+	this.getConfig = function(  ) {
 		var data, t;
-		var fbConfig=PropertiesService.getUserProperties().getProperty("ForecastingMethodologies.config");
-		refresh=(refresh || false);
-
-		if ( ( fbConfig !== null ) && !refresh ) {
-			return JSON.parse(fbConfig);
-		}
 
 		t = FirebaseConnector.getToken();
 		if ( !t ) {
@@ -78,8 +71,6 @@ var ForecastingMethodologies = new( function() {
 			return null;
 		}
 
-		PropertiesService.getUserProperties().setProperty("ForecastingMethodologies.config",data);
-
 		return JSON.parse( data );
 	};
 
@@ -88,7 +79,7 @@ var ForecastingMethodologies = new( function() {
 	 * reads the forecasting Methodology ranges from firebase
 	 * @return {array} array of ranges, null otherwise
 	 */
-	var getFMRanges=function() {
+	this.getFMRanges=function() {
 		var config;
 		var tokenFireBase = FirebaseConnector.getToken();
 
@@ -97,7 +88,7 @@ var ForecastingMethodologies = new( function() {
 			return null;
 		}
 
-		config=ForecastingMethodologies.getConfig();
+		config=ForecastingMethodologies.getConfig(true);
 
 		if(!config) return null;
 
@@ -114,7 +105,7 @@ var ForecastingMethodologies = new( function() {
  	 */
 	this.moveFMCols = function( range, columnOffset ) {
 		var movedColNum, newFmRanges = [];
-		var fmRanges = getFMRanges();
+		var fmRanges = this.getFMRanges();
 		range = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( range );
 		movedColNum = range.getColumn();
 
@@ -145,9 +136,11 @@ var ForecastingMethodologies = new( function() {
 	this.onEdit = function( e ) {
 		var activeCell = e.range,
 			activeCellVal;
-		var fmRanges = getFMRanges();
+		var fmRanges = this.getFMRanges();
 
 		if ( !fmRanges ) return;
+
+
 
 		var r;
 		for ( var i = fmRanges.length; i--; ) {

@@ -200,8 +200,8 @@ var Utility=new (function(){
   this.openSidebar = function(){
   dbName=Config.dbName;
   apiKey=Config.apiKey;
-  countryCell=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange(Config.countryCell).getValue();
-  datasourceCell=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange(Config.datasourceCell).getValue();
+  countryCell=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange(Config.Sheet.countryCell).getValue();
+  datasourceCell=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange(Config.Sheet.datasourceCell).getValue();
   var html = HtmlService.createTemplateFromFile('amisMenu')
       .evaluate()
       .setTitle('Amis')
