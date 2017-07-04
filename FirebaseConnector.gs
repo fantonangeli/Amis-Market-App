@@ -76,6 +76,23 @@ var FirebaseConnector=new function(){
   //---------------------------------------------------------
   // END fetch data from Firebase
   //---------------------------------------------------------
+  
+  
+  //---------------------------------------------------------
+  /**
+	 * fetch country name from google sheet ID
+     * @param  {string} auth token
+     * @return {json}   country name from google sheet id
+	 */
+  //---------------------------------------------------------
+  this.getCountryNameFromSheet= function(userToken) {
+   var sheetId= Utility.getGoogleSheetID();
+   var dataBaseNodeToRead='config/countries/'+sheetId;	  
+   return JSON.parse(FirebaseConnector.getFireBaseData(dataBaseNodeToRead,userToken)).name;
+  }
+  //---------------------------------------------------------
+  // END -- fetch country name from google sheet ID
+  //---------------------------------------------------------
 
 
 }

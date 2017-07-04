@@ -2,11 +2,11 @@
 function onOpen() {
   FirebaseConnector.setToken("");
 
-  //alert for amis menu
-  Browser.msgBox('To Open AMIS click on "AMIS" in the menu');
-
   //create Amis menu
   Utility.createAmisMenu();
+  
+  //alert for amis menu
+  Browser.msgBox('To Open AMIS click on "AMIS" in the menu');
 
   //create Amis sidebar
   //Utility.openSidebar();
