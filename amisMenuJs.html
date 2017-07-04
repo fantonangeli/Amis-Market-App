@@ -51,7 +51,8 @@
              var user_data = snapshot.val();
 
              if(!user_data){
-                 alert("User "+user.email+" is not authorized!");
+                 //alert("User "+user.email+" is not authorized!");
+                 google.script.run.LIB_FUNC( "AmisMarketApp.Utility.popUpAlert");
                  return;
              }
              console.log('USER_DATA', user_data);
@@ -78,7 +79,8 @@
              
              if ( user_data.type!="admin" ) {
                 //automatic fetch for operative users
-                google.script.run.LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",data);
+                showLoading();                     
+                google.script.run.withSuccessHandler(hideLoading).LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",data);
              }
                  console.log( 'gettoken', data );
                  google.script.run.LIB_FUNC( "AmisMarketApp.FirebaseConnector.setToken", data );
@@ -91,14 +93,22 @@
                      showLoading();
                      google.script.run.withSuccessHandler(hideLoading).LIB_FUNC( "AmisMarketApp.SyncMasterSheet.startSync", data );
                      //disable the button himself
-                     $( "#addFrc" ).prop( "disabled", false );
+                     $( "#addFrc16" ).prop( "disabled", false );
+                     $( "#addFrc17" ).prop( "disabled", false );
                  } );
-                 $( "#addFrc" ).bind( "click", function() {
+                 $( "#addFrc16" ).bind( "click", function() {
                      //google.script.run.addForecast(data);
                      showLoading();
-                     google.script.run.withSuccessHandler(hideLoading).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast", data );
+                     google.script.run.withSuccessHandler(hideLoading).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast", "16-17", data );
                      //disable the button himself
-                     $( "#addFrc" ).prop( "disabled", true );
+                     $( "#addFrc16" ).prop( "disabled", true );
+                 } );
+                 $( "#addFrc17" ).bind( "click", function() {
+                     //google.script.run.addForecast(data);
+                     showLoading();
+                     google.script.run.withSuccessHandler(hideLoading).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast", "17-18", data );
+                     //disable the button himself
+                     $( "#addFrc17" ).prop( "disabled", true );
                  } );
                  //binding FETCH function with AMIS MARKET API
                  $("#buttonFetch").bind( "click", function() {
@@ -133,7 +143,8 @@
             onLoggedState(result.user);
        	} ).catch( function( error ) {
             console.log('ERROR', error);
-       		alert("User "+error.email+" is not authorized!");
+       		//alert("User "+error.email+" is not authorized!");
+            google.script.run.LIB_FUNC( "AmisMarketApp.Utility.popUpAlert");
        		// Handle Errors here.
        		var errorCode = error.code;
        		var errorMessage = error.message;

@@ -49,7 +49,7 @@ var ForecastingMethodologies = new( function() {
 		var html = HtmlService.createTemplateFromFile( 'MethodsDialog' )
 			.evaluate()
 			.setWidth( 800 )
-			.setHeight( 400 );
+			.setHeight( 600 );
 		SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
 			.showModalDialog( html, 'Forecasting Methodologies' );
 		return true;

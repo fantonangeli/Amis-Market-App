@@ -52,11 +52,37 @@ var Utility=new (function(){
            var letter = chr(65 + numeric);
            var number2 = parseInt((number - 1) / 26);
            if (number2 > 0) {
-               return numToChar(number2) + letter;
+               return Utility.numToChar(number2) + letter;
            } else {
                return letter;
            }
        };
+  
+  
+  this.popUpAlert = function () {
+    Browser.msgBox('Please ensure that popup lock is DISABLED. Then try again.');  
+  }
+  
+  //-----------------------------------------------------------------------------------------------------------------
+  /**
+   * converts column letter to column number
+   * @param  {string} column letter   
+   * @return {integer} column number
+   */
+  //------------------------------------------------------------------------------------------------------------------
+  this.letterToColumn = function(letter)
+  {
+    var column = 0, length = letter.length;
+    for (var i = 0; i < length; i++)
+    {
+      column += (letter.charCodeAt(i) - 64) * Math.pow(26, length - i - 1);
+    }
+    return column;
+  }
+  //------------------------------------------------------------------------------------------------------------------
+  //END  -- converts column letter to column number
+  //------------------------------------------------------------------------------------------------------------------
+  
   //-----------------------------------------------------------------------------------------------------------------
   /**
    * FIND A VALUE INTO A ROW OF A SPECIFIC RANGE
@@ -76,6 +102,32 @@ var Utility=new (function(){
         return i+1;
       }
     }
+   };
+  //------------------------------------------------------------------------------------------------------------------
+  //END  -- THIS FIND A VALUE INTO A ROW OF A SPECIFIC RANGE
+  //------------------------------------------------------------------------------------------------------------------
+  
+  //-----------------------------------------------------------------------------------------------------------------
+  /**
+   * FIND A VALUE INTO A ROW OF A SPECIFIC RANGE
+   * @param  {string} value
+   * @param  {range}  range of the row where search
+   * @return {ARRAY}  RETURN AN ARRAY OF ALL THE OCCURENCY OF THE STRING SEARCHED
+   */
+  //------------------------------------------------------------------------------------------------------------------
+  this.findValueIntoRowMultipeResult = function(value,range){
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+
+    var data = sheet.getRange(range).getValues();
+
+    var res =[];
+
+    for(var i = 0; i<data[0].length;i++){
+      if(data[0][i] == value){
+        res.push(i+1);
+      }
+    }
+    return res;
    };
   //------------------------------------------------------------------------------------------------------------------
   //END  -- THIS FIND A VALUE INTO A ROW OF A SPECIFIC RANGE
