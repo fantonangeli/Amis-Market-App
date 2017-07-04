@@ -8,7 +8,7 @@ var SyncMasterSheet=new function(){
 	  //---------------------------------------------------------
 	  this.startFetch=function(userToken) {
         //hide old forecasts leaving only the last one
-        ForecastUtility.hideAllPreviusForecasts(userToken);
+        ForecastUtility.hideAllPreviousForecasts(userToken);
         
         //Get the currently active sheet
         var sheet = SpreadsheetApp.getActiveSheet();    
@@ -105,7 +105,7 @@ var SyncMasterSheet=new function(){
     
     FirebaseConnector.writeOnFirebase(excelData,saveNode,userToken);
      
-    SyncMasterSheet.setLastUpdate();
+    SyncMasterSheet.setLastUpdate(userToken);
     
     //-------------------------------------------------------------------------------------------------
      //TODO _ move this logic out of here
@@ -138,7 +138,7 @@ var SyncMasterSheet=new function(){
        var orderInTheSheet = parseInt(FirebaseConnector.getFireBaseData(orderInTheSheetNode,userToken));
        
        //SOLVE CTRL+Z PROBLEMS. IF ANY and return the position where put the new column
-       newForecastColumnPosition =ForecastUtility.preventUndoConflictForNewForecast(newForecastColumnPosition,lastForeCast,userToken,orderInTheSheet);
+       newForecastColumnPosition =ForecastUtility.preventUndoConflictForNewForecast(newForecastColumnPosition,lastForeCast,userToken,orderInTheSheet,firstForecastColumnPosition,beginForeCast);       
        
        //hide all the last forecast -- this.findeValueIntoRow(lastForeCast) is called again because moveNewForecastFinder moves that value
        ForecastUtility.hideOldForecasts(firstForecastColumnPosition, newForecastColumnPosition,2 );
@@ -182,13 +182,18 @@ var SyncMasterSheet=new function(){
 	  return Utility.getGoogleSheetID();
   }
   
-  this.setLastUpdate = function(){
+  this.setLastUpdate = function(userToken){
     var sheet = SpreadsheetApp.getActiveSheet();
     var date = new Date();
     //var dateFormatted = date.getDate()+"/"+date.getMonth()+"/"+date.getFullYear();
     
+    var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);
+    //datanode from firebase
+    var lastUpdateCellNode = 'config/lastUpdateCell/'+countryName;
+    var lastUpdateCell= JSON.parse(FirebaseConnector.getFireBaseData(lastUpdateCellNode,userToken));
+    
     //TODO get this range from firebase
-    sheet.getRange('C5').setValue(date);
+    sheet.getRange(lastUpdateCell).setValue(date);
   }
   
   this.getRangeToBeStoredNode = function(userToken){
