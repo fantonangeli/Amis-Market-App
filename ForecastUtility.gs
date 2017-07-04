@@ -113,11 +113,7 @@ var ForecastUtility=new function(){
       //move forecastMetodology column position on firebase (range as input)
       ForecastingMethodologies.moveFMCols(columnLetter+':'+columnLetter,1);
     }    
-    //get the A1 notation for the column
-    //var columnLetter = Utility.numToChar(newForecastColumnPosition+1);    
-    //move forecastMetodology column position on firebase (range as input)
-    //ForecastingMethodologies.moveFMCols(columnLetter+':'+columnLetter,1);
-    //ForecastingMethodologies.moveFMCols('V:V',1);
+    
     //refetch from firebase the configuration for forecastmetodologies
     ForecastingMethodologies.getConfig(true);
     
