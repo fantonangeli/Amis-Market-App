@@ -7,13 +7,13 @@ var Config={
 	 * dbName on firebase
 	 * @type {String}
 	 */
-	dbName:"amis-9189b",
+	dbName:"amis-market-antonangeli",
 
 	/**
 	 * apiKey on firebase
 	 * @type {String}
 	 */
-	apiKey: "AIzaSyA3aklD6VK81sc6ui_vjf1IceAi_Zgtjqo",
+	apiKey: "AIzaSyCSkTNjFVSnnN3qeZMeqLvxiV2sHzEp4bE",
 
 	/**
 	 * spreadsheet config
@@ -21,7 +21,7 @@ var Config={
 	 */
 	Sheet:{
 		countryCell:"C2",
-		datasourceCell:"C4" 
+		datasourceCell:"C4"
 	}
 
 };
