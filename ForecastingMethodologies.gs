@@ -49,7 +49,7 @@ var ForecastingMethodologies = new( function() {
 		var html = HtmlService.createTemplateFromFile( 'MethodsDialog' )
 			.evaluate()
 			.setWidth( 800 )
-			.setHeight( 600 );
+			.setHeight( 400 );
 		SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
 			.showModalDialog( html, 'Forecasting Methodologies' );
 		return true;
@@ -59,8 +59,14 @@ var ForecastingMethodologies = new( function() {
 	 * get the firebase configuration for the Forecasting Methodologies
 	 * @return {Object}         the configuration
 	 */
-	this.getConfig = function(  ) {
+	this.getConfig = function( refresh ) {
 		var data, t;
+		var fbConfig=PropertiesService.getUserProperties().getProperty("ForecastingMethodologies.config");
+		refresh=(refresh || false);
+
+		if ( ( fbConfig !== null ) && !refresh ) {
+			return JSON.parse(fbConfig);
+		}
 
 		t = FirebaseConnector.getToken();
 		if ( !t ) {
@@ -70,6 +76,8 @@ var ForecastingMethodologies = new( function() {
 		if ( !data ) {
 			return null;
 		}
+
+		PropertiesService.getUserProperties().setProperty("ForecastingMethodologies.config",data);
 
 		return JSON.parse( data );
 	};
@@ -88,7 +96,7 @@ var ForecastingMethodologies = new( function() {
 			return null;
 		}
 
-		config=ForecastingMethodologies.getConfig(true);
+		config=ForecastingMethodologies.getConfig();
 
 		if(!config) return null;
 
