@@ -57,7 +57,6 @@ var ForecastingMethodologies = new( function() {
 
 	/**
 	 * get the firebase configuration for the Forecasting Methodologies
-	 * @param  {bool} refresh (default false) true to force cache renew
 	 * @return {Object}         the configuration
 	 */
 	this.getConfig = function( refresh ) {
@@ -88,7 +87,7 @@ var ForecastingMethodologies = new( function() {
 	 * reads the forecasting Methodology ranges from firebase
 	 * @return {array} array of ranges, null otherwise
 	 */
-	var getFMRanges=function() {
+	this.getFMRanges=function() {
 		var config;
 		var tokenFireBase = FirebaseConnector.getToken();
 
@@ -114,7 +113,7 @@ var ForecastingMethodologies = new( function() {
  	 */
 	this.moveFMCols = function( range, columnOffset ) {
 		var movedColNum, newFmRanges = [];
-		var fmRanges = getFMRanges();
+		var fmRanges = this.getFMRanges();
 		range = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( range );
 		movedColNum = range.getColumn();
 
@@ -145,9 +144,11 @@ var ForecastingMethodologies = new( function() {
 	this.onEdit = function( e ) {
 		var activeCell = e.range,
 			activeCellVal;
-		var fmRanges = getFMRanges();
+		var fmRanges = this.getFMRanges();
 
 		if ( !fmRanges ) return;
+
+
 
 		var r;
 		for ( var i = fmRanges.length; i--; ) {

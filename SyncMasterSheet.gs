@@ -28,7 +28,7 @@ var SyncMasterSheet=new function(){
        }            
         
         
-        Utility.toastInfo('Data Fetched', 'DATA FETCHED');       
+        Utility.toastInfo('Data successfully loaded to the AMIS database', 'DATA LOADED');
 	    
 	  }
 	  //---------------------------------------------------------
@@ -85,7 +85,7 @@ var SyncMasterSheet=new function(){
         SyncMasterSheet.syncMasterSheet(dataToBeStored,userToken,saveNode);
       
     }
-    Utility.toastInfo('Data Saved', 'data');
+    Utility.toastInfo('Data successfully saved to the AMIS database', 'DATA SAVED');
     
     //protect again the sheet
     ProtectRanges.protectCell(userToken);

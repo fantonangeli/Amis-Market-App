@@ -27,7 +27,7 @@ var FirebaseConnector=new function(){
     This takes in a path, and
     returns a URL that updates the data in that path
     */
-    return 'https://amis-9189b.firebaseio.com/' + jsonPath + '.json?auth=' + userToken
+    return 'https://'+Config.dbName+'.firebaseio.com/' + jsonPath + '.json?auth=' + userToken
   }
   //---------------------------------------------------------
   // END  return firebase url to be update/fetched
