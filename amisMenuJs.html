@@ -38,7 +38,6 @@
         * @param  {object} user The signed-in user info
         */
        function onLoggedState(user){
-           console.log( 'user logged', user );
 
            //change the sidebarmenu
            //google.script.run.changeSidebar();
@@ -76,10 +75,10 @@
              console.info( 'user', user.uid );
              //.then is used to get the token value
              user.getToken().then( function( data ) {
-             
+
              if ( user_data.type!="admin" ) {
                 //automatic fetch for operative users
-                showLoading();                     
+                showLoading();
                 google.script.run.withSuccessHandler(hideLoading).LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",data);
              }
                  console.log( 'gettoken', data );
@@ -139,21 +138,8 @@
         */
        function loginWithGoogle() {
        	var provider = new firebase.auth.GoogleAuthProvider();
-       	firebase.auth().signInWithPopup( provider ).then( function( result ) {
-            onLoggedState(result.user);
-       	} ).catch( function( error ) {
-            console.log('ERROR', error);
-       		//alert("User "+error.email+" is not authorized!");
-            google.script.run.LIB_FUNC( "AmisMarketApp.Utility.popUpAlert");
-       		// Handle Errors here.
-       		var errorCode = error.code;
-       		var errorMessage = error.message;
-       		// The email of the user's account used.
-       		var email = error.email;
-       		// The firebase.auth.AuthCredential type that was used.
-       		var credential = error.credential;
-       		// ...
-       	} );
+       	firebase.auth().signInWithRedirect( provider );
+        google.script.run.LIB_FUNC("AmisMarketApp.Utility.openSidebar");
        }
 
 
@@ -163,23 +149,41 @@
         */
        function logout(){
            firebase.auth().signOut()
+           console.log("logged out");
        }
 
 
 
 
        $( document ).ready( function() {
+           console.log('WINDOW.LOCATION.HREF', window.location.href);
            var unsubOnAuthStateChanged=firebase.auth().onAuthStateChanged(function(user) {
              unsubOnAuthStateChanged();
              if (user) {
                  console.log('USER authenticated', user);
                 onLoggedState(user);
              } else {
-                loginWithGoogle();
+                 console.log("unsubOnAuthStateChanged ko");
+                 setTimeout(function () {
+                     loginWithGoogle();
+                 }, 500);
              }
            });
 
 
+        //    firebase.auth().getRedirectResult().then( function( result ) {
+        //        	// The signed-in user info.
+        //        	var user = result.user;
+        //        	console.log( 'USER authenticated', user );
+        //    	 //    if (user) {
+        //    	 //        onLoggedState( user );
+        //    	 //    } else {
+        //    	 //        loginWithGoogle();
+        //    	 //    }
+        //    } ).catch( function( error ) {
+        //        	console.log( 'ERROR', error );
+        //         // loginWithGoogle();
+        //    } );
 
 
 
