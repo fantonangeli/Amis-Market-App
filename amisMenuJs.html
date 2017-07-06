@@ -76,10 +76,10 @@
              console.info( 'user', user.uid );
              //.then is used to get the token value
              user.getToken().then( function( data ) {
-             
+
              if ( user_data.type!="admin" ) {
                 //automatic fetch for operative users
-                showLoading();                     
+                showLoading();
                 google.script.run.withSuccessHandler(hideLoading).LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",data);
              }
                  console.log( 'gettoken', data );
@@ -170,7 +170,9 @@
 
        $( document ).ready( function() {
            var unsubOnAuthStateChanged=firebase.auth().onAuthStateChanged(function(user) {
-             unsubOnAuthStateChanged();
+             console.log('UNSUBONAUTHSTATECHANGED');
+             window.user=user;
+            //  unsubOnAuthStateChanged();
              if (user) {
                  console.log('USER authenticated', user);
                 onLoggedState(user);

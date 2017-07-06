@@ -22,6 +22,12 @@ var Config={
 	Sheet:{
 		countryCell:"C2",
 		datasourceCell:"C4"
-	}
+	},
+
+	/**
+	 * developer mode
+	 * @type {bool}
+	 */
+	devMode:true
 
 };
