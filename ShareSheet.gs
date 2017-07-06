@@ -84,7 +84,11 @@ var ShareSheet=new function(){
 	  //share the Amis Market Api TODO _ get it from firebase
 	  //DriveApp.getFileById('1OJQBydtovPhuO5-PwYdmzIe6977jVqcRuk3d3ZfvHCNWWWaLjpB8kLeg').addViewer(countryAccount);
 	  //my version of AMIS MARKET APP API
-      DriveApp.getFileById('1N2dpVYeE8nmYNQg4KPz2nSkdyKb9Pl1SEw78VXte6p1dU5CrakltRB1d').addViewer(countryAccount);
+      //DriveApp.getFileById('1N2dpVYeE8nmYNQg4KPz2nSkdyKb9Pl1SEw78VXte6p1dU5CrakltRB1d').addViewer(countryAccount);
+      //AMIS MARKET APP ID
+      DriveApp.getFileById('1OJQBydtovPhuO5-PwYdmzIe6977jVqcRuk3d3ZfvHCNWWWaLjpB8kLeg').addViewer(countryAccount);
+    
+    
   }
   //---------------------------------------------------------
   // END -- SHARE SHEET

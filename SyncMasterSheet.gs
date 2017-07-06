@@ -7,28 +7,42 @@ var SyncMasterSheet=new function(){
 		 */
 	  //---------------------------------------------------------
 	  this.startFetch=function(userToken) {
-        //hide old forecasts leaving only the last one
-        ForecastUtility.hideAllPreviousForecasts(userToken);
         
-        //Get the currently active sheet
-        var sheet = SpreadsheetApp.getActiveSheet();    
-        
-        var rangeFromConfig=JSON.parse(FirebaseConnector.getFireBaseData(SyncMasterSheet.getRangeToBeStoredNode(userToken),userToken));
-    
-       //loop all the ranges stored in firebase
-       for (var singleRange in rangeFromConfig) {
-         
-         //get Firebase node name to be fetch
-         var fireBaseNodeData= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/' + JSON.parse(SyncMasterSheet.getNodeToWriteData(userToken)).dataSheetNode+ '/' + singleRange;                        
-         
-         var fireBaseValues = JSON.parse(FirebaseConnector.getFireBaseData(fireBaseNodeData,userToken));	    	    
-         
-         //set value into cells
-         sheet.getRange(singleRange).setValues(fireBaseValues);               
-       }            
+        var userChoise = Browser.msgBox('LOAD DATA', 'Load the latest data from the AMIS database overwriting the data in the sheet?', Browser.Buttons.YES_NO);        
         
         
-        Utility.toastInfo('Data successfully loaded to the AMIS database', 'DATA LOADED');
+        // if user wants to laod data
+        if (userChoise == 'yes' || userChoise == 'si') {
+          
+          
+          //hide old forecasts leaving only the last one
+          ForecastUtility.hideAllPreviousForecasts(userToken);
+          
+          //Get the currently active sheet
+          var sheet = SpreadsheetApp.getActiveSheet();    
+          
+          var rangeFromConfig=JSON.parse(FirebaseConnector.getFireBaseData(SyncMasterSheet.getRangeToBeStoredNode(userToken),userToken));
+          
+          //loop all the ranges stored in firebase
+          for (var singleRange in rangeFromConfig) {
+            
+            //get Firebase node name to be fetch
+            var fireBaseNodeData= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/' + JSON.parse(SyncMasterSheet.getNodeToWriteData(userToken)).dataSheetNode+ '/' + singleRange;                        
+            
+            var fireBaseValues = JSON.parse(FirebaseConnector.getFireBaseData(fireBaseNodeData,userToken));	    	    
+            
+            //set value into cells
+            sheet.getRange(singleRange).setValues(fireBaseValues);               
+          }            
+          
+          
+          Utility.toastInfo('Data successfully loaded to the AMIS database', 'DATA LOADED');
+          
+        } else {
+          
+          //do nothing
+        }
+        
 	    
 	  }
 	  //---------------------------------------------------------
