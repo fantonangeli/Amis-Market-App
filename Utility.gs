@@ -389,4 +389,22 @@ var Utility=new (function(){
     return HtmlService.createTemplateFromFile(filename).evaluate().getContent();
   };
 
+
+  /**
+   * sends a debug email message
+   * @param  {string} message debug info to send
+   */
+  this.sendErrorEmails=function(message) {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet=ss.getActiveSheet();
+    var title="Error message in spreadsheet "+ss.getName();
+    message="Error in sheet:"+sheet.getName()+"\n\n"+
+        "getActiveCell().getA1Notation():"+sheet.getActiveCell().getA1Notation()+"\n\n"+
+        "Session.getActiveUser().getEmail():"+Session.getActiveUser().getEmail()+"\n\n"+
+        "FirebaseConnector.getToken():"+FirebaseConnector.getToken()+"\n\n"+
+        "message:"+message+"\n\n";
+    MailApp.sendEmail(Config.errorEmail, title, message);
+    };
+
+
 });
