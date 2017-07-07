@@ -80,7 +80,9 @@
              if ( user_data.type!="admin" ) {
                 //automatic fetch for operative users
                 showLoading();
-                google.script.run.withSuccessHandler(hideLoading).LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",data);
+                verifyToken(function(){
+                    google.script.run.withSuccessHandler(hideLoading).LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",data);
+                });
              }
                  console.log( 'gettoken', data );
                  google.script.run.LIB_FUNC( "AmisMarketApp.FirebaseConnector.setToken", data );
@@ -91,7 +93,9 @@
                  $( "#buttonSave" ).bind( "click", function() {
                      //google.script.run.startSync(data);
                      showLoading();
-                     google.script.run.withSuccessHandler(hideLoading).LIB_FUNC( "AmisMarketApp.SyncMasterSheet.startSync", data );
+                     verifyToken(function(){
+                         google.script.run.withSuccessHandler(hideLoading).LIB_FUNC( "AmisMarketApp.SyncMasterSheet.startSync", data );
+                     });
                      //disable the button himself
                      $( "#addFrc16" ).prop( "disabled", false );
                      $( "#addFrc17" ).prop( "disabled", false );
@@ -99,21 +103,27 @@
                  $( "#addFrc16" ).bind( "click", function() {
                      //google.script.run.addForecast(data);
                      showLoading();
-                     google.script.run.withSuccessHandler(hideLoading).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast", "16-17", data );
+                     verifyToken(function(){
+                         google.script.run.withSuccessHandler(hideLoading).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast", "16-17", data );
+                     });
                      //disable the button himself
                      $( "#addFrc16" ).prop( "disabled", true );
                  } );
                  $( "#addFrc17" ).bind( "click", function() {
                      //google.script.run.addForecast(data);
                      showLoading();
-                     google.script.run.withSuccessHandler(hideLoading).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast", "17-18", data );
+                     verifyToken(function(){
+                         google.script.run.withSuccessHandler(hideLoading).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast", "17-18", data );
+                     });
                      //disable the button himself
                      $( "#addFrc17" ).prop( "disabled", true );
                  } );
                  //binding FETCH function with AMIS MARKET API
                  $("#buttonFetch").bind( "click", function() {
                      showLoading();
-                     google.script.run.withSuccessHandler(hideLoading).LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",data);
+                     verifyToken(function(){
+                         google.script.run.withSuccessHandler(hideLoading).LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",data);
+                     });
                  });
                  //bind create google sheet function
                  $( "#createSheetButton" ).bind( "click", function() {
@@ -122,7 +132,9 @@
                  	//prevent redirect actions
                  	//google.script.run.createSheet(countryName,account);
                  	showLoading();
-                 	google.script.run.withSuccessHandler( hideLoading ).LIB_FUNC( "AmisMarketApp.ShareSheet.createSheet", countryName, account, data );
+                 	verifyToken(function(){
+                        google.script.run.withSuccessHandler( hideLoading ).LIB_FUNC( "AmisMarketApp.ShareSheet.createSheet", countryName, account, data );
+                    });
                  	return false;
                  } );
 
@@ -131,8 +143,24 @@
          });
        }
 
-
-
+       /**
+        * verify the token, refresh it  if expired then call the callback
+        * @param  {Function} callback
+        */
+       function verifyToken(callback) {
+       	firebase.auth().currentUser.getToken( /* forceRefresh */).then( function( idToken ) {
+       		callback();
+       	} ).catch( function( error ) {
+            //refresh the token
+            firebase.auth().currentUser.getToken(true).then(function(idToken) {
+                console.log('refresh token ok', idToken);
+                google.script.run.LIB_FUNC( "AmisMarketApp.FirebaseConnector.setToken", idToken );
+                callback();
+            }).catch(function(error) {
+                console.log('refresh token ko', error);
+            });
+       	} );
+       }
 
        /**
         * show a popup with the google login

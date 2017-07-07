@@ -63,6 +63,9 @@ var ForecastUtility=new function(){
     // This inserts the new column
     sheet.insertColumnsAfter(newForecastColumnPosition,1);
     
+    //this set the correct formulas for new column
+    ForecastUtility.writeFormulasForNewForecasts(userToken, newForecastColumnPosition+1);
+    
     //retrive the row where write the new label
     var labelRowNumberNode = 'config/addForecast/labelRowNumber';
     //in the database value is stored like range "9:9"... to get column number, i have to split
@@ -238,4 +241,42 @@ var ForecastUtility=new function(){
   // END -- function called to hide all the forecast for previus year except the last one          
   //------------------------------------------------------------------------------------------------------------------
   
+  this.writeFormulasForNewForecasts = function (userToken, newForecastColumnPosition){
+    var sheet = SpreadsheetApp.getActiveSpreadsheet(); 
+    
+    var newForecastColumnPositionLetter = Utility.numToChar(newForecastColumnPosition);
+    //Browser.msgBox(newForecastColumnPositionLetter);
+    
+    //TODO _ take argentina from firebase
+    var addForecastFormulasNode = 'config/addForecastFormulas/argentina';
+  
+    //retrive the row containing 'Forecasting  Methodology'. IT MUST BE next the last forecast.
+    var addForecastFormulas = JSON.parse(FirebaseConnector.getFireBaseData(addForecastFormulasNode,userToken));    
+    
+    for (var forecastFormulas in addForecastFormulas) {  
+      //Browser.msgBox(addForecastFormulas[forecastFormulas].formula);  
+      
+      //get the formula with string to be replaced (eg. _1 )
+      var finalFormula =addForecastFormulas[forecastFormulas].formula;
+      
+      //loop over "replacer" node. It allow to calculate the row position of the cell
+      for (var i=0; i<addForecastFormulas[forecastFormulas].replacer.length;i++){
+                        
+        //sum the row with the content of replecer
+        var newValue = newForecastColumnPositionLetter+ (parseInt(forecastFormulas.split(':')[0])+addForecastFormulas[forecastFormulas].replacer[i]);
+        
+        //replace loop for all the occurences
+        finalFormula= finalFormula.split('_'+(i+1)).join(newValue);
+        
+        //build the cell  (eg if we have newForecastColumnPositionLetter="AA" and  forecastFormulas="10:10"" IT BECOMES AA10 )
+        var cellForNewFormula = newForecastColumnPositionLetter+forecastFormulas.split(':')[0]
+        
+        //set the new formula
+        sheet.getRange(cellForNewFormula).setFormula(finalFormula);
+        
+      }       
+    }
+    
+    
+  }
 }
