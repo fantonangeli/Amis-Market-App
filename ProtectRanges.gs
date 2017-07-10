@@ -17,12 +17,11 @@ var ProtectRanges=new function(){
    * @param  {event}  you must call it from OnEdit function and pass 'e' event object
    */
     this.protectCell = function(userToken){ 	  
-      
-      var rangeFromConfig=JSON.parse(FirebaseConnector.getFireBaseData('config/rangeToBeProtected/argentina',userToken));	   
+      var rangeFromConfigNotParsed = FirebaseConnector.getFireBaseData('config/rangeToBeProtected/argentina',userToken);
+      var rangeFromConfig=JSON.parse(rangeFromConfigNotParsed);	   
       
       //store into session the ranges to be protected
-      PropertiesService.getUserProperties().setProperty("rangeProtected", FirebaseConnector.getFireBaseData('config/rangeToBeProtected/argentina',userToken));
-      
+      PropertiesService.getUserProperties().setProperty("rangeProtected",rangeFromConfigNotParsed);
       
       //store into session the values of protected ranges
       ProtectRanges.storeLocalValuesFromRanges(rangeFromConfig);
@@ -30,39 +29,38 @@ var ProtectRanges=new function(){
     }
     
   this.storeLocalValuesFromRanges = function(rangesProteced){
-    
     var sheet = SpreadsheetApp.getActiveSpreadsheet();
     
-    //loop all the protected ranges stored in firebase
-    for (var singleRange in rangesProteced) { 
+    for (var i=0; i<rangesProteced.length;i++){
       
       //get protected values
-      var val= sheet.getRange(singleRange).getValues();
+      var val= sheet.getRange(rangesProteced[i]).getValues();
       
       //store into session the ranges protected... 
       //KEY = protected range --- VALUE = the values of the protected range
-      PropertiesService.getUserProperties().setProperty(singleRange, JSON.stringify(val));      
+      PropertiesService.getUserProperties().setProperty(rangesProteced[i], JSON.stringify(val));      
+   
     }
+    
   }
   
   this.checkIfValueIsNotProtected = function (e) {    
 
     var sheet = SpreadsheetApp.getActiveSpreadsheet();
     var activeCell=e.range;
-    //loop all the ranges stored in firebase
-    for (var singleRange in JSON.parse(PropertiesService.getUserProperties().getProperty("rangeProtected"))) {             
-
+    var rangesProtectedStored = JSON.parse(PropertiesService.getUserProperties().getProperty("rangeProtected"));
+    
+    for (var i=0; i<rangesProtectedStored.length;i++){
+      
       
       //if a protected cell is update
-      if(Utility.isInRange(singleRange, activeCell)){        
+      if(Utility.isInRange(rangesProtectedStored[i], activeCell)){        
 
         //get old values
-        var oldValues= JSON.parse(PropertiesService.getUserProperties().getProperty(singleRange));
-        
+        var oldValues= JSON.parse(PropertiesService.getUserProperties().getProperty(rangesProtectedStored[i]));        
         //restore old values
-        sheet.getRange(singleRange).setValues(oldValues);        
+        sheet.getRange(rangesProtectedStored[i]).setValues(oldValues);        
       }
-      
     }
   }
   
