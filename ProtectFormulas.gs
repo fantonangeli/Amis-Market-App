@@ -18,11 +18,12 @@ var ProtectFormulas=new function(){
 	 */
     this.protectCell = function(userToken){
     
+      var rangeFromConfigNotParsed = FirebaseConnector.getFireBaseData('config/formulasToBeProtected/argentina',userToken);      
       //get from firebase the formulas to be protected
-      var rangeFromConfig=JSON.parse(FirebaseConnector.getFireBaseData('config/formulasToBeProtected/argentina',userToken));	   
+      var rangeFromConfig=JSON.parse(rangeFromConfigNotParsed);	   
 
       //store into session the ranges to be protected
-      PropertiesService.getUserProperties().setProperty("formulasProtected", FirebaseConnector.getFireBaseData('config/formulasToBeProtected/argentina',userToken));
+      PropertiesService.getUserProperties().setProperty("formulasProtected", rangeFromConfigNotParsed);
       
       //store into session the values of protected ranges
       ProtectFormulas.storeLocalValuesFromRanges(rangeFromConfig);
@@ -32,57 +33,53 @@ var ProtectFormulas=new function(){
   
   this.storeLocalValuesFromRanges = function(rangesProteced){
     
-    var sheet = SpreadsheetApp.getActiveSpreadsheet(); 
+    var sheet = SpreadsheetApp.getActiveSpreadsheet();
     
-    //loop all the protected ranges stored in firebase
-    for (var singleRange in rangesProteced) { 
+    for (var i=0; i<rangesProteced.length;i++){
     
       //get protected values
-      var val= sheet.getRange(singleRange).getFormulas();
+      var val= sheet.getRange(rangesProteced[i]).getFormulas();
       
       //get protected background style
-      var valbck = sheet.getRange(singleRange).getBackgrounds();
-
+      var valbck = sheet.getRange(rangesProteced[i]).getBackgrounds();
+    
       //store into session the ranges protected... 
       //KEY = protected range --- VALUE = the values of the protected range
-      PropertiesService.getUserProperties().setProperty(singleRange, JSON.stringify(val));
+      PropertiesService.getUserProperties().setProperty(rangesProteced[i], JSON.stringify(val));      
       //added 'bck' for background
-      PropertiesService.getUserProperties().setProperty(singleRange+'bck', JSON.stringify(valbck));
-
+      PropertiesService.getUserProperties().setProperty(rangesProteced[i]+'bck', JSON.stringify(valbck));
     }
+    
+    
   }
   
   this.checkIfValueIsNotProtected = function (e) {    
 	  
     var sheet = SpreadsheetApp.getActiveSpreadsheet();
     var activeCell=e.range;
+    var rangesProtectedStored = JSON.parse(PropertiesService.getUserProperties().getProperty("formulasProtected"));
     
-    
-    //loop all the ranges stored in firebase
-    for (var singleRange in JSON.parse(PropertiesService.getUserProperties().getProperty("formulasProtected"))) {             
-      
+    for (var i=0; i<rangesProtectedStored.length;i++){
+     
       //if a protected cell is update
-      if(Utility.isInRange(singleRange, activeCell)){                
+      if(Utility.isInRange(rangesProtectedStored[i], activeCell)){        
         
         //get old values
-        var oldValues= JSON.parse(PropertiesService.getUserProperties().getProperty(singleRange));
+        var oldValues= JSON.parse(PropertiesService.getUserProperties().getProperty(rangesProtectedStored[i]));
         
         //get old background styles
-        var oldValuesBck= JSON.parse(PropertiesService.getUserProperties().getProperty(singleRange+'bck'));
-        
+        var oldValuesBck= JSON.parse(PropertiesService.getUserProperties().getProperty(rangesProtectedStored[i]+'bck'));
         
         //restore old background
-        sheet.getRange(singleRange).setBackgrounds(oldValuesBck);
+        sheet.getRange(rangesProtectedStored[i]).setBackgrounds(oldValuesBck);
                 
-        
-
-        
         //restore old formulas
-        sheet.getRange(singleRange).setFormulas(oldValues);         
+        sheet.getRange(rangesProtectedStored[i]).setFormulas(oldValues);   
       }
       
     }
     
+        
   }
   
 }

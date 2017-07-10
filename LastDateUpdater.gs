@@ -43,21 +43,23 @@ var LastDateUpdater=new function(){
         
     var formulasProtected = JSON.parse(PropertiesService.getUserProperties().getProperty("formulasProtected"));
     var rangeProtected = JSON.parse(PropertiesService.getUserProperties().getProperty("rangeProtected"));    
-    var mergeRange = LastDateUpdater.jsonConcat(formulasProtected,rangeProtected);    
+    var mergeRange = formulasProtected.concat(rangeProtected);
+    
+    //var mergeRange = LastDateUpdater.jsonConcat(formulasProtected,rangeProtected);    
     
     //used after to determinate if set the last date or not
     var canWrite = true;
     
     //loop all the ranges stored in firebase
-    for (var singleRange in  mergeRange) {                   
-      
+    for (var i=0; i<mergeRange.length;i++){
       //if a protected cell is update
-      if(Utility.isInRange(singleRange, activeCell)){                                
+      if(Utility.isInRange(mergeRange[i], activeCell)){                                
         //if the cell updated is in a protected range I CANT WRITE
         canWrite = false;        
       }
       
     }
+    
     if(canWrite){      
       var cell = ss.getRange(lastDateUpdaterRow, thisCol);
       //update the cell putting last date editing
@@ -67,6 +69,7 @@ var LastDateUpdater=new function(){
 
   }
   
+  //TODO _ delete
   //concat two json
   this.jsonConcat = function(o1, o2) {
     for (var key in o2) {
