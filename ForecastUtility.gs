@@ -122,6 +122,8 @@ var ForecastUtility=new function(){
     
     //protect again the sheet
     ProtectRanges.protectCell(userToken);
+    ProtectFormulas.protectCell(userToken);
+    LastDateUpdater.protectCell(userToken);
     
     
     
@@ -253,6 +255,9 @@ var ForecastUtility=new function(){
     //retrive the row containing 'Forecasting  Methodology'. IT MUST BE next the last forecast.
     var addForecastFormulas = JSON.parse(FirebaseConnector.getFireBaseData(addForecastFormulasNode,userToken));    
     
+    //initialize
+    var newFormulaRangesToBeStored = []
+    
     for (var forecastFormulas in addForecastFormulas) {  
       //Browser.msgBox(addForecastFormulas[forecastFormulas].formula);  
       
@@ -274,9 +279,30 @@ var ForecastUtility=new function(){
         //set the new formula
         sheet.getRange(cellForNewFormula).setFormula(finalFormula);
         
-      }       
+        
     }
-    
+      //push the range into the array to be stored
+      newFormulaRangesToBeStored.push(newForecastColumnPositionLetter+forecastFormulas.split(':')[0]);              
     
   }
+    //store the new formula in PROTECTED FORMULAS
+    ForecastUtility.storeProtectedFormulasForNewForecasts(userToken,newFormulaRangesToBeStored );
+  
+}
+  
+  this.storeProtectedFormulasForNewForecasts = function(userToken,ArrayForNewFormula){
+    //TODO _ take argentina from firebase
+    var newProtectedFormulaRangeNode = 'config/formulasToBeProtected/argentina';                
+    var newProtectedFormulaRange = JSON.parse(FirebaseConnector.getFireBaseData(newProtectedFormulaRangeNode,userToken));      
+    //avoid override old formulas stored into firebase
+    var newFormulas = newProtectedFormulaRange.concat(ArrayForNewFormula);
+    //write new formula to be protected
+    FirebaseConnector.writeOnFirebase(
+			newFormulas,
+			newProtectedFormulaRangeNode,
+			userToken
+		);
+    
+  }
+  
 }
