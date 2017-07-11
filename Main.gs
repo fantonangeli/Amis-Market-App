@@ -43,7 +43,12 @@ function onLogin(){
  * protect sheet event
  */
 function protectSheet(userToken){
-	ProtectRanges.protectCell(userToken);
+  userToken = userToken ? userToken : FirebaseConnector.getToken();
+  if(userToken){
+    ProtectRanges.protectCell(userToken);
     ProtectFormulas.protectCell(userToken);
     LastDateUpdater.protectCell(userToken);
+    
+  }
+  
 }
