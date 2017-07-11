@@ -42,8 +42,10 @@ var ForecastUtility=new function(){
           FirebaseConnector.writeOnFirebase(Utility.numToChar(newForecastColumnPosition+1), lastForeCast, userToken);
           FirebaseConnector.writeOnFirebase(Utility.numToChar(firstForecastColumnPosition+1), beginForeCast, userToken);          
           
-          //MOVE FRC 17-18
+          //MOVE PROTECTED FORMULAS FRC 17-18
           SyncMasterSheet.moveProtectedFormulasCols17_18(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1,1);
+          //MOVE RANGE TO BE STORED FRC 17-18
+          SyncMasterSheet.moveRangeToBeStored17_18(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1,1);
         }else{
           FirebaseConnector.writeOnFirebase(Utility.numToChar(newForecastColumnPosition+1), lastForeCast, userToken);          
           
@@ -57,8 +59,10 @@ var ForecastUtility=new function(){
           //this set the correct formulas for new column
           ForecastUtility.writeFormulasForNewForecasts(userToken, newForecastColumnPosition+1);
           
-          //MOVE FRC 16-17
-          SyncMasterSheet.moveProtectedFormulasCols16_17(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1,0);
+          //MOVE PROTECTED FORMULAS  FRC 16-17
+          SyncMasterSheet.moveProtectedFormulasCols16_17(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1);
+          //MOVE RANGE TO BE STORED  FRC 16-17
+          SyncMasterSheet.moveRangeToBeStored16_17(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1);
           
           //retrive the row where write the new label
           var labelRowNumberNode = 'config/addForecast/labelRowNumber';
@@ -127,8 +131,10 @@ var ForecastUtility=new function(){
     
     FirebaseConnector.writeOnFirebase(Utility.numToChar(newForecastColumnPosition+1), lastForeCast, userToken);      
     
-    //MOVE FRC 17-18
+    //MOVE PROTECTED FORMULAS FRC 17-18
     SyncMasterSheet.moveProtectedFormulasCols17_18(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1,0);
+    //MOVE RANGE TO BE STORED FRC 17-18
+    SyncMasterSheet.moveRangeToBeStored17_18(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1,0);
     
     //get the A1 notation for the column
     var columnLetter = Utility.numToChar(newForecastColumnPosition+1);    
