@@ -18,10 +18,24 @@ var ProtectFormulas=new function(){
 	 */
     this.protectCell = function(userToken){
     
-      var rangeFromConfigNotParsed = FirebaseConnector.getFireBaseData('config/formulasToBeProtected/argentina',userToken);      
+      var rangeFromConfigNotParsedStd = FirebaseConnector.getFireBaseData('config/formulasToBeProtected/argentina',FirebaseConnector.getToken());      
       //get from firebase the formulas to be protected
-      var rangeFromConfig=JSON.parse(rangeFromConfigNotParsed);	   
+      var a=JSON.parse(rangeFromConfigNotParsedStd);	
+      
+      //get for frc 16-17
+      var rangeFromConfigNotParsed16_17 = FirebaseConnector.getFireBaseData('config/formulasToBeProtectedFrc16-17/argentina',FirebaseConnector.getToken());      
+      var b=JSON.parse(rangeFromConfigNotParsed16_17);	
 
+      //get for frc 17-18
+      var rangeFromConfigNotParsed17_18 = FirebaseConnector.getFireBaseData('config/formulasToBeProtectedFrc17-18/argentina',FirebaseConnector.getToken());      
+      var c=JSON.parse(rangeFromConfigNotParsed17_18);
+      
+      //set the final ranges
+       var rangeFromConfig = a.concat(b.concat(c));
+      //create the final ranges string to be stored into session
+      var rangeFromConfigNotParsed = rangeFromConfigNotParsedStd.replace(']',',')+rangeFromConfigNotParsed16_17.substring(1, rangeFromConfigNotParsed16_17.length-1)+rangeFromConfigNotParsed17_18.replace('[',',')
+      
+      //Utilities.sleep(300);
       //store into session the ranges to be protected
       PropertiesService.getUserProperties().setProperty("formulasProtected", rangeFromConfigNotParsed);
       
@@ -45,8 +59,10 @@ var ProtectFormulas=new function(){
     
       //store into session the ranges protected... 
       //KEY = protected range --- VALUE = the values of the protected range
+      //Utilities.sleep(300);
       PropertiesService.getUserProperties().setProperty(rangesProteced[i], JSON.stringify(val));      
       //added 'bck' for background
+      //Utilities.sleep(300);
       PropertiesService.getUserProperties().setProperty(rangesProteced[i]+'bck', JSON.stringify(valbck));
     }
     
