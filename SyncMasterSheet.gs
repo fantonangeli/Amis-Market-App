@@ -21,7 +21,10 @@ var SyncMasterSheet=new function(){
           //Get the currently active sheet
           var sheet = SpreadsheetApp.getActiveSheet();    
           
-          var rangeFromConfig=JSON.parse(FirebaseConnector.getFireBaseData(SyncMasterSheet.getRangeToBeStoredNode(userToken),userToken));
+          //var rangeFromConfig=JSON.parse(FirebaseConnector.getFireBaseData(SyncMasterSheet.getRangeToBeStoredNode(userToken),userToken));
+          
+          var rangeFromConfig= SyncMasterSheet.getRangeToBeStored(userToken);
+          
           
           for (var i=0; i<rangeFromConfig.length;i++){
 
@@ -33,21 +36,7 @@ var SyncMasterSheet=new function(){
               //set value into cells
               sheet.getRange(rangeFromConfig[i]).setValues(fireBaseValues);
           }
-         
-          //TODO _ remove
-          //loop all the ranges stored in firebase
-//          for (var singleRange in rangeFromConfig) {
-//            
-//            //get Firebase node name to be fetch
-//            var fireBaseNodeData= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/' + JSON.parse(SyncMasterSheet.getNodeToWriteData(userToken)).dataSheetNode+ '/' + singleRange;                        
-//            
-//            var fireBaseValues = JSON.parse(FirebaseConnector.getFireBaseData(fireBaseNodeData,userToken));	    	    
-//            
-//            //set value into cells
-//            sheet.getRange(singleRange).setValues(fireBaseValues);               
-//          }            
-          
-          
+                   
           Utility.toastInfo('Data successfully loaded to the AMIS database', 'DATA LOADED');
           
         } else {
@@ -79,7 +68,9 @@ var SyncMasterSheet=new function(){
     
     var baseOfSaveNode='';
     
-    var rangeFromConfig=JSON.parse(FirebaseConnector.getFireBaseData(SyncMasterSheet.getRangeToBeStoredNode(userToken),userToken));
+    //var rangeFromConfig=JSON.parse(FirebaseConnector.getFireBaseData(SyncMasterSheet.getRangeToBeStoredNode(userToken),userToken));
+    
+    var rangeFromConfig= SyncMasterSheet.getRangeToBeStored(userToken);
     
     //loop all the ranges stored in firebase    
     for (var p=0; p<rangeFromConfig.length;p++){
@@ -113,43 +104,11 @@ var SyncMasterSheet=new function(){
           SyncMasterSheet.syncMasterSheet(dataToBeStored,userToken,saveNode);
         
       }
-    //TODO _ remove
-    //loop all the ranges stored in firebase
-//    for (var singleRange in rangeFromConfig) {
-//      
-//      var dataToBeStored = sheet.getRange(singleRange).getValues();
-//      
-//      //TODO put it into function -- store data to firebase
-//      for (i = 0, len = dataToBeStored.length; i < len; i++) {	    	          
-//          for (j = 0, len2 = dataToBeStored[i].length; j < len2; j++){
-//            //Logger.log(dataToBeStored[i][j]);
-//            if(Object.prototype.toString.call(dataToBeStored[i][j]) === '[object Date]'){              
-//              var monthNames = [
-//                "January", "February", "March",
-//                "April", "May", "June", "July",
-//                "August", "September", "October",
-//                "November", "December"
-//              ];
-//              
-//              var day = dataToBeStored[i][j].getDate();
-//              var monthIndex = dataToBeStored[i][j].getMonth();
-//              var year = dataToBeStored[i][j].getFullYear();
-//              dataToBeStored[i][j]=day + ' ' + monthNames[monthIndex] + ' ' + year;
-//            }
-//          }
-//	    }
-//        //store node for data in firebase -- it contains the rangeDefinition
-//      if(baseOfSaveNode ===''){
-//          baseOfSaveNode= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/' + JSON.parse(SyncMasterSheet.getNodeToWriteData(userToken)).dataSheetNode;
-//      }
-//        saveNode = baseOfSaveNode+ '/' + singleRange;
-//        SyncMasterSheet.syncMasterSheet(dataToBeStored,userToken,saveNode);
-//      
-//    }
+    
     Utility.toastInfo('Data successfully saved to the AMIS database', 'DATA SAVED');
     
     //protect again the sheet
-    ProtectRanges.protectCell(userToken);
+    //ProtectRanges.protectCell(userToken);
   }
   //---------------------------------------------------------
   // END Saving Sheet Data function
@@ -263,55 +222,40 @@ var SyncMasterSheet=new function(){
 	  return 'config/rangeToBeStored/'+JSON.parse(FirebaseConnector.getFireBaseData(dataBaseNodeToRead,userToken)).name;
   }
   
+  
+  
   //---------------------------------------------------------
   //---------------------------------------------------------
   // END -- functions that retrives values
   //---------------------------------------------------------
   //---------------------------------------------------------
   
-  //------------------------------------------------------------------------------------------------------------------
-  /**
- 	 * move RANGES TO BE STORED
- 	 * @param  {string} range range in A1 notation
-	 * @param  {number} columnOffset   number of columns right from the range's top-left cell; negative values represent columns left from the range's top-left cell
- 	 * @return {bool}       true if ok, false otherwise
- 	 */
-  //------------------------------------------------------------------------------------------------------------------
-	this.moveRangesCols = function( range, columnOffset ) {
-      //TODO _ take argentina from firebase
-      var rangeToBeStoredNode = 'config/rangeToBeStored/argentina';
-      
-      //retrive the row containing 'Forecasting  Methodology'. IT MUST BE next the last forecast.
-      var rangeToBeStored = JSON.parse(FirebaseConnector.getFireBaseData(rangeToBeStoredNode,FirebaseConnector.getToken()));    
-      
-      
-		var movedColNum, newFmRanges = [];
-		var fmRanges = rangeToBeStored;
-		range = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( range );
-		movedColNum = range.getLastColumn();
-
-		if ( !fmRanges ) return;
-
-		var r;
-		for ( var i = fmRanges.length; i--; ) {
-			r = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( fmRanges[ i ] );
-
-			if ( r.getLastColumn() >= movedColNum ) {
-				r = r.offset( 0, columnOffset );
-			}
-
-			newFmRanges.unshift( r.getA1Notation() );
-		}
-
-		FirebaseConnector.writeOnFirebase(
-			newFmRanges,
-			'config/rangeToBeStored/argentina/b',
-			FirebaseConnector.getToken()
-		);
-    };
-  //------------------------------------------------------------------------------------------------------------------  
-  // END -- move RANGES TO BE STORED	
-  //------------------------------------------------------------------------------------------------------------------
+  
+   //---------------------------------------------------------   
+   /**
+	 * retrive all the ranges to be stored       
+     *  @param  {string} auth token     
+     *  @return  {array} ranges to be stored
+	 */
+   //---------------------------------------------------------
+  this.getRangeToBeStored = function(userToken) {
+    
+    var rangeFromConfig=JSON.parse(FirebaseConnector.getFireBaseData(SyncMasterSheet.getRangeToBeStoredNode(userToken),userToken));
+    
+    //get for frc 16-17
+    var rangeFromConfigFrc16_17 =JSON.parse(FirebaseConnector.getFireBaseData('config/rangeToBeStored16-17/argentina',userToken));    
+    
+    //get for frc 17-18
+    var rangeFromConfigFrc17_18 =JSON.parse(FirebaseConnector.getFireBaseData('config/rangeToBeStored17-18/argentina',userToken));    
+        
+    //set the final ranges
+    return rangeFromConfig.concat(rangeFromConfigFrc16_17.concat(rangeFromConfigFrc17_18));
+  }
+  //--------------------------------------------------------- 
+  //---------------------------------------------------------
+  // END -- Retrives all the ranges to be stored
+  //---------------------------------------------------------
+  //---------------------------------------------------------
   
   //------------------------------------------------------------------------------------------------------------------
   /**
@@ -407,8 +351,102 @@ var SyncMasterSheet=new function(){
 		);
     };
   //------------------------------------------------------------------------------------------------------------------  
+  // END --  move moveProtectedFormulasCols for FORECAST 17_18	
+  //------------------------------------------------------------------------------------------------------------------
+  
+  //------------------------------------------------------------------------------------------------------------------
+  /**
+ 	 * move RANGE TO BE STORED FRC 16-17
+ 	 * @param  {string} range range in A1 notation
+	 * @param  {number} columnOffset   number of columns right from the range's top-left cell; negative values represent columns left from the range's top-left cell
+ 	 * @return {bool}       true if ok, false otherwise
+ 	 */
+  //------------------------------------------------------------------------------------------------------------------
+  this.moveRangeToBeStored16_17 = function( range, columnOffset){
+    
+      //TODO _ take argentina from firebase
+      var rangeToBeStoredNode = 'config/rangeToBeStored16-17/argentina';
+      
+      //retrive the row containing 'Forecasting  Methodology'. IT MUST BE next the last forecast.
+      var rangeToBeStored = JSON.parse(FirebaseConnector.getFireBaseData(rangeToBeStoredNode,FirebaseConnector.getToken()));    
+      
+      
+		var movedColNum, newFmRanges = [];
+		var fmRanges = rangeToBeStored;
+		range = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( range );
+		movedColNum = range.getLastColumn();
+        //Browser.msgBox('movedCL '+ movedColNum);
+   
+		if ( !fmRanges ) return;
+
+		var r;
+		for ( var i = fmRanges.length; i--; ) {
+			r = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( fmRanges[ i ] );            
+          //Browser.msgBox('ASSTL '+  r.getLastColumn());
+			if ( r.getLastColumn() >= movedColNum ) {              
+                r = r.offset( 0, 0, r.getNumRows() , r.getNumColumns()+1 );              
+			}
+
+			newFmRanges.unshift( r.getA1Notation() );
+		}
+
+		FirebaseConnector.writeOnFirebase(
+			newFmRanges,
+			'config/rangeToBeStored16-17/argentina',
+			FirebaseConnector.getToken()
+		);
+    };
+  //------------------------------------------------------------------------------------------------------------------  
   // END -- move RANGES TO BE STORED	
   //------------------------------------------------------------------------------------------------------------------
   
-  
+  //------------------------------------------------------------------------------------------------------------------
+  /**
+ 	 * move RANGE TO BE STORED FRC 17-18
+ 	 * @param  {string} range range in A1 notation
+	 * @param  {number} columnOffset   number of columns right from the range's top-left cell; negative values represent columns left from the range's top-left cell
+ 	 * @param  {number} 0 if you have to move only the end of the range , 1 if you have to slide all the range
+ 	 */
+  //------------------------------------------------------------------------------------------------------------------
+  this.moveRangeToBeStored17_18 = function( range, columnOffset, type ){
+    
+      //TODO _ take argentina from firebase
+      var rangeToBeStoredNode = 'config/rangeToBeStored17-18/argentina';
+      
+      //retrive the row containing 'Forecasting  Methodology'. IT MUST BE next the last forecast.
+      var rangeToBeStored = JSON.parse(FirebaseConnector.getFireBaseData(rangeToBeStoredNode,FirebaseConnector.getToken()));    
+      
+      
+		var movedColNum, newFmRanges = [];
+		var fmRanges = rangeToBeStored;
+		range = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( range );
+		movedColNum = range.getLastColumn();
+        //Browser.msgBox('movedCL '+ movedColNum);
+   
+		if ( !fmRanges ) return;
+
+		var r;
+		for ( var i = fmRanges.length; i--; ) {
+			r = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( fmRanges[ i ] );            
+          //Browser.msgBox('ASSTL '+  r.getLastColumn());
+			if ( r.getLastColumn() >= movedColNum ) {              
+              if(type == 0){
+                r = r.offset( 0, 0, r.getNumRows() , r.getNumColumns()+1 );
+              }else{
+                r = r.offset( 0, columnOffset );
+              }          
+			}
+
+			newFmRanges.unshift( r.getA1Notation() );
+		}
+
+		FirebaseConnector.writeOnFirebase(
+			newFmRanges,
+			'config/rangeToBeStored17-18/argentina',
+			FirebaseConnector.getToken()
+		);
+    };
+  //------------------------------------------------------------------------------------------------------------------  
+  // END --  move moveProtectedFormulasCols for FORECAST 17_18	
+  //------------------------------------------------------------------------------------------------------------------
 }

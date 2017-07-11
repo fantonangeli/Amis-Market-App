@@ -90,7 +90,13 @@ var ProtectFormulas=new function(){
         sheet.getRange(rangesProtectedStored[i]).setBackgrounds(oldValuesBck);
                 
         //restore old formulas
-        sheet.getRange(rangesProtectedStored[i]).setFormulas(oldValues);   
+        sheet.getRange(rangesProtectedStored[i]).setFormulas(oldValues);
+        
+        //set bold text
+        sheet.getRange(rangesProtectedStored[i]).setFontWeight("bold");
+        
+        //set font size
+        sheet.getRange(rangesProtectedStored[i]).setFontSize(10);
       }
       
     }
