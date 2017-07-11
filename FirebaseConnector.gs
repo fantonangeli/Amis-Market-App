@@ -6,6 +6,7 @@ var FirebaseConnector=new function(){
      * @param  {string} token
      */
     this.setToken = function( token ) {
+      //Utilities.sleep(300);
         PropertiesService.getUserProperties().setProperty("tokenFireBase", token);
     };
 

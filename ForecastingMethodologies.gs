@@ -76,7 +76,7 @@ var ForecastingMethodologies = new( function() {
 		if ( !data ) {
 			return null;
 		}
-
+      //Utilities.sleep(300);
 		PropertiesService.getUserProperties().setProperty("ForecastingMethodologies.config",data);
 
 		return JSON.parse( data );

@@ -351,7 +351,7 @@ var SyncMasterSheet=new function(){
 
 		FirebaseConnector.writeOnFirebase(
 			newFmRanges,
-			'config/formulasToBeProtectedFrc16-17/b',
+			'config/formulasToBeProtectedFrc16-17/argentina',
 			FirebaseConnector.getToken()
 		);
     };
@@ -402,7 +402,7 @@ var SyncMasterSheet=new function(){
 
 		FirebaseConnector.writeOnFirebase(
 			newFmRanges,
-			'config/formulasToBeProtectedFrc17-18/b',
+			'config/formulasToBeProtectedFrc17-18/argentina',
 			FirebaseConnector.getToken()
 		);
     };

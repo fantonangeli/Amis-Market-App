@@ -17,7 +17,7 @@ var LastDateUpdater=new function(){
   this.protectCell = function(userToken){ 
       
       var labelRowForLastDate=JSON.parse(FirebaseConnector.getFireBaseData('config/labelRowForLastDate/argentina',userToken));    
-      
+      //Utilities.sleep(300);
     //store into session the labelRowForLastDate      
       PropertiesService.getUserProperties().setProperty("labelRowForLastDate", labelRowForLastDate);      
       
