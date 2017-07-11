@@ -4,7 +4,7 @@ function onOpen() {
 
   //create Amis menu
   Utility.createAmisMenu();
-  
+
   //alert for amis menu
   Browser.msgBox('To Open AMIS click on "AMIS" in the menu');
 
@@ -30,6 +30,11 @@ function onEdit(e){
   ProtectRanges.checkIfValueIsNotProtected(e);
   //protected formulas and Backgruond color in the ranges store in firebase
   ProtectFormulas.checkIfValueIsNotProtected(e);
+
+  if(!FirebaseConnector.getToken()){
+      ProtectSheet.onEdit();
+  }
+
 }
 
 /**
