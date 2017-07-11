@@ -57,7 +57,7 @@ var SyncMasterSheet=new function(){
 	 */
   //---------------------------------------------------------
   this.startSync=function(userToken) {
-    
+    SyncMasterSheet.deleteSavedData();
     //SyncMasterSheet.moveRangesCols('AC:AC',1);
     
     //hide old forecasts leaving only the last one
@@ -448,5 +448,20 @@ var SyncMasterSheet=new function(){
     };
   //------------------------------------------------------------------------------------------------------------------  
   // END --  move moveProtectedFormulasCols for FORECAST 17_18	
+  //------------------------------------------------------------------------------------------------------------------
+  
+  //------------------------------------------------------------------------------------------------------------------  
+  // delete saved data
+  //------------------------------------------------------------------------------------------------------------------
+  this.deleteSavedData = function(){
+    var ar = []
+    FirebaseConnector.writeOnFirebase(
+      ar,
+      'dataAmisSheet/countries/argentinaData',
+     FirebaseConnector.getToken()
+    );
+  }
+  //------------------------------------------------------------------------------------------------------------------  
+  // END --  delete saved data
   //------------------------------------------------------------------------------------------------------------------
 }
