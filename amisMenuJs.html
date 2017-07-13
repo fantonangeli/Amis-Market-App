@@ -98,7 +98,7 @@
                 //automatic fetch for operative users
                 showLoading();
                 verifyToken(function(){
-                    google.script.run.withSuccessHandler(hideLoading).LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",data);
+                    google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",data);
                 });
              }
                  console.log( 'gettoken', data );
@@ -122,7 +122,7 @@
                      //google.script.run.addForecast(data);
                      showLoading();
                      verifyToken(function(){
-                         google.script.run.withSuccessHandler(hideLoading).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast", "16-17", data );
+                         google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast16_17", data );
                      });
                      //disable the button himself
                      //$( "#addFrc16" ).prop( "disabled", true );
@@ -131,7 +131,7 @@
                      //google.script.run.addForecast(data);
                      showLoading();
                      verifyToken(function(){
-                         google.script.run.withSuccessHandler(hideLoading).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast", "17-18", data );
+                         google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast17_18", data );
                      });
                      //disable the button himself
                      //$( "#addFrc17" ).prop( "disabled", true );
