@@ -148,17 +148,18 @@ var ForecastingMethodologies = new( function() {
 
 		if ( !fmRanges ) return;
 
-        //THIS AVOID PROBLEMS IN CASE SOMEBODY COPY AND PASTE VALUES FROM A CELL WITH VALIDATION
-        activeCell.setDataValidation(null);
-        //THIS PRESERV THE ALIGNMENT RIGHT in case of copy/paste
-        activeCell.setHorizontalAlignment('right');
-
 		var r;
 		for ( var i = fmRanges.length; i--; ) {
 			r = fmRanges[ i ];
 
 			//check if is in a FM range
 			if ( Utility.isInRange( r, activeCell ) ) {
+
+                //THIS AVOID PROBLEMS IN CASE SOMEBODY COPY AND PASTE VALUES FROM A CELL WITH VALIDATION
+                activeCell.setDataValidation(null);
+                //THIS PRESERV THE ALIGNMENT RIGHT in case of copy/paste
+                activeCell.setHorizontalAlignment('right');
+
 				activeCellVal = activeCell.getValue();
 
 				//check if cell is not valid and is to open the dialog
