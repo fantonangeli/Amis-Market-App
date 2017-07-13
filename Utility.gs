@@ -254,8 +254,8 @@ var Utility=new (function(){
     var columnsEdited = Utility.numToChar(activeCell.getColumn());
     
     //TODO _ move it to firebase / session ?
-    //                     0    1   2   3   4   5   6   7   8     9   10   11   12   13   14  15   16
-    var interestedRows  = [12 ,16 ,40 ,41, 42, 43, 44 ,49 , 48 , 50 , 51 , 52 , 53 , 54 , 55, 29 , 30 ];
+    //                     0    1   2   3   4   5   6   7   8     9   10   11   12   13   14  15   16  17
+    var interestedRows  = [12 ,16 ,40 ,41, 42, 43, 44 ,49 , 48 , 50 , 51 , 52 , 53 , 54 , 55, 29 , 30, 31 ];
     
     //valore assoluto C43 - (C12/C41) 
     var operation = Math.abs(parseFloat(sheet.getRange(columnsEdited+interestedRows[5]).getValue()) - ( parseFloat(sheet.getRange(columnsEdited+interestedRows[0]).getValue()) / parseFloat(sheet.getRange(columnsEdited+interestedRows[3]).getValue()) ));
@@ -265,6 +265,21 @@ var Utility=new (function(){
     var operation3 = parseFloat(sheet.getRange(columnsEdited+interestedRows[8]).getValue()) + parseFloat(sheet.getRange(columnsEdited+interestedRows[9]).getValue()) +parseFloat(sheet.getRange(columnsEdited+interestedRows[11]).getValue());
     //sum 48 50 52 
     var operation4 = parseFloat(sheet.getRange(columnsEdited+interestedRows[7]).getValue()) + parseFloat(sheet.getRange(columnsEdited+interestedRows[10]).getValue()) +parseFloat(sheet.getRange(columnsEdited+interestedRows[12]).getValue());        
+    
+    //condition formatting number one and two
+    if ( parseFloat(sheet.getRange(columnsEdited+interestedRows[17]).getValue()) != 0) {      
+      
+      //set cell 31
+      sheet.getRange(columnsEdited+interestedRows[17]).setFontColor('#ff0000');
+      sheet.getRange(columnsEdited+interestedRows[17]).setBackground('#d8d8d8'); 
+      sheet.getRange(columnsEdited+interestedRows[17]).setNumberFormat('0');       
+      
+    }else {
+      //set cell 41
+      sheet.getRange(columnsEdited+interestedRows[17]).setFontColor('#000000');
+      sheet.getRange(columnsEdited+interestedRows[17]).setBackground('#d8d8d8'); 
+      sheet.getRange(columnsEdited+interestedRows[17]).setNumberFormat('0');       
+    }
     
     //condition formatting number one and two
     if ( sheet.getRange(columnsEdited+interestedRows[4]).getValue() != '' &&  parseFloat(sheet.getRange(columnsEdited+interestedRows[3]).getValue()) > parseFloat(sheet.getRange(columnsEdited+interestedRows[4]).getValue())  ) {
