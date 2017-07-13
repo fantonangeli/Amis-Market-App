@@ -254,8 +254,8 @@ var Utility=new (function(){
     var columnsEdited = Utility.numToChar(activeCell.getColumn());
     
     //TODO _ move it to firebase / session ?
-    //                     0    1   2   3   4   5   6   7   8     9   10   11   12   13   14
-    var interestedRows  = [12 ,16 ,40 ,41, 42, 43, 44 ,49 , 48 , 50 , 51 , 52 , 53 , 54 , 55 ];
+    //                     0    1   2   3   4   5   6   7   8     9   10   11   12   13   14  15   16
+    var interestedRows  = [12 ,16 ,40 ,41, 42, 43, 44 ,49 , 48 , 50 , 51 , 52 , 53 , 54 , 55, 29 , 30 ];
     
     //valore assoluto C43 - (C12/C41) 
     var operation = Math.abs(parseFloat(sheet.getRange(columnsEdited+interestedRows[5]).getValue()) - ( parseFloat(sheet.getRange(columnsEdited+interestedRows[0]).getValue()) / parseFloat(sheet.getRange(columnsEdited+interestedRows[3]).getValue()) ));
@@ -340,7 +340,19 @@ var Utility=new (function(){
       sheet.getRange(columnsEdited+interestedRows[14]).setBackground('#d8d8d8'); 
       sheet.getRange(columnsEdited+interestedRows[14]).setNumberFormat('0'); 
     }
+    //condition formatting number 7
     
+    if (parseFloat(sheet.getRange(columnsEdited+interestedRows[16]).getValue())  > parseFloat(sheet.getRange(columnsEdited+interestedRows[15]).getValue())  ) {  
+      //set cell 30
+      sheet.getRange(columnsEdited+interestedRows[16]).setFontColor('#ff0000');
+      sheet.getRange(columnsEdited+interestedRows[4]).setBackground('#ffffff'); 
+      sheet.getRange(columnsEdited+interestedRows[16]).setNumberFormat('0'); 
+    }else {
+      //set cell 30
+      sheet.getRange(columnsEdited+interestedRows[16]).setFontColor('#000000');
+      sheet.getRange(columnsEdited+interestedRows[4]).setBackground('#ffffff');  
+      sheet.getRange(columnsEdited+interestedRows[16]).setNumberFormat('0'); 
+    }
     
     
   }
