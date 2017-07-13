@@ -45,7 +45,9 @@ var ProtectRanges=new function(){
   }
   
   this.checkIfValueIsNotProtected = function (e) {    
-
+    //THIS AVOID PROBLEMS IN CASE SOMEBODY COPY AND PASTE VALUES FROM A CELL WITH VALIDATION
+    e.range.setDataValidation(null);
+    
     var sheet = SpreadsheetApp.getActiveSpreadsheet();
     var activeCell=e.range;
     var rangesProtectedStored = JSON.parse(PropertiesService.getUserProperties().getProperty("rangeProtected"));

@@ -142,6 +142,9 @@ var ForecastingMethodologies = new( function() {
 	 * @param  {Object} e
 	 */
 	this.onEdit = function( e ) {
+        //THIS AVOID PROBLEMS IN CASE SOMEBODY COPY AND PASTE VALUES FROM A CELL WITH VALIDATION
+        e.range.setDataValidation(null);
+      
 		var activeCell = e.range,
 			activeCellVal;
 		var fmRanges = this.getFMRanges();
