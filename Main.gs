@@ -21,6 +21,9 @@ function openSidebar(){
 
 function onEdit(e){
 
+  //this apply conditional formatting
+  Utility.applyConditionalFormatting(e);
+  
   ForecastingMethodologies.onEdit(e);
 
   //it set the last date when updating particular column (data entry column)
