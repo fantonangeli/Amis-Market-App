@@ -177,60 +177,6 @@ var Utility=new (function(){
 
   //------------------------------------------------------------------------------------------------------------------
   /**
-   * SET LAST DATE WHEN UPDATING A CELL
-   * @param  {event}  you must call it from OnEdit function and pass 'e' event object
-   */
-  //------------------------------------------------------------------------------------------------------------------
-//TODO REMOVE THIS METHOD
-//  this.onEditSetLastUpdateDate = function(e){
-//
-//    //TODO they must come from firebase
-//    var rowsToWriteUpdateDate = [10,34,39,47];
-//    var rowToUpdate;
-//
-//    var thisRow = e.range.getRow();
-//    var thisCol = e.range.getColumn();
-//
-//    var ss = e.range.getSheet();
-//
-//    var configRow = ss.getRange(thisRow,1).getValues()[0][0];
-//    var configColumn = ss.getRange(1,thisCol).getValues()[0][0];
-//
-//    //TODO _ nu --- must come by firebase
-//    // if the cell is NU --- NO UPDATE DATE
-//    if(configRow == 'nu' || configColumn == 'nu' )
-//      return;
-//
-//    //else
-//
-//    for (i = 0; i < rowsToWriteUpdateDate.length; i++) {
-//
-//      //at the first loop I simple assign rowToUpdate
-//      if(i==0)
-//        rowToUpdate=rowsToWriteUpdateDate[i];
-//
-//      //found the 'distance' between the label row and the active cell
-//      var sub = thisRow - rowsToWriteUpdateDate[i];
-//
-//      //if the 'distance' is positive I'll take the minus 'distance'
-//      if(sub > 0  && ( (thisRow - rowToUpdate) >= sub))
-//      rowToUpdate = rowsToWriteUpdateDate[i];
-//    }
-//    Logger.log(rowToUpdate);
-//
-//    //TODO put this value under firebase config and retrive the row number
-//    var cell = ss.getRange(rowToUpdate, thisCol);
-//
-//    //update the cell putting last date editing
-//    cell.setValue(new Date());
-//    cell.setFontWeight("bold");
-//  }
-  //------------------------------------------------------------------------------------------------------------------
-  //END -- SET LAST DATE WHEN UPDATING A CELL
-  //------------------------------------------------------------------------------------------------------------------
-
-  //------------------------------------------------------------------------------------------------------------------
-  /**
    * make a toast on the screen
    * @param  {string}  title of toast
    * @param  {string}  text of toast
@@ -295,6 +241,113 @@ var Utility=new (function(){
   //------------------------------------------------------------------------------------------------------------------
   // END --  get GoogleSheetID
   //------------------------------------------------------------------------------------------------------------------
+  
+  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * apply conditional formatting and color the cell when it is required
+   * @params {e} ON EDIT params   
+   */
+  //------------------------------------------------------------------------------------------------------------------
+  this.applyConditionalFormatting= function(e){
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var activeCell=e.range;
+    var columnsEdited = Utility.numToChar(activeCell.getColumn());
+    
+    //TODO _ move it to firebase / session ?
+    //                     0    1   2   3   4   5   6   7   8     9   10   11   12   13   14
+    var interestedRows  = [12 ,16 ,40 ,41, 42, 43, 44 ,49 , 48 , 50 , 51 , 52 , 53 , 54 , 55 ];
+    
+    //valore assoluto C43 - (C12/C41) 
+    var operation = Math.abs(parseFloat(sheet.getRange(columnsEdited+interestedRows[5]).getValue()) - ( parseFloat(sheet.getRange(columnsEdited+interestedRows[0]).getValue()) / parseFloat(sheet.getRange(columnsEdited+interestedRows[3]).getValue()) ));
+    //valore assoluto ASS(C44-1000*C16/C40)
+    var operation2 = Math.abs(parseFloat(sheet.getRange(columnsEdited+interestedRows[6]).getValue()) - ( 1000 * parseFloat(sheet.getRange(columnsEdited+interestedRows[1]).getValue()) / parseFloat(sheet.getRange(columnsEdited+interestedRows[2]).getValue()) ));
+    //sum 48 50 52 
+    var operation3 = parseFloat(sheet.getRange(columnsEdited+interestedRows[8]).getValue()) + parseFloat(sheet.getRange(columnsEdited+interestedRows[9]).getValue()) +parseFloat(sheet.getRange(columnsEdited+interestedRows[11]).getValue());
+    //sum 48 50 52 
+    var operation4 = parseFloat(sheet.getRange(columnsEdited+interestedRows[7]).getValue()) + parseFloat(sheet.getRange(columnsEdited+interestedRows[10]).getValue()) +parseFloat(sheet.getRange(columnsEdited+interestedRows[12]).getValue());        
+    
+    //condition formatting number one and two
+    if ( sheet.getRange(columnsEdited+interestedRows[4]).getValue() != '' &&  parseFloat(sheet.getRange(columnsEdited+interestedRows[3]).getValue()) > parseFloat(sheet.getRange(columnsEdited+interestedRows[4]).getValue())  ) {
+      
+      //set cell 41
+      sheet.getRange(columnsEdited+interestedRows[3]).setFontColor('#ff0000');
+      sheet.getRange(columnsEdited+interestedRows[3]).setBackground('#ffffff'); 
+      sheet.getRange(columnsEdited+interestedRows[3]).setNumberFormat('0'); 
+      //set cell 42
+      sheet.getRange(columnsEdited+interestedRows[4]).setFontColor('#ff0000');
+      sheet.getRange(columnsEdited+interestedRows[4]).setBackground('#ffffff'); 
+      sheet.getRange(columnsEdited+interestedRows[4]).setNumberFormat('0'); 
+      
+    }else {
+      //set cell 41
+      sheet.getRange(columnsEdited+interestedRows[3]).setFontColor('#000000');
+      sheet.getRange(columnsEdited+interestedRows[3]).setBackground('#ffffff'); 
+      sheet.getRange(columnsEdited+interestedRows[3]).setNumberFormat('0'); 
+      //set cell 42
+      sheet.getRange(columnsEdited+interestedRows[4]).setFontColor('#000000');
+      sheet.getRange(columnsEdited+interestedRows[4]).setBackground('#ffffff'); 
+      sheet.getRange(columnsEdited+interestedRows[4]).setNumberFormat('0'); 
+    }      
+    
+    //condition formatting number three 
+    if ( operation > 0.1 && sheet.getRange(columnsEdited+interestedRows[0]).getValue() != '' && sheet.getRange(columnsEdited+interestedRows[3]).getValue() != '' ) {  
+      //set cell 43
+      sheet.getRange(columnsEdited+interestedRows[5]).setFontColor('#ff0000');
+      sheet.getRange(columnsEdited+interestedRows[5]).setBackground('#d8d8d8'); 
+      sheet.getRange(columnsEdited+interestedRows[5]).setNumberFormat('0.00'); 
+    }else {
+     //set cell 43
+     sheet.getRange(columnsEdited+interestedRows[5]).setFontColor('#000000');
+     sheet.getRange(columnsEdited+interestedRows[5]).setBackground('#d8d8d8'); 
+     sheet.getRange(columnsEdited+interestedRows[5]).setNumberFormat('0.00'); 
+   }
+    
+    //condition formatting number four 
+    if ( operation2 > 0.1 && sheet.getRange(columnsEdited+interestedRows[1]).getValue() != '' && sheet.getRange(columnsEdited+interestedRows[2]).getValue() != '' ) {  
+      //set cell 44
+      sheet.getRange(columnsEdited+interestedRows[6]).setFontColor('#ff0000');
+      sheet.getRange(columnsEdited+interestedRows[6]).setBackground('#d8d8d8'); 
+      sheet.getRange(columnsEdited+interestedRows[6]).setNumberFormat('0.00'); 
+    }else {
+      //set cell 44
+      sheet.getRange(columnsEdited+interestedRows[6]).setFontColor('#000000');
+      sheet.getRange(columnsEdited+interestedRows[6]).setBackground('#d8d8d8'); 
+      sheet.getRange(columnsEdited+interestedRows[6]).setNumberFormat('0.00'); 
+    }
+     
+    //condtion formatting number 5
+    if ( sheet.getRange(columnsEdited+interestedRows[13]).getValue() != '' && ( sheet.getRange(columnsEdited+interestedRows[8]).getValue() != '' && sheet.getRange(columnsEdited+interestedRows[9]).getValue() != '' && sheet.getRange(columnsEdited+interestedRows[11]).getValue() != '') && operation3 > parseFloat(sheet.getRange(columnsEdited+interestedRows[13]).getValue())  ) {  
+      //set cell 54
+      sheet.getRange(columnsEdited+interestedRows[13]).setFontColor('#ff0000');
+      sheet.getRange(columnsEdited+interestedRows[13]).setBackground('#d8d8d8'); 
+      sheet.getRange(columnsEdited+interestedRows[14]).setNumberFormat('0'); 
+    }else {
+      //set cell 54
+      sheet.getRange(columnsEdited+interestedRows[13]).setFontColor('#000000');
+      sheet.getRange(columnsEdited+interestedRows[13]).setBackground('#d8d8d8'); 
+      sheet.getRange(columnsEdited+interestedRows[14]).setNumberFormat('0'); 
+    }    
+    
+     //condtion formatting number 6
+    if ( sheet.getRange(columnsEdited+interestedRows[14]).getValue() != '' && ( sheet.getRange(columnsEdited+interestedRows[7]).getValue() != '' && sheet.getRange(columnsEdited+interestedRows[10]).getValue() != '' && sheet.getRange(columnsEdited+interestedRows[12]).getValue() != '') && operation4 > parseFloat(sheet.getRange(columnsEdited+interestedRows[14]).getValue())  ) {  
+      //set cell 55
+      sheet.getRange(columnsEdited+interestedRows[14]).setFontColor('#ff0000');
+      sheet.getRange(columnsEdited+interestedRows[14]).setBackground('#d8d8d8'); 
+      sheet.getRange(columnsEdited+interestedRows[14]).setNumberFormat('0.00'); 
+    }else {
+      //set cell 55
+      sheet.getRange(columnsEdited+interestedRows[14]).setFontColor('#000000');
+      sheet.getRange(columnsEdited+interestedRows[14]).setBackground('#d8d8d8'); 
+      sheet.getRange(columnsEdited+interestedRows[14]).setNumberFormat('0'); 
+    }
+    
+    
+    
+  }
+  //------------------------------------------------------------------------------------------------------------------
+  // END -- apply conditional formatting and color the cell when it is required
+  //------------------------------------------------------------------------------------------------------------------
+  
 
   this.noNegativeValue=function(){
     //Get the currently active sheet
