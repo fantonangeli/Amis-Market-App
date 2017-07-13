@@ -142,16 +142,16 @@ var ForecastingMethodologies = new( function() {
 	 * @param  {Object} e
 	 */
 	this.onEdit = function( e ) {
-        //THIS AVOID PROBLEMS IN CASE SOMEBODY COPY AND PASTE VALUES FROM A CELL WITH VALIDATION
-        e.range.setDataValidation(null);
-      
 		var activeCell = e.range,
 			activeCellVal;
 		var fmRanges = this.getFMRanges();
 
 		if ( !fmRanges ) return;
 
-
+        //THIS AVOID PROBLEMS IN CASE SOMEBODY COPY AND PASTE VALUES FROM A CELL WITH VALIDATION
+        activeCell.setDataValidation(null);
+        //THIS PRESERV THE ALIGNMENT RIGHT in case of copy/paste
+        activeCell.setHorizontalAlignment('right');
 
 		var r;
 		for ( var i = fmRanges.length; i--; ) {
