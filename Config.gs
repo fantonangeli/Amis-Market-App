@@ -21,7 +21,19 @@ var Config={
 	 */
 	Sheet:{
 		countryCell:"B1",
-		datasourceCell:"B3" 
-	}
+		datasourceCell:"B3"
+	},
+
+	/**
+	 * developer mode
+	 * @type {bool}
+	 */
+	devMode:false,
+
+	/**
+	 * email address for errors informations
+	 * @type {String}
+	 */
+	errorEmail:"amis.outlook.fao@gmail.com"
 
 };

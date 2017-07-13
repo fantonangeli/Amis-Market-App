@@ -57,16 +57,16 @@ var Utility=new (function(){
                return letter;
            }
        };
-  
-  
+
+
   this.popUpAlert = function () {
-    Browser.msgBox('Please ensure that popup lock is DISABLED. Then try again.');  
+    Browser.msgBox('Please ensure that popup lock is DISABLED. Then try again.');
   }
-  
+
   //-----------------------------------------------------------------------------------------------------------------
   /**
    * converts column letter to column number
-   * @param  {string} column letter   
+   * @param  {string} column letter
    * @return {integer} column number
    */
   //------------------------------------------------------------------------------------------------------------------
@@ -82,7 +82,7 @@ var Utility=new (function(){
   //------------------------------------------------------------------------------------------------------------------
   //END  -- converts column letter to column number
   //------------------------------------------------------------------------------------------------------------------
-  
+
   //-----------------------------------------------------------------------------------------------------------------
   /**
    * FIND A VALUE INTO A ROW OF A SPECIFIC RANGE
@@ -106,7 +106,7 @@ var Utility=new (function(){
   //------------------------------------------------------------------------------------------------------------------
   //END  -- THIS FIND A VALUE INTO A ROW OF A SPECIFIC RANGE
   //------------------------------------------------------------------------------------------------------------------
-  
+
   //-----------------------------------------------------------------------------------------------------------------
   /**
    * FIND A VALUE INTO A ROW OF A SPECIFIC RANGE
@@ -200,6 +200,7 @@ var Utility=new (function(){
   apiKey=Config.apiKey;
   countryCell=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange(Config.Sheet.countryCell).getValue();
   datasourceCell=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange(Config.Sheet.datasourceCell).getValue();
+  devMode=Config.devMode;
   var html = HtmlService.createTemplateFromFile('amisMenu')
       .evaluate()
       .setTitle('Amis')
@@ -467,5 +468,23 @@ var Utility=new (function(){
   this.include=function(filename) {
     return HtmlService.createTemplateFromFile(filename).evaluate().getContent();
   };
+
+
+  /**
+   * sends a debug email message
+   * @param  {string} message debug info to send
+   */
+  this.sendErrorEmails=function(message) {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet=ss.getActiveSheet();
+    var title="Error message in spreadsheet "+ss.getName();
+    message="Error in sheet:"+sheet.getName()+"\n\n"+
+        "getActiveCell().getA1Notation():"+sheet.getActiveCell().getA1Notation()+"\n\n"+
+        "Session.getActiveUser().getEmail():"+Session.getActiveUser().getEmail()+"\n\n"+
+        "FirebaseConnector.getToken():"+FirebaseConnector.getToken()+"\n\n"+
+        "message:"+message+"\n\n";
+    MailApp.sendEmail(Config.errorEmail, title, message);
+    };
+
 
 });
