@@ -146,11 +146,12 @@ var ProtectionMaker=new function(){
     var activeCell=e.range;
     
     //get the letter of current column edited
-    var currentColumn = activeCell.getA1Notation().charAt(0);
+    var currentColumn = Utility.numToChar(activeCell.getColumn());
+    
     //Browser.msgBox(activeCell.getA1Notation().charAt(0))
     
     var currentRangeColumn = currentColumn+ ':'+ currentColumn;
-    
+    Browser.msgBox(currentRangeColumn)
     //A:A contain the safe style and the script rebuild that style
     sheet.getRange('A:A').copyTo(sheet.getRange(currentRangeColumn), {formatOnly:true});
     
