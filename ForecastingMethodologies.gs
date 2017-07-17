@@ -7,14 +7,14 @@ var ForecastingMethodologies = new( function() {
 	 * path firebase where configuration is stored
 	 * @type {String}
 	 */
-	var fbPath = "config/forecastingMethodologies/argentina";
+	var fbPath = "config/forecastingMethodologies/";
 
 	/**
 	 * get the path firebase where configuration is stored
 	 * @return {string} the path
 	 */
 	var getFbConfigPath = function() {
-		return fbPath;
+		return fbPath+FirebaseConnector.getCountryNameFromSheet();
 	};
 
 
