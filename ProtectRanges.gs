@@ -16,9 +16,25 @@ var ProtectRanges=new function(){
    * SET LAST DATE WHEN UPDATING A CELL
    * @param  {event}  you must call it from OnEdit function and pass 'e' event object
    */
-    this.protectCell = function(userToken){ 	  
-      var rangeFromConfigNotParsed = FirebaseConnector.getFireBaseData('config/rangeToBeProtected/argentina',userToken);
-      var rangeFromConfig=JSON.parse(rangeFromConfigNotParsed);	   
+    this.protectCell = function(userToken){
+      var rangeFromConfigNotParsedStd = FirebaseConnector.getFireBaseData('config/rangeToBeProtected/argentina',FirebaseConnector.getToken());      
+      //get from firebase the formulas to be protected
+      var a=JSON.parse(rangeFromConfigNotParsedStd);	
+      
+      //get for frc 16-17
+      var rangeFromConfigNotParsed16_17 = FirebaseConnector.getFireBaseData('config/rangeToBeProtected16-17/argentina',FirebaseConnector.getToken());      
+      var b=JSON.parse(rangeFromConfigNotParsed16_17);	
+      
+      //get for frc 17-18
+      var rangeFromConfigNotParsed17_18 = FirebaseConnector.getFireBaseData('config/rangeToBeProtected17-18/argentina',FirebaseConnector.getToken());      
+      var c=JSON.parse(rangeFromConfigNotParsed17_18);
+      
+      //set the final ranges
+      var rangeFromConfig = a.concat(b.concat(c));
+      //create the final ranges string to be stored into session
+      var rangeFromConfigNotParsed = rangeFromConfigNotParsedStd.replace(']',',')+rangeFromConfigNotParsed16_17.substring(1, rangeFromConfigNotParsed16_17.length-1)+rangeFromConfigNotParsed17_18.replace('[',',')
+      
+      Browser.msgBox(rangeFromConfig);
       
       //store into session the ranges to be protected
       PropertiesService.getUserProperties().setProperty("rangeProtected",rangeFromConfigNotParsed);
@@ -45,8 +61,7 @@ var ProtectRanges=new function(){
   }
   
   this.checkIfValueIsNotProtected = function (e) {    
-    //THIS AVOID PROBLEMS IN CASE SOMEBODY COPY AND PASTE VALUES FROM A CELL WITH VALIDATION
-    e.range.setDataValidation(null);
+    
     
     var sheet = SpreadsheetApp.getActiveSpreadsheet();
     var activeCell=e.range;
@@ -57,7 +72,8 @@ var ProtectRanges=new function(){
       
       //if a protected cell is update
       if(Utility.isInRange(rangesProtectedStored[i], activeCell)){        
-
+        //THIS AVOID PROBLEMS IN CASE SOMEBODY COPY AND PASTE VALUES FROM A CELL WITH VALIDATION
+        e.range.setDataValidation(null);
         //get old values
         var oldValues= JSON.parse(PropertiesService.getUserProperties().getProperty(rangesProtectedStored[i]));        
         //restore old values
