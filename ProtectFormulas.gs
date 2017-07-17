@@ -124,7 +124,7 @@ var ProtectFormulas=new function(){
       
     }
     if(canWrite){      
-       Browser.msgBox('ok_prtformuls');
+      
       //rebuild Style form current column
       ProtectionMaker.checkIfValueIsNotProtected(e);
       //rebuild conditional formatting
@@ -134,7 +134,7 @@ var ProtectFormulas=new function(){
       ForecastUtility.checkIfValueIsNotProtected(e);
        
     }else{
-      Browser.msgBox('KO__FROMS')
+      
     }
     
         
