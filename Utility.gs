@@ -242,140 +242,140 @@ var Utility=new (function(){
   //------------------------------------------------------------------------------------------------------------------
   // END --  get GoogleSheetID
   //------------------------------------------------------------------------------------------------------------------
-  
+
   //------------------------------------------------------------------------------------------------------------------
   /**
    * apply conditional formatting and color the cell when it is required
-   * @params {e} ON EDIT params   
+   * @params {e} ON EDIT params
    */
   //------------------------------------------------------------------------------------------------------------------
   this.applyConditionalFormatting= function(e){
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
     var activeCell=e.range;
     var columnsEdited = Utility.numToChar(activeCell.getColumn());
-    
+
     //TODO _ move it to firebase / session ?
     //                     0    1   2   3   4   5   6   7   8     9   10   11   12   13   14  15   16  17
     var interestedRows  = [12 ,16 ,40 ,41, 42, 43, 44 ,49 , 48 , 50 , 51 , 52 , 53 , 54 , 55, 29 , 30, 31 ];
-    
-    //valore assoluto C43 - (C12/C41) 
+
+    //valore assoluto C43 - (C12/C41)
     var operation = Math.abs(parseFloat(sheet.getRange(columnsEdited+interestedRows[5]).getValue()) - ( parseFloat(sheet.getRange(columnsEdited+interestedRows[0]).getValue()) / parseFloat(sheet.getRange(columnsEdited+interestedRows[3]).getValue()) ));
     //valore assoluto ASS(C44-1000*C16/C40)
     var operation2 = Math.abs(parseFloat(sheet.getRange(columnsEdited+interestedRows[6]).getValue()) - ( 1000 * parseFloat(sheet.getRange(columnsEdited+interestedRows[1]).getValue()) / parseFloat(sheet.getRange(columnsEdited+interestedRows[2]).getValue()) ));
-    //sum 48 50 52 
+    //sum 48 50 52
     var operation3 = parseFloat(sheet.getRange(columnsEdited+interestedRows[8]).getValue()) + parseFloat(sheet.getRange(columnsEdited+interestedRows[9]).getValue()) +parseFloat(sheet.getRange(columnsEdited+interestedRows[11]).getValue());
-    //sum 48 50 52 
-    var operation4 = parseFloat(sheet.getRange(columnsEdited+interestedRows[7]).getValue()) + parseFloat(sheet.getRange(columnsEdited+interestedRows[10]).getValue()) +parseFloat(sheet.getRange(columnsEdited+interestedRows[12]).getValue());        
-    
+    //sum 48 50 52
+    var operation4 = parseFloat(sheet.getRange(columnsEdited+interestedRows[7]).getValue()) + parseFloat(sheet.getRange(columnsEdited+interestedRows[10]).getValue()) +parseFloat(sheet.getRange(columnsEdited+interestedRows[12]).getValue());
+
     //condition formatting number one and two
-    if ( parseFloat(sheet.getRange(columnsEdited+interestedRows[17]).getValue()) != 0) {      
-      
+    if ( parseFloat(sheet.getRange(columnsEdited+interestedRows[17]).getValue()) != 0) {
+
       //set cell 31
       sheet.getRange(columnsEdited+interestedRows[17]).setFontColor('#ff0000');
-      sheet.getRange(columnsEdited+interestedRows[17]).setBackground('#d8d8d8'); 
-      sheet.getRange(columnsEdited+interestedRows[17]).setNumberFormat('0');       
-      
+      sheet.getRange(columnsEdited+interestedRows[17]).setBackground('#d8d8d8');
+      sheet.getRange(columnsEdited+interestedRows[17]).setNumberFormat('0');
+
     }else {
       //set cell 41
       sheet.getRange(columnsEdited+interestedRows[17]).setFontColor('#000000');
-      sheet.getRange(columnsEdited+interestedRows[17]).setBackground('#d8d8d8'); 
-      sheet.getRange(columnsEdited+interestedRows[17]).setNumberFormat('0');       
+      sheet.getRange(columnsEdited+interestedRows[17]).setBackground('#d8d8d8');
+      sheet.getRange(columnsEdited+interestedRows[17]).setNumberFormat('0');
     }
-    
+
     //condition formatting number one and two
     if ( sheet.getRange(columnsEdited+interestedRows[4]).getValue() != '' &&  parseFloat(sheet.getRange(columnsEdited+interestedRows[3]).getValue()) > parseFloat(sheet.getRange(columnsEdited+interestedRows[4]).getValue())  ) {
-      
+
       //set cell 41
       sheet.getRange(columnsEdited+interestedRows[3]).setFontColor('#ff0000');
-      sheet.getRange(columnsEdited+interestedRows[3]).setBackground('#ffffff'); 
-      sheet.getRange(columnsEdited+interestedRows[3]).setNumberFormat('0'); 
+      sheet.getRange(columnsEdited+interestedRows[3]).setBackground('#ffffff');
+      sheet.getRange(columnsEdited+interestedRows[3]).setNumberFormat('0');
       //set cell 42
       sheet.getRange(columnsEdited+interestedRows[4]).setFontColor('#ff0000');
-      sheet.getRange(columnsEdited+interestedRows[4]).setBackground('#ffffff'); 
-      sheet.getRange(columnsEdited+interestedRows[4]).setNumberFormat('0'); 
-      
+      sheet.getRange(columnsEdited+interestedRows[4]).setBackground('#ffffff');
+      sheet.getRange(columnsEdited+interestedRows[4]).setNumberFormat('0');
+
     }else {
       //set cell 41
       sheet.getRange(columnsEdited+interestedRows[3]).setFontColor('#000000');
-      sheet.getRange(columnsEdited+interestedRows[3]).setBackground('#ffffff'); 
-      sheet.getRange(columnsEdited+interestedRows[3]).setNumberFormat('0'); 
+      sheet.getRange(columnsEdited+interestedRows[3]).setBackground('#ffffff');
+      sheet.getRange(columnsEdited+interestedRows[3]).setNumberFormat('0');
       //set cell 42
       sheet.getRange(columnsEdited+interestedRows[4]).setFontColor('#000000');
-      sheet.getRange(columnsEdited+interestedRows[4]).setBackground('#ffffff'); 
-      sheet.getRange(columnsEdited+interestedRows[4]).setNumberFormat('0'); 
-    }      
-    
-    //condition formatting number three 
-    if ( operation > 0.1 && sheet.getRange(columnsEdited+interestedRows[0]).getValue() != '' && sheet.getRange(columnsEdited+interestedRows[3]).getValue() != '' ) {  
+      sheet.getRange(columnsEdited+interestedRows[4]).setBackground('#ffffff');
+      sheet.getRange(columnsEdited+interestedRows[4]).setNumberFormat('0');
+    }
+
+    //condition formatting number three
+    if ( operation > 0.1 && sheet.getRange(columnsEdited+interestedRows[0]).getValue() != '' && sheet.getRange(columnsEdited+interestedRows[3]).getValue() != '' ) {
       //set cell 43
       sheet.getRange(columnsEdited+interestedRows[5]).setFontColor('#ff0000');
-      sheet.getRange(columnsEdited+interestedRows[5]).setBackground('#d8d8d8'); 
-      sheet.getRange(columnsEdited+interestedRows[5]).setNumberFormat('0.00'); 
+      sheet.getRange(columnsEdited+interestedRows[5]).setBackground('#d8d8d8');
+      sheet.getRange(columnsEdited+interestedRows[5]).setNumberFormat('0.00');
     }else {
      //set cell 43
      sheet.getRange(columnsEdited+interestedRows[5]).setFontColor('#000000');
-     sheet.getRange(columnsEdited+interestedRows[5]).setBackground('#d8d8d8'); 
-     sheet.getRange(columnsEdited+interestedRows[5]).setNumberFormat('0.00'); 
+     sheet.getRange(columnsEdited+interestedRows[5]).setBackground('#d8d8d8');
+     sheet.getRange(columnsEdited+interestedRows[5]).setNumberFormat('0.00');
    }
-    
-    //condition formatting number four 
-    if ( operation2 > 0.1 && sheet.getRange(columnsEdited+interestedRows[1]).getValue() != '' && sheet.getRange(columnsEdited+interestedRows[2]).getValue() != '' ) {  
+
+    //condition formatting number four
+    if ( operation2 > 0.1 && sheet.getRange(columnsEdited+interestedRows[1]).getValue() != '' && sheet.getRange(columnsEdited+interestedRows[2]).getValue() != '' ) {
       //set cell 44
       sheet.getRange(columnsEdited+interestedRows[6]).setFontColor('#ff0000');
-      sheet.getRange(columnsEdited+interestedRows[6]).setBackground('#d8d8d8'); 
-      sheet.getRange(columnsEdited+interestedRows[6]).setNumberFormat('0.00'); 
+      sheet.getRange(columnsEdited+interestedRows[6]).setBackground('#d8d8d8');
+      sheet.getRange(columnsEdited+interestedRows[6]).setNumberFormat('0.00');
     }else {
       //set cell 44
       sheet.getRange(columnsEdited+interestedRows[6]).setFontColor('#000000');
-      sheet.getRange(columnsEdited+interestedRows[6]).setBackground('#d8d8d8'); 
-      sheet.getRange(columnsEdited+interestedRows[6]).setNumberFormat('0.00'); 
+      sheet.getRange(columnsEdited+interestedRows[6]).setBackground('#d8d8d8');
+      sheet.getRange(columnsEdited+interestedRows[6]).setNumberFormat('0.00');
     }
-     
+
     //condtion formatting number 5
-    if ( sheet.getRange(columnsEdited+interestedRows[13]).getValue() != '' && ( sheet.getRange(columnsEdited+interestedRows[8]).getValue() != '' && sheet.getRange(columnsEdited+interestedRows[9]).getValue() != '' && sheet.getRange(columnsEdited+interestedRows[11]).getValue() != '') && operation3 > parseFloat(sheet.getRange(columnsEdited+interestedRows[13]).getValue())  ) {  
+    if ( sheet.getRange(columnsEdited+interestedRows[13]).getValue() != '' && ( sheet.getRange(columnsEdited+interestedRows[8]).getValue() != '' && sheet.getRange(columnsEdited+interestedRows[9]).getValue() != '' && sheet.getRange(columnsEdited+interestedRows[11]).getValue() != '') && operation3 > parseFloat(sheet.getRange(columnsEdited+interestedRows[13]).getValue())  ) {
       //set cell 54
       sheet.getRange(columnsEdited+interestedRows[13]).setFontColor('#ff0000');
-      sheet.getRange(columnsEdited+interestedRows[13]).setBackground('#d8d8d8'); 
-      sheet.getRange(columnsEdited+interestedRows[14]).setNumberFormat('0'); 
+      sheet.getRange(columnsEdited+interestedRows[13]).setBackground('#d8d8d8');
+      sheet.getRange(columnsEdited+interestedRows[14]).setNumberFormat('0');
     }else {
       //set cell 54
       sheet.getRange(columnsEdited+interestedRows[13]).setFontColor('#000000');
-      sheet.getRange(columnsEdited+interestedRows[13]).setBackground('#d8d8d8'); 
-      sheet.getRange(columnsEdited+interestedRows[14]).setNumberFormat('0'); 
-    }    
-    
+      sheet.getRange(columnsEdited+interestedRows[13]).setBackground('#d8d8d8');
+      sheet.getRange(columnsEdited+interestedRows[14]).setNumberFormat('0');
+    }
+
      //condtion formatting number 6
-    if ( sheet.getRange(columnsEdited+interestedRows[14]).getValue() != '' && ( sheet.getRange(columnsEdited+interestedRows[7]).getValue() != '' && sheet.getRange(columnsEdited+interestedRows[10]).getValue() != '' && sheet.getRange(columnsEdited+interestedRows[12]).getValue() != '') && operation4 > parseFloat(sheet.getRange(columnsEdited+interestedRows[14]).getValue())  ) {  
+    if ( sheet.getRange(columnsEdited+interestedRows[14]).getValue() != '' && ( sheet.getRange(columnsEdited+interestedRows[7]).getValue() != '' && sheet.getRange(columnsEdited+interestedRows[10]).getValue() != '' && sheet.getRange(columnsEdited+interestedRows[12]).getValue() != '') && operation4 > parseFloat(sheet.getRange(columnsEdited+interestedRows[14]).getValue())  ) {
       //set cell 55
       sheet.getRange(columnsEdited+interestedRows[14]).setFontColor('#ff0000');
-      sheet.getRange(columnsEdited+interestedRows[14]).setBackground('#d8d8d8'); 
-      sheet.getRange(columnsEdited+interestedRows[14]).setNumberFormat('0.00'); 
+      sheet.getRange(columnsEdited+interestedRows[14]).setBackground('#d8d8d8');
+      sheet.getRange(columnsEdited+interestedRows[14]).setNumberFormat('0.00');
     }else {
       //set cell 55
       sheet.getRange(columnsEdited+interestedRows[14]).setFontColor('#000000');
-      sheet.getRange(columnsEdited+interestedRows[14]).setBackground('#d8d8d8'); 
-      sheet.getRange(columnsEdited+interestedRows[14]).setNumberFormat('0'); 
+      sheet.getRange(columnsEdited+interestedRows[14]).setBackground('#d8d8d8');
+      sheet.getRange(columnsEdited+interestedRows[14]).setNumberFormat('0');
     }
     //condition formatting number 7
-    
-    if (parseFloat(sheet.getRange(columnsEdited+interestedRows[16]).getValue())  > parseFloat(sheet.getRange(columnsEdited+interestedRows[15]).getValue())  ) {  
+
+    if (parseFloat(sheet.getRange(columnsEdited+interestedRows[16]).getValue())  > parseFloat(sheet.getRange(columnsEdited+interestedRows[15]).getValue())  ) {
       //set cell 30
       sheet.getRange(columnsEdited+interestedRows[16]).setFontColor('#ff0000');
-      sheet.getRange(columnsEdited+interestedRows[4]).setBackground('#ffffff'); 
-      sheet.getRange(columnsEdited+interestedRows[16]).setNumberFormat('0'); 
+      sheet.getRange(columnsEdited+interestedRows[4]).setBackground('#ffffff');
+      sheet.getRange(columnsEdited+interestedRows[16]).setNumberFormat('0');
     }else {
       //set cell 30
       sheet.getRange(columnsEdited+interestedRows[16]).setFontColor('#000000');
-      sheet.getRange(columnsEdited+interestedRows[4]).setBackground('#ffffff');  
-      sheet.getRange(columnsEdited+interestedRows[16]).setNumberFormat('0'); 
+      sheet.getRange(columnsEdited+interestedRows[4]).setBackground('#ffffff');
+      sheet.getRange(columnsEdited+interestedRows[16]).setNumberFormat('0');
     }
-    
-    
+
+
   }
   //------------------------------------------------------------------------------------------------------------------
   // END -- apply conditional formatting and color the cell when it is required
   //------------------------------------------------------------------------------------------------------------------
-  
+
 
   this.noNegativeValue=function(){
     //Get the currently active sheet
@@ -484,6 +484,14 @@ var Utility=new (function(){
         "FirebaseConnector.getToken():"+FirebaseConnector.getToken()+"\n\n"+
         "message:"+message+"\n\n";
     MailApp.sendEmail(Config.errorEmail, title, message);
+    };
+
+    /**
+     * check if the current spreadsheet is Master
+     * @return {bool} true if master, false otherwise
+     */
+    this.isMaster = function() {
+      return ~SpreadsheetApp.getActiveSpreadsheet().getName().indexOf(Config.masterSpreadSheetNameKeyword);
     };
 
 

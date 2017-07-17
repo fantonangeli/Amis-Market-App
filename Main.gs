@@ -4,7 +4,7 @@ function onOpen() {
 
   //create Amis menu
   Utility.createAmisMenu();
-  
+
   //alert for amis menu
   Browser.msgBox('To Open AMIS click on "AMIS" in the menu');
 
@@ -23,7 +23,7 @@ function onEdit(e){
 
   //this apply conditional formatting
   Utility.applyConditionalFormatting(e);
-  
+
   ForecastingMethodologies.onEdit(e);
 
   //it set the last date when updating particular column (data entry column)
@@ -39,6 +39,10 @@ function onEdit(e){
  * onLogin  event
  */
 function onLogin(){
+    if (Utility.isMaster()) {
+      return;
+    }
+
     ForecastingMethodologies.getConfig(true);
 }
 
@@ -51,7 +55,7 @@ function protectSheet(userToken){
     ProtectRanges.protectCell(userToken);
     ProtectFormulas.protectCell(userToken);
     LastDateUpdater.protectCell(userToken);
-    
+
   }
-  
+
 }
