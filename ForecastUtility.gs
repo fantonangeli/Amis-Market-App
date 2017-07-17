@@ -43,9 +43,14 @@ var ForecastUtility=new function(){
           FirebaseConnector.writeOnFirebase(Utility.numToChar(firstForecastColumnPosition+1), beginForeCast, userToken);          
           
           //MOVE PROTECTED FORMULAS FRC 17-18
-          SyncMasterSheet.moveProtectedFormulasCols17_18(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1,1);
+          //SyncMasterSheet.moveProtectedFormulasCols17_18(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1,1);
+          
           //MOVE RANGE TO BE STORED FRC 17-18
           SyncMasterSheet.moveRangeToBeStored17_18(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1,1);
+          
+          //MOVE RANGE TO BE PROTECTED FRC 17-18
+          SyncMasterSheet.moveRangeToBeProtected17_18(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1,1);
+          
         }else{
           FirebaseConnector.writeOnFirebase(Utility.numToChar(newForecastColumnPosition+1), lastForeCast, userToken);          
           
@@ -60,9 +65,14 @@ var ForecastUtility=new function(){
           ForecastUtility.writeFormulasForNewForecasts(userToken, newForecastColumnPosition+1);
           
           //MOVE PROTECTED FORMULAS  FRC 16-17
-          SyncMasterSheet.moveProtectedFormulasCols16_17(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1);
+          //SyncMasterSheet.moveProtectedFormulasCols16_17(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1);
+          
           //MOVE RANGE TO BE STORED  FRC 16-17
           SyncMasterSheet.moveRangeToBeStored16_17(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1);
+          
+          //MOVE RANGE TO BE STORED  FRC 16-17
+          SyncMasterSheet.moveRangeToBeProtected16_17(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1);
+          
           
           //retrive the row where write the new label
           var labelRowNumberNode = 'config/addForecast/labelRowNumber';
@@ -132,9 +142,14 @@ var ForecastUtility=new function(){
     FirebaseConnector.writeOnFirebase(Utility.numToChar(newForecastColumnPosition+1), lastForeCast, userToken);      
     
     //MOVE PROTECTED FORMULAS FRC 17-18
-    SyncMasterSheet.moveProtectedFormulasCols17_18(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1,0);
+    //SyncMasterSheet.moveProtectedFormulasCols17_18(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1,0);
+   
     //MOVE RANGE TO BE STORED FRC 17-18
     SyncMasterSheet.moveRangeToBeStored17_18(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1,0);
+    
+    //MOVE RANGE TO BE PROTECTED FRC 17-18
+    SyncMasterSheet.moveRangeToBeProtected17_18(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1,0);
+    
     
     //get the A1 notation for the column
     var columnLetter = Utility.numToChar(newForecastColumnPosition+1);    
@@ -463,6 +478,66 @@ var ForecastUtility=new function(){
 			userToken
 		);
     
+  }
+
+  
+  this.protectCell = function(userToken){ 	  
+    var rangeFromConfigNotParsed = FirebaseConnector.getFireBaseData('config/addForecastFormulas/argentina',userToken);
+    var rangeFromConfig=JSON.parse(rangeFromConfigNotParsed);	   
+    
+    //store into session the ranges to be protected
+    PropertiesService.getUserProperties().setProperty("rulesForFormulas",rangeFromConfigNotParsed);
+
+    
+  }
+  
+  //rebuild the 
+  this.checkIfValueIsNotProtected = function (e) {    
+    var activeCell=e.range;
+    
+    //get the letter of current column edited
+    var columnPositionLetter = activeCell.getA1Notation().charAt(0);
+    
+    var formulasProperties = JSON.parse(PropertiesService.getUserProperties().getProperty("rulesForFormulas"));
+    //Browser.msgBox(rangesProtectedStored);
+    
+    //call rebuild formulas
+    ForecastUtility.rebuildFormulas(formulasProperties, columnPositionLetter);    
+    
+  }
+  
+  this.rebuildFormulas = function(formulasProperties, columnPositionLetter) {
+    var addForecastFormulas = formulasProperties;
+    var newForecastColumnPositionLetter = columnPositionLetter;
+    
+    var sheet = SpreadsheetApp.getActiveSpreadsheet();    
+    
+    for (var forecastFormulas in addForecastFormulas) {
+      var splitted = forecastFormulas.split(':')[0];
+      //Browser.msgBox(addForecastFormulas[forecastFormulas].formula);  
+      
+      //get the formula with string to be replaced (eg. _1 )
+      var finalFormula =addForecastFormulas[forecastFormulas].formula;
+      
+      //loop over "replacer" node. It allow to calculate the row position of the cell
+      for (var i=0; i<addForecastFormulas[forecastFormulas].replacer.length;i++){
+        
+        //sum the row with the content of replecer
+        var newValue = newForecastColumnPositionLetter+ (parseInt(splitted)+addForecastFormulas[forecastFormulas].replacer[i]);
+        
+        //replace loop for all the occurences
+        finalFormula= finalFormula.split('_'+(i+1)).join(newValue);
+        
+        //build the cell  (eg if we have newForecastColumnPositionLetter="AA" and  forecastFormulas="10:10"" IT BECOMES AA10 )
+        var cellForNewFormula = newForecastColumnPositionLetter+splitted;
+        
+        //set the new formula
+        sheet.getRange(cellForNewFormula).setFormula(finalFormula);
+        
+        
+      }
+      
+    }
   }
   
 }
