@@ -30,9 +30,8 @@ function onEdit(e){
   ProtectRanges.checkIfValueIsNotProtected(e);
   //protected formulas and Backgruond color in the ranges store in firebase
   ProtectFormulas.checkIfValueIsNotProtected(e);
-
   if(!FirebaseConnector.getToken()){
-      ProtectSheet.onEdit();
+      ProtectSheet.onEdit(e);
   }
 
 }

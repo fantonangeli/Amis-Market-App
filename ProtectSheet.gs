@@ -36,14 +36,15 @@ var ProtectSheet=new function(){
 	   var cloneSheet = ss.getSheetByName(sheet.getName()+hiddenSuffix);
 	   var cell = sheet.getActiveCell();
 	   var editRange = e.range;
-	   var cloneRange = cloneSheet.getRange(editRange.getA1Notation())
-	   var editCol = editRange.getColumn();
+	   var cloneRange = cloneSheet.getRange(editRange.getA1Notation());
+       var cloneFormula=cloneRange.getFormula();
 
 	   if(!cloneSheet ) return;
 
-	   if(e.oldValue){
-		  Browser.msgBox('old value is defined as ' + cloneRange.getFormula());
-		  e.range.setValue(cloneRange.getFormula());
+       if(cloneFormula){
+         e.range.setFormula(cloneFormula);
+       }else if(e.oldValue){
+		  e.range.setValue(cloneRange.getValue());
 	   } else {
 		  e.range.clear();
 	  }
