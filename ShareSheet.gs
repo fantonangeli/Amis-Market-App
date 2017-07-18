@@ -23,6 +23,8 @@ var ShareSheet=new function(){
 	  ShareSheet.storeSheetId(countryName, newFile.getId(), userToken)
 	  
 	  ShareSheet.shareSheet(newFile,countryAccount);
+      
+      Utility.toastInfo('Sheet created', 'Sheet created and shared');
 	  	  	  
     }else{
       //if it ALREADY EXISTS we simply have to share the existing google sheet
@@ -82,13 +84,10 @@ var ShareSheet=new function(){
 	  newfile.addEditor(countryAccount);
 	  
 	  //share the Amis Market Api TODO _ get it from firebase
-	  //DriveApp.getFileById('1OJQBydtovPhuO5-PwYdmzIe6977jVqcRuk3d3ZfvHCNWWWaLjpB8kLeg').addViewer(countryAccount);
+	  DriveApp.getFileById('1OJQBydtovPhuO5-PwYdmzIe6977jVqcRuk3d3ZfvHCNWWWaLjpB8kLeg').addViewer(countryAccount);
+    
 	  //my version of AMIS MARKET APP API
-      //DriveApp.getFileById('1N2dpVYeE8nmYNQg4KPz2nSkdyKb9Pl1SEw78VXte6p1dU5CrakltRB1d').addViewer(countryAccount);
-      //AMIS MARKET APP ID
-      DriveApp.getFileById('1OJQBydtovPhuO5-PwYdmzIe6977jVqcRuk3d3ZfvHCNWWWaLjpB8kLeg').addViewer(countryAccount);
-    
-    
+      //DriveApp.getFileById('1hxYNjnVdM7hSmjvaJeoiRV6EQuZki-7c1mHkOQ-USat5uUwOL3uc26EI').addViewer(countryAccount);    
   }
   //---------------------------------------------------------
   // END -- SHARE SHEET
