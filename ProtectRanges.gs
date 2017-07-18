@@ -52,7 +52,7 @@ var ProtectRanges=new function(){
       
       //store into session the ranges protected... 
       //KEY = protected range --- VALUE = the values of the protected range
-      PropertiesService.getUserProperties().setProperty(rangesProteced[i], JSON.stringify(val));      
+      PropertiesService.getUserProperties().setProperty(rangesProteced[i]+'_rangePtr', JSON.stringify(val));      
    
     }
     
@@ -68,12 +68,11 @@ var ProtectRanges=new function(){
       
       
       //if a protected cell is update
-      if(Utility.isInRange(rangesProtectedStored[i], activeCell)){   
-    
+      if(Utility.isInRange(rangesProtectedStored[i], activeCell)){        
         //THIS AVOID PROBLEMS IN CASE SOMEBODY COPY AND PASTE VALUES FROM A CELL WITH VALIDATION
         e.range.setDataValidation(null);
         //get old values
-        var oldValues= JSON.parse(PropertiesService.getUserProperties().getProperty(rangesProtectedStored[i]));        
+        var oldValues= JSON.parse(PropertiesService.getUserProperties().getProperty(rangesProtectedStored[i]+'_rangePtr'));                
         //restore old values
         sheet.getRange(rangesProtectedStored[i]).setValues(oldValues);        
       }

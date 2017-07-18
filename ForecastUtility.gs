@@ -94,6 +94,7 @@ var ForecastUtility=new function(){
       
       //refetch from firebase the configuration for forecastmetodologies    
       ForecastingMethodologies.getConfig(true);
+      //save all data
       SyncMasterSheet.startSync(userToken);
     }
     else {
@@ -117,64 +118,75 @@ var ForecastUtility=new function(){
   //------------------------------------------------------------------------------------------------------------------
   this.addForecast17_18= function(userToken){                
     
-    var periodChoosen = '17-18';
-    
-    var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);
-    var sheet = SpreadsheetApp.getActiveSpreadsheet();    
-    
-    //datanode from firebase
-    var lastForeCast = 'config/addForecast/'+countryName+'/'+periodChoosen+'/lastForecast';
-        
-    var newForecastColumnPosition = JSON.parse(FirebaseConnector.getFireBaseData(lastForeCast,userToken));    
-    
-    newForecastColumnPosition = Utility.letterToColumn(newForecastColumnPosition);    
-        
-    //datanode from firebase
-    var beginForeCast = 'config/addForecast/'+countryName+'/'+periodChoosen+'/firstForecast';
-    
-    var firstForecastColumnPosition = JSON.parse(FirebaseConnector.getFireBaseData(beginForeCast,userToken));
-    
-    firstForecastColumnPosition = Utility.letterToColumn(firstForecastColumnPosition);
-    
-    //datanode from firebase
-    var labelNode = 'config/addForecast/'+countryName+'/'+periodChoosen+'/label';    
-    var labelValue = JSON.parse(FirebaseConnector.getFireBaseData(labelNode,userToken));    
-    
-    // This inserts the new column
-    sheet.insertColumnsAfter(newForecastColumnPosition,1);        
-        
-    
-    //retrive the row where write the new label
-    var labelRowNumberNode = 'config/addForecast/labelRowNumber';
-    //in the database value is stored like range "9:9"... to get column number, i have to split
-    var labelRowNumber = JSON.parse(FirebaseConnector.getFireBaseData(labelRowNumberNode,userToken)).split(":")[0];
-    
-    //set the years of the forecast
-    var newCell = sheet.getActiveSheet().getRange(labelRowNumber,newForecastColumnPosition+1).setValue(labelValue);
-    
-    ForecastUtility.writeFormulasForNewForecasts(userToken, newForecastColumnPosition+1);
-    
-    FirebaseConnector.writeOnFirebase(Utility.numToChar(newForecastColumnPosition+1), lastForeCast, userToken);      
-    
-    //MOVE PROTECTED FORMULAS FRC 17-18
-    SyncMasterSheet.moveProtectedFormulasCols17_18(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1,0);
-   
-    //MOVE RANGE TO BE STORED FRC 17-18
-    SyncMasterSheet.moveRangeToBeStored17_18(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1,0);
-    
-    //MOVE RANGE TO BE PROTECTED FRC 17-18
-    SyncMasterSheet.moveRangeToBeProtected17_18(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1,0);
+    var userChoise = Browser.msgBox('Adding New Forecast', 'Adding a new Forecast will automatically save data. Do you want to proceed?', Browser.Buttons.YES_NO);        
     
     
-    //get the A1 notation for the column
-    var columnLetter = Utility.numToChar(newForecastColumnPosition+1);    
-    //move forecastMetodology column position on firebase (range as input)
-    ForecastingMethodologies.moveFMCols(columnLetter+':'+columnLetter,1);
-        
-    
-    //refetch from firebase the configuration for forecastmetodologies
-    ForecastingMethodologies.getConfig(true);
-    
+    // if user wants to add new FRC
+    if (userChoise == 'yes' || userChoise == 'si') { 
+      var periodChoosen = '17-18';
+      
+      var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);
+      var sheet = SpreadsheetApp.getActiveSpreadsheet();    
+      
+      //datanode from firebase
+      var lastForeCast = 'config/addForecast/'+countryName+'/'+periodChoosen+'/lastForecast';
+      
+      var newForecastColumnPosition = JSON.parse(FirebaseConnector.getFireBaseData(lastForeCast,userToken));    
+      
+      newForecastColumnPosition = Utility.letterToColumn(newForecastColumnPosition);    
+      
+      //datanode from firebase
+      var beginForeCast = 'config/addForecast/'+countryName+'/'+periodChoosen+'/firstForecast';
+      
+      var firstForecastColumnPosition = JSON.parse(FirebaseConnector.getFireBaseData(beginForeCast,userToken));
+      
+      firstForecastColumnPosition = Utility.letterToColumn(firstForecastColumnPosition);
+      
+      //datanode from firebase
+      var labelNode = 'config/addForecast/'+countryName+'/'+periodChoosen+'/label';    
+      var labelValue = JSON.parse(FirebaseConnector.getFireBaseData(labelNode,userToken));    
+      
+      // This inserts the new column
+      sheet.insertColumnsAfter(newForecastColumnPosition,1);        
+      
+      
+      //retrive the row where write the new label
+      var labelRowNumberNode = 'config/addForecast/labelRowNumber';
+      //in the database value is stored like range "9:9"... to get column number, i have to split
+      var labelRowNumber = JSON.parse(FirebaseConnector.getFireBaseData(labelRowNumberNode,userToken)).split(":")[0];
+      
+      //set the years of the forecast
+      var newCell = sheet.getActiveSheet().getRange(labelRowNumber,newForecastColumnPosition+1).setValue(labelValue);
+      
+      ForecastUtility.writeFormulasForNewForecasts(userToken, newForecastColumnPosition+1);
+      
+      FirebaseConnector.writeOnFirebase(Utility.numToChar(newForecastColumnPosition+1), lastForeCast, userToken);      
+      
+      //MOVE PROTECTED FORMULAS FRC 17-18
+      SyncMasterSheet.moveProtectedFormulasCols17_18(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1,1);
+      
+      //MOVE RANGE TO BE STORED FRC 17-18
+      SyncMasterSheet.moveRangeToBeStored17_18(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1,0);
+      
+      //MOVE RANGE TO BE PROTECTED FRC 17-18
+      SyncMasterSheet.moveRangeToBeProtected17_18(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1,0);
+      
+      
+      //get the A1 notation for the column
+      var columnLetter = Utility.numToChar(newForecastColumnPosition+1);    
+      //move forecastMetodology column position on firebase (range as input)
+      ForecastingMethodologies.moveFMCols(columnLetter+':'+columnLetter,1);
+      
+      
+      //refetch from firebase the configuration for forecastmetodologies
+      ForecastingMethodologies.getConfig(true);
+      //save all data
+      SyncMasterSheet.startSync(userToken);
+      
+    }
+    else{
+      //do nothing
+    }
     
   }
   //------------------------------------------------------------------------------------------------------------------
