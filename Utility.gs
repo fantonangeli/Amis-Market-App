@@ -491,7 +491,7 @@ var Utility=new (function(){
      * @return {bool} true if master, false otherwise
      */
     this.isMaster = function() {
-      return ~SpreadsheetApp.getActiveSpreadsheet().getName().indexOf(Config.masterSpreadSheetNameKeyword);
+      return SpreadsheetApp.getActiveSpreadsheet().getName().indexOf(Config.masterSpreadSheetNameKeyword)>0;
     };
 
 
