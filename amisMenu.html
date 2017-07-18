@@ -41,6 +41,12 @@
        </div>
    <br/>
    <br/>
+
+    <div class="" id="devToolbar" <?= (devMode)?"":"hidden" ?> >
+           <button onclick="loginWithGoogle()">loginWithGoogle()</button>
+           <button onclick="logout()">logout()</button>
+           <button onclick="console.clear()">console.clear</button>
+   </div>
    <!-- hidden part -->
     <div id="userActionsDiv" hidden class="container">
 
@@ -141,6 +147,10 @@
                     <select class="form-control" id="account">
                         <option value="">Choose an Account</option>
                         <option value="arg.national.amis@gmail.com">arg.national.amis@gmail.com</option>
+                        <? if (devMode) { ?>
+                            <option value="fabrizio.antonangeli@gmail.com">fabrizio.antonangeli@gmail.com</option>
+                            <option value="sabbadini.misael@gmail.com">sabbadini.misael@gmail.com</option>
+                        <? } ?>
                     </select>
                 </div>
             </div>

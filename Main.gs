@@ -4,7 +4,7 @@ function onOpen() {
 
   //create Amis menu
   Utility.createAmisMenu();
-  
+
   //alert for amis menu
   Browser.msgBox('To Open AMIS click on "AMIS" in the menu');
 
@@ -37,6 +37,10 @@ function onEdit(e){
  * onLogin  event
  */
 function onLogin(){
+    if (Utility.isMaster()) {
+      return;
+    }
+
     ForecastingMethodologies.getConfig(true);
 }
 
@@ -52,11 +56,10 @@ function protectSheet(userToken){
     ProtectFormulas.protectCell(userToken);
     
     LastDateUpdater.protectCell(userToken);
-    
     ProtectionMaker.protectCell(userToken);
     
     //store the rules for new formulas
     ForecastUtility.protectCell(userToken);
   }
-  
+
 }
