@@ -53,7 +53,7 @@ function protectSheet(userToken){
     
     LastDateUpdater.protectCell(userToken);
     
-    //ProtectionMaker.protectCell(userToken);
+    ProtectionMaker.protectCell(userToken);
     
     //store the rules for new formulas
     ForecastUtility.protectCell(userToken);

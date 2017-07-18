@@ -7,25 +7,32 @@ var ForecastUtility=new function(){
   //------------------------------------------------------------------------------------------------------------------
   this.addForecast16_17= function(userToken){
     
-    var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);
-    var sheet = SpreadsheetApp.getActiveSpreadsheet();
+    var userChoise = Browser.msgBox('Adding New Forecast', 'Adding a new Forecast will automatically save data. Do you want to proceed?', Browser.Buttons.YES_NO);        
     
-    //datanode from firebase
-    var periodsNode = 'config/addForecast/'+countryName;
     
-    var periodsData= JSON.parse(FirebaseConnector.getFireBaseData(periodsNode,userToken));
-    
+    // if user wants to add new FRC
+    if (userChoise == 'yes' || userChoise == 'si') {
+      
+      
+      var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);
+      var sheet = SpreadsheetApp.getActiveSpreadsheet();
+      
+      //datanode from firebase
+      var periodsNode = 'config/addForecast/'+countryName;
+      
+      var periodsData= JSON.parse(FirebaseConnector.getFireBaseData(periodsNode,userToken));
+      
       //I have to update also ALL other firebase configuration for all the other forecast
       for (var period in periodsData) {  
         
         var lastForeCast = 'config/addForecast/'+countryName+'/'+period+'/lastForecast';
-                
+        
         var newForecastColumnPosition = JSON.parse(FirebaseConnector.getFireBaseData(lastForeCast,userToken));        
         newForecastColumnPosition = Utility.letterToColumn(newForecastColumnPosition);      
         
         //datanode from firebase
         var beginForeCast = 'config/addForecast/'+countryName+'/'+period+'/firstForecast';
-                
+        
         var firstForecastColumnPosition = JSON.parse(FirebaseConnector.getFireBaseData(beginForeCast,userToken));
         firstForecastColumnPosition = Utility.letterToColumn(firstForecastColumnPosition);
         
@@ -82,11 +89,19 @@ var ForecastUtility=new function(){
           //set the years of the forecast
           var newCell = sheet.getActiveSheet().getRange(labelRowNumber,newForecastColumnPosition+1).setValue(labelValue);
         }
+        
+      }    
       
-    }    
-
-    //refetch from firebase the configuration for forecastmetodologies    
-    ForecastingMethodologies.getConfig(true);    
+      //refetch from firebase the configuration for forecastmetodologies    
+      ForecastingMethodologies.getConfig(true);
+      SyncMasterSheet.startSync(userToken);
+    }
+    else {
+      
+      //do nothing
+    }
+    
+    
     
   }
   //------------------------------------------------------------------------------------------------------------------

@@ -13,18 +13,18 @@ var ProtectionMaker=new function(){
 	
 
   /**
-   * SET LAST DATE WHEN UPDATING A CELL
+   * STORE THE ROWS TO BE RESTORED
    * @param  {event}  you must call it from OnEdit function and pass 'e' event object
    */
     this.protectCell = function(userToken){ 	  
-      var rangeFromConfigNotParsed = FirebaseConnector.getFireBaseData('config/protectionMaker/argentina',userToken);
+      var rangeFromConfigNotParsed = FirebaseConnector.getFireBaseData('config/restoreStyleRows/argentina',userToken);
       var rangeFromConfig=JSON.parse(rangeFromConfigNotParsed);	   
       
       //store into session the ranges to be protected
-      PropertiesService.getUserProperties().setProperty("rangeProtectionMaker",rangeFromConfigNotParsed);
+      PropertiesService.getUserProperties().setProperty("restoreStyleRows",rangeFromConfigNotParsed);
       
       //store into session the values of protected ranges
-      ProtectionMaker.storeLocalValuesFromRanges(rangeFromConfig);
+      //ProtectionMaker.storeLocalValuesFromRanges(rangeFromConfig);
       
     }
     
@@ -64,7 +64,7 @@ var ProtectionMaker=new function(){
     
   }
   
-  this.checkIfValueIsNotProtected = function (e) {    
+  this.checkIfValueIsNotProtected_OLD = function (e) {    
     
     
     var sheet = SpreadsheetApp.getActiveSpreadsheet();
@@ -146,16 +146,18 @@ var ProtectionMaker=new function(){
     var activeCell=e.range;
     
     //get the letter of current column edited
-    var currentColumn = Utility.numToChar(activeCell.getColumn());
+    var currentColumn = Utility.numToChar(activeCell.getColumn());                
     
-    //Browser.msgBox(activeCell.getA1Notation().charAt(0))
+    var restoreStyleRows = JSON.parse(PropertiesService.getUserProperties().getProperty('restoreStyleRows'));        
     
-    var currentRangeColumn = currentColumn+ ':'+ currentColumn;
-    //Browser.msgBox(currentRangeColumn)
+    for (var i=0; i<restoreStyleRows.length;i++){
+      
+      //it contains the first and the last row of the range to be style restored
+      var firstAndLastRowToBeRestored = restoreStyleRows[i].split('-');
     
-    //A:A contain the safe style and the script rebuild that style
-    sheet.getRange('A:A').copyTo(sheet.getRange(currentRangeColumn), {formatOnly:true});
-    
+      //A:A contain the safe style and the script rebuild that style
+      sheet.getRange('A'+firstAndLastRowToBeRestored[0]+':A'+firstAndLastRowToBeRestored[1]).copyTo(sheet.getRange(currentColumn+firstAndLastRowToBeRestored[0]+':'+currentColumn+firstAndLastRowToBeRestored[1]), {formatOnly:true});
+    }
     
   }
   

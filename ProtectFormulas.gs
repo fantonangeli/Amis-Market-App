@@ -124,14 +124,12 @@ var ProtectFormulas=new function(){
       
     }
     if(canWrite){      
-      
       //rebuild Style form current column
       ProtectionMaker.checkIfValueIsNotProtected(e);
-      //rebuild conditional formatting
-      Utility.applyConditionalFormatting(e);
-      
       //rebuild the formulas for current column
       ForecastUtility.checkIfValueIsNotProtected(e);
+      //rebuild conditional formatting
+      Utility.applyConditionalFormatting(e);
        
     }else{
       

@@ -158,7 +158,7 @@ var SyncMasterSheet=new function(){
        var orderInTheSheet = parseInt(FirebaseConnector.getFireBaseData(orderInTheSheetNode,userToken));
        
        //SOLVE CTRL+Z PROBLEMS. IF ANY and return the position where put the new column
-       newForecastColumnPosition =ForecastUtility.preventUndoConflictForNewForecast(newForecastColumnPosition,lastForeCast,userToken,orderInTheSheet,firstForecastColumnPosition,beginForeCast);       
+       //newForecastColumnPosition =ForecastUtility.preventUndoConflictForNewForecast(newForecastColumnPosition,lastForeCast,userToken,orderInTheSheet,firstForecastColumnPosition,beginForeCast);       
        
        //hide all the last forecast -- this.findeValueIntoRow(lastForeCast) is called again because moveNewForecastFinder moves that value
        ForecastUtility.hideOldForecasts(firstForecastColumnPosition, newForecastColumnPosition,2 );
@@ -287,7 +287,7 @@ var SyncMasterSheet=new function(){
 			r = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( fmRanges[ i ] );            
           //Browser.msgBox('ASSTL '+  r.getLastColumn());
 			if ( r.getLastColumn() >= movedColNum ) {              
-                r = r.offset( 0, 0, r.getNumRows() , r.getNumColumns()+1 );              
+                r = r.offset( 0, columnOffset );
 			}
 
 			newFmRanges.unshift( r.getA1Notation() );
