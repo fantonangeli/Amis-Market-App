@@ -32,9 +32,7 @@ var ProtectRanges=new function(){
       //set the final ranges
       var rangeFromConfig = a.concat(b.concat(c));
       //create the final ranges string to be stored into session
-      var rangeFromConfigNotParsed = rangeFromConfigNotParsedStd.replace(']',',')+rangeFromConfigNotParsed16_17.substring(1, rangeFromConfigNotParsed16_17.length-1)+rangeFromConfigNotParsed17_18.replace('[',',')
-      
-      Browser.msgBox(rangeFromConfig);
+      var rangeFromConfigNotParsed = rangeFromConfigNotParsedStd.replace(']',',')+rangeFromConfigNotParsed16_17.substring(1, rangeFromConfigNotParsed16_17.length-1)+rangeFromConfigNotParsed17_18.replace('[',',');
       
       //store into session the ranges to be protected
       PropertiesService.getUserProperties().setProperty("rangeProtected",rangeFromConfigNotParsed);
@@ -62,7 +60,6 @@ var ProtectRanges=new function(){
   
   this.checkIfValueIsNotProtected = function (e) {    
     
-    
     var sheet = SpreadsheetApp.getActiveSpreadsheet();
     var activeCell=e.range;
     var rangesProtectedStored = JSON.parse(PropertiesService.getUserProperties().getProperty("rangeProtected"));
@@ -71,7 +68,8 @@ var ProtectRanges=new function(){
       
       
       //if a protected cell is update
-      if(Utility.isInRange(rangesProtectedStored[i], activeCell)){        
+      if(Utility.isInRange(rangesProtectedStored[i], activeCell)){   
+    
         //THIS AVOID PROBLEMS IN CASE SOMEBODY COPY AND PASTE VALUES FROM A CELL WITH VALIDATION
         e.range.setDataValidation(null);
         //get old values

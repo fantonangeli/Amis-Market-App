@@ -40,7 +40,7 @@ var ProtectFormulas=new function(){
       PropertiesService.getUserProperties().setProperty("formulasProtected", rangeFromConfigNotParsed);
       
       //store into session the values of protected ranges
-      ProtectFormulas.storeLocalValuesFromRanges(rangeFromConfig);
+      //ProtectFormulas.storeLocalValuesFromRanges(rangeFromConfig);
       
     }
 	  
@@ -69,7 +69,7 @@ var ProtectFormulas=new function(){
     
   }
   
-  this.checkIfValueIsNotProtected = function (e) {    
+  this.checkIfValueIsNotProtected_Old = function (e) {    
 	  
     var sheet = SpreadsheetApp.getActiveSpreadsheet();
     var activeCell=e.range;
@@ -98,6 +98,42 @@ var ProtectFormulas=new function(){
         //set font size
         sheet.getRange(rangesProtectedStored[i]).setFontSize(10);
       }
+      
+    }
+    
+        
+  }
+  
+  
+  this.checkIfValueIsNotProtected = function (e) {    
+	  
+    var sheet = SpreadsheetApp.getActiveSpreadsheet();
+    var activeCell=e.range;
+    var rangesProtectedStored = JSON.parse(PropertiesService.getUserProperties().getProperty("formulasProtected"));
+    
+    //used after to determinate if set the last date or not
+    var canWrite = true;
+    
+    for (var i=0; i<rangesProtectedStored.length;i++){
+     
+      //if a protected cell is update
+      if(Utility.isInRange(rangesProtectedStored[i], activeCell)){        
+        //if the cell updated is in a protected range I CANT WRITE
+        canWrite = false;  
+      }
+      
+    }
+    if(canWrite){      
+      
+      //rebuild Style form current column
+      ProtectionMaker.checkIfValueIsNotProtected(e);
+      //rebuild conditional formatting
+      Utility.applyConditionalFormatting(e);
+      
+      //rebuild the formulas for current column
+      ForecastUtility.checkIfValueIsNotProtected(e);
+       
+    }else{
       
     }
     

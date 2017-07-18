@@ -21,27 +21,14 @@ function openSidebar(){
 
 function onEdit(e){
   
-  //this apply conditional formatting
-  //Utility.applyConditionalFormatting(e);
+  //this restore the styles and the formatting condition if necessary
+  ProtectFormulas.checkIfValueIsNotProtected(e);
+  
+  //this restore old values of protected areas
+  ProtectRanges.checkIfValueIsNotProtected(e);
   
   ForecastingMethodologies.onEdit(e);
-
-  //protected values in the ranges store in firebase  
-  //protected formulas and Backgruond color in the ranges store in firebase
-  //ProtectFormulas.checkIfValueIsNotProtected(e);
-  //ProtectionMaker.checkIfValueIsNotProtected(e);
   
-  //rebuild Style form current column
-  ProtectionMaker.checkIfValueIsNotProtected(e);
-  //rebuild the formulas for current column
-  ForecastUtility.checkIfValueIsNotProtected(e);
-  
-  //rebuild conditional formatting
-  Utility.applyConditionalFormatting(e);
-  
-  //protect the sheet
-  ProtectRanges.checkIfValueIsNotProtected(e);
-  //it set the last date when updating particular column (data entry column)  
   LastDateUpdater.onEditSetLastUpdateDate(FirebaseConnector.getToken(),e);
   
 }
@@ -61,8 +48,11 @@ function protectSheet(userToken){
   if(userToken){
     
     ProtectRanges.protectCell(userToken);
-    //ProtectFormulas.protectCell(userToken);
+    
+    ProtectFormulas.protectCell(userToken);
+    
     LastDateUpdater.protectCell(userToken);
+    
     //ProtectionMaker.protectCell(userToken);
     
     //store the rules for new formulas

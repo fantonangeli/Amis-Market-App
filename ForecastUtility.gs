@@ -43,7 +43,7 @@ var ForecastUtility=new function(){
           FirebaseConnector.writeOnFirebase(Utility.numToChar(firstForecastColumnPosition+1), beginForeCast, userToken);          
           
           //MOVE PROTECTED FORMULAS FRC 17-18
-          //SyncMasterSheet.moveProtectedFormulasCols17_18(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1,1);
+          SyncMasterSheet.moveProtectedFormulasCols17_18(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1,1);
           
           //MOVE RANGE TO BE STORED FRC 17-18
           SyncMasterSheet.moveRangeToBeStored17_18(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1,1);
@@ -65,7 +65,7 @@ var ForecastUtility=new function(){
           ForecastUtility.writeFormulasForNewForecasts(userToken, newForecastColumnPosition+1);
           
           //MOVE PROTECTED FORMULAS  FRC 16-17
-          //SyncMasterSheet.moveProtectedFormulasCols16_17(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1);
+          SyncMasterSheet.moveProtectedFormulasCols16_17(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1);
           
           //MOVE RANGE TO BE STORED  FRC 16-17
           SyncMasterSheet.moveRangeToBeStored16_17(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1);
@@ -142,7 +142,7 @@ var ForecastUtility=new function(){
     FirebaseConnector.writeOnFirebase(Utility.numToChar(newForecastColumnPosition+1), lastForeCast, userToken);      
     
     //MOVE PROTECTED FORMULAS FRC 17-18
-    //SyncMasterSheet.moveProtectedFormulasCols17_18(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1,0);
+    SyncMasterSheet.moveProtectedFormulasCols17_18(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1,0);
    
     //MOVE RANGE TO BE STORED FRC 17-18
     SyncMasterSheet.moveRangeToBeStored17_18(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1,0);
@@ -495,9 +495,9 @@ var ForecastUtility=new function(){
   this.checkIfValueIsNotProtected = function (e) {    
     var activeCell=e.range;
     
+    var columnPositionLetter = Utility.numToChar(activeCell.getColumn());
     //get the letter of current column edited
-    var columnPositionLetter = activeCell.getA1Notation().charAt(0);
-    
+        
     var formulasProperties = JSON.parse(PropertiesService.getUserProperties().getProperty("rulesForFormulas"));
     //Browser.msgBox(rangesProtectedStored);
     
@@ -514,6 +514,7 @@ var ForecastUtility=new function(){
     
     for (var forecastFormulas in addForecastFormulas) {
       var splitted = forecastFormulas.split(':')[0];
+      
       //Browser.msgBox(addForecastFormulas[forecastFormulas].formula);  
       
       //get the formula with string to be replaced (eg. _1 )
