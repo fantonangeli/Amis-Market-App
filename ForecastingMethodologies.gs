@@ -144,6 +144,12 @@ var ForecastingMethodologies = new( function() {
 	this.onEdit = function( e ) {
 		var activeCell = e.range,
 			activeCellVal;
+
+		//check if master
+		if (Utility.isMaster()) {
+		  return;
+		}
+
 		var fmRanges = this.getFMRanges();
 
 		if ( !fmRanges ) return;

@@ -34,6 +34,12 @@ var Config={
 	 * email address for errors informations
 	 * @type {String}
 	 */
-	errorEmail:"amis.outlook.fao@gmail.com"
+	errorEmail:"amis.outlook.fao@gmail.com",
+
+	/**
+	 * the keyword to recognize the master spreadsheet by the filename
+	 * @type {String}
+	 */
+	masterKeyword:"MASTER"
 
 };
