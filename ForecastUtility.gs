@@ -1,4 +1,58 @@
 var ForecastUtility=new function(){
+
+
+    /**
+     * gets the periods data from firebase
+     * @return {object} the data
+     */
+    this.getPeriodsData = function() {
+        //   var countryName, periodsNode, userToken;
+        //   userToken = FirebaseConnector.getToken();
+        //   countryName = FirebaseConnector.getCountryNameFromSheet(userToken);
+        //   periodsNode = 'config/addForecast/' + countryName;
+        //   return JSON.parse(FirebaseConnector.getFireBaseData(periodsNode, userToken));
+        return JSON.parse(PropertiesService.getUserProperties().getProperty("addForecastConfig"));
+    };
+
+
+    /**
+     * check if the cell is the lastForecast, the forecastMetodology or the notes of any period
+     * @param  {object} cell the cell to check
+     * @return {bool}      true if one of that colums, false otherwise
+     */
+    this.isEndOfPeriod = function(cell) {
+      var cellPos, currLastForecastPos, period, periodsData;
+      periodsData=this.getPeriodsData();
+      cellPos = cell.getColumn();
+      for (period in periodsData) {
+        currLastForecastPos = Utility.letterToColumn(periodsData[period].lastForecast);
+        if (currLastForecastPos <= cellPos && cellPos <= (currLastForecastPos + 2)) {
+          return true;
+        }
+      }
+      return false;
+    };
+
+
+    /**
+     * udate date of the last 3 date columns of the period of the current cell
+     * @param  {object} cell               the cell
+     * @param  {number} lastDateUpdaterRow row number of the date row
+     */
+    this.updateDataOfEndOfPeriod = function(cell,lastDateUpdaterRow) {
+      var cellPos, currLastForecastPos, period, periodsData, dataCells;
+      periodsData=this.getPeriodsData();
+      cellPos = cell.getColumn();
+      for (period in periodsData) {
+        currLastForecastPos = Utility.letterToColumn(periodsData[period].lastForecast);
+        if (currLastForecastPos <= cellPos && cellPos <= (currLastForecastPos + 2)) {
+          dataCells=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange(lastDateUpdaterRow, currLastForecastPos, 1, 3);
+          dataCells.setValue(new Date());
+        }
+      }
+    };
+
+
   //------------------------------------------------------------------------------------------------------------------
   /**
 	 * ADD A NEW FORECAST on the google sheet	 
