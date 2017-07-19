@@ -20,19 +20,17 @@ function openSidebar(){
 }
 
 function onEdit(e){
-
-  //this apply conditional formatting
-  Utility.applyConditionalFormatting(e);
-
-  ForecastingMethodologies.onEdit(e);
-
-  //it set the last date when updating particular column (data entry column)
-  LastDateUpdater.onEditSetLastUpdateDate(FirebaseConnector.getToken(),e);
-
-  //protected values in the ranges store in firebase
-  ProtectRanges.checkIfValueIsNotProtected(e);
-  //protected formulas and Backgruond color in the ranges store in firebase
+  
+  //this restore the styles and the formatting condition if necessary
   ProtectFormulas.checkIfValueIsNotProtected(e);
+  
+  //this restore old values of protected areas
+  ProtectRanges.checkIfValueIsNotProtected(e);
+  
+  ForecastingMethodologies.onEdit(e);
+  
+  LastDateUpdater.onEditSetLastUpdateDate(FirebaseConnector.getToken(),e);
+  
 }
 
 /**
@@ -52,10 +50,16 @@ function onLogin(){
 function protectSheet(userToken){
   userToken = userToken ? userToken : FirebaseConnector.getToken();
   if(userToken){
+    
     ProtectRanges.protectCell(userToken);
+    
     ProtectFormulas.protectCell(userToken);
+    
     LastDateUpdater.protectCell(userToken);
-
+    ProtectionMaker.protectCell(userToken);
+    
+    //store the rules for new formulas
+    ForecastUtility.protectCell(userToken);
   }
 
 }

@@ -20,8 +20,8 @@ var Config={
 	 * @type {Object}
 	 */
 	Sheet:{
-		countryCell:"B1",
-		datasourceCell:"B3"
+		countryCell:"C1",
+		datasourceCell:"C3"
 	},
 
 	/**

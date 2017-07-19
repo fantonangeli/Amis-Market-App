@@ -158,7 +158,7 @@ var SyncMasterSheet=new function(){
        var orderInTheSheet = parseInt(FirebaseConnector.getFireBaseData(orderInTheSheetNode,userToken));
        
        //SOLVE CTRL+Z PROBLEMS. IF ANY and return the position where put the new column
-       newForecastColumnPosition =ForecastUtility.preventUndoConflictForNewForecast(newForecastColumnPosition,lastForeCast,userToken,orderInTheSheet,firstForecastColumnPosition,beginForeCast);       
+       //newForecastColumnPosition =ForecastUtility.preventUndoConflictForNewForecast(newForecastColumnPosition,lastForeCast,userToken,orderInTheSheet,firstForecastColumnPosition,beginForeCast);       
        
        //hide all the last forecast -- this.findeValueIntoRow(lastForeCast) is called again because moveNewForecastFinder moves that value
        ForecastUtility.hideOldForecasts(firstForecastColumnPosition, newForecastColumnPosition,2 );
@@ -287,7 +287,7 @@ var SyncMasterSheet=new function(){
 			r = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( fmRanges[ i ] );            
           //Browser.msgBox('ASSTL '+  r.getLastColumn());
 			if ( r.getLastColumn() >= movedColNum ) {              
-                r = r.offset( 0, 0, r.getNumRows() , r.getNumColumns()+1 );              
+                r = r.offset( 0, columnOffset );
 			}
 
 			newFmRanges.unshift( r.getA1Notation() );
@@ -449,6 +449,102 @@ var SyncMasterSheet=new function(){
   //------------------------------------------------------------------------------------------------------------------  
   // END --  move moveProtectedFormulasCols for FORECAST 17_18	
   //------------------------------------------------------------------------------------------------------------------
+  
+  //------------------------------------------------------------------------------------------------------------------
+  /**
+  * move RANGE TO BE PROTECTED FRC 16-17
+  * @param  {string} range range in A1 notation
+  * @param  {number} columnOffset   number of columns right from the range's top-left cell; negative values represent columns left from the range's top-left cell
+  * @return {bool}       true if ok, false otherwise
+  */
+  //------------------------------------------------------------------------------------------------------------------
+  this.moveRangeToBeProtected16_17 = function( range, columnOffset){    
+    //TODO _ take argentina from firebase
+    var rangeToBeStoredNode = 'config/rangeToBeProtected16-17/argentina';
+    
+    //retrive the row containing 'Forecasting  Methodology'. IT MUST BE next the last forecast.
+    var rangeToBeStored = JSON.parse(FirebaseConnector.getFireBaseData(rangeToBeStoredNode,FirebaseConnector.getToken()));    
+    
+    
+    var movedColNum, newFmRanges = [];
+    var fmRanges = rangeToBeStored;
+    range = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( range );
+    movedColNum = range.getLastColumn();
+    //Browser.msgBox('movedCL '+ movedColNum);
+    
+    if ( !fmRanges ) return;
+    
+    var r;
+    for ( var i = fmRanges.length; i--; ) {
+      r = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( fmRanges[ i ] );            
+      //Browser.msgBox('ASSTL '+  r.getLastColumn());
+      if ( r.getLastColumn() >= movedColNum ) {              
+        r = r.offset( 0, 0, r.getNumRows() , r.getNumColumns()+1 );              
+      }
+      
+      newFmRanges.unshift( r.getA1Notation() );
+    }
+    
+    FirebaseConnector.writeOnFirebase(
+      newFmRanges,
+      'config/rangeToBeProtected16-17/argentina',
+      FirebaseConnector.getToken()
+    );
+  };
+  //------------------------------------------------------------------------------------------------------------------  
+  // END -- move RANGES TO BE PROTECTED
+  //------------------------------------------------------------------------------------------------------------------
+  
+  //------------------------------------------------------------------------------------------------------------------
+  /**
+  * move RANGE TO BE PROTECTED FRC 17-18
+  * @param  {string} range range in A1 notation
+  * @param  {number} columnOffset   number of columns right from the range's top-left cell; negative values represent columns left from the range's top-left cell
+  * @param  {number} 0 if you have to move only the end of the range , 1 if you have to slide all the range
+  */
+  //------------------------------------------------------------------------------------------------------------------
+  this.moveRangeToBeProtected17_18 = function( range, columnOffset, type ){
+    
+    //TODO _ take argentina from firebase
+    var rangeToBeStoredNode = 'config/rangeToBeProtected17-18/argentina';
+    
+    //retrive the row containing 'Forecasting  Methodology'. IT MUST BE next the last forecast.
+    var rangeToBeStored = JSON.parse(FirebaseConnector.getFireBaseData(rangeToBeStoredNode,FirebaseConnector.getToken()));    
+    
+    
+    var movedColNum, newFmRanges = [];
+    var fmRanges = rangeToBeStored;
+    range = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( range );
+    movedColNum = range.getLastColumn();
+    //Browser.msgBox('movedCL '+ movedColNum);
+    
+    if ( !fmRanges ) return;
+    
+    var r;
+    for ( var i = fmRanges.length; i--; ) {
+      r = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( fmRanges[ i ] );            
+      //Browser.msgBox('ASSTL '+  r.getLastColumn());
+      if ( r.getLastColumn() >= movedColNum ) {              
+        if(type == 0){
+          r = r.offset( 0, 0, r.getNumRows() , r.getNumColumns()+1 );
+        }else{
+          r = r.offset( 0, columnOffset );
+        }          
+      }
+      
+      newFmRanges.unshift( r.getA1Notation() );
+    }
+    
+    FirebaseConnector.writeOnFirebase(
+      newFmRanges,
+      'config/rangeToBeProtected17-18/argentina',
+      FirebaseConnector.getToken()
+    );
+  };
+  //------------------------------------------------------------------------------------------------------------------  
+  // END --  move RANGE TO BE PROTECTED for FORECAST 17_18	
+  //------------------------------------------------------------------------------------------------------------------
+
   
   //------------------------------------------------------------------------------------------------------------------  
   // delete saved data

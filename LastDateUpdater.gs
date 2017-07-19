@@ -41,10 +41,12 @@ var LastDateUpdater=new function(){
 
     var ss = sheet.getSheets()[0];
 
-    var formulasProtected = JSON.parse(PropertiesService.getUserProperties().getProperty("formulasProtected"));
+    //var formulasProtected = JSON.parse(PropertiesService.getUserProperties().getProperty("formulasProtected"));
     var rangeProtected = JSON.parse(PropertiesService.getUserProperties().getProperty("rangeProtected"));
-    var mergeRange = formulasProtected.concat(rangeProtected);
+    //var mergeRange = formulasProtected.concat(rangeProtected);
 
+    var mergeRange = rangeProtected;
+    
     //var mergeRange = LastDateUpdater.jsonConcat(formulasProtected,rangeProtected);
 
     //used after to determinate if set the last date or not
