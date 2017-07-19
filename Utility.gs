@@ -63,13 +63,11 @@ var Utility=new (function(){
     Browser.msgBox('Please ensure that popup lock is DISABLED. Then try again.');
   }
 
-  //-----------------------------------------------------------------------------------------------------------------
   /**
    * converts column letter to column number
    * @param  {string} column letter
    * @return {integer} column number
    */
-  //------------------------------------------------------------------------------------------------------------------
   this.letterToColumn = function(letter)
   {
     var column = 0, length = letter.length;
@@ -496,7 +494,7 @@ var Utility=new (function(){
      * @return {bool} true if master, false otherwise
      */
     this.isMaster = function() {
-      return SpreadsheetApp.getActiveSpreadsheet().getName().indexOf(Config.masterSpreadSheetNameKeyword)>0;
+      return SpreadsheetApp.getActiveSpreadsheet().getName().indexOf(Config.masterKeyword)>0;
     };
 
 

@@ -1,5 +1,5 @@
 <script>
-        var hideLoading, showLoading;
+        var hideLoading, showLoading, userToken;
 
        //-----------------------------------------------------------------
        // Initialize Firebase
@@ -28,26 +28,26 @@
        /**
         * callBack For All google script calls
         */
-       hideLoading = function() {         
-          $('#loading').hide();         
+       hideLoading = function() {
+          $('#loading').hide();
        };
-       
+
        /**
         * callback WITH PROTECTION SHEET
         */
-       hideLoadingWithProtection = function() {         
+       hideLoadingWithProtection = function() {
          //this protect the sheet and avoid script error
          google.script.run.withSuccessHandler(hideLoadingDiv).LIB_FUNC( "AmisMarketApp.protectSheet");
        };
-       
+
        /**
         * hide the loading spinner
         */
-       hideLoadingDiv = function() {         
+       hideLoadingDiv = function() {
          $('#loading').hide();
        };
-       
-       
+
+
 
 
        /**
@@ -93,69 +93,20 @@
              console.info( 'user', user.uid );
              //.then is used to get the token value
              user.getToken().then( function( data ) {
+                 userToken=data;
 
-             if ( user_data.type!="admin" ) {
-                //automatic fetch for operative users
-                showLoading();
-                verifyToken(function(){
-                    google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",data);
-                });
-             }
+                 if ( user_data.type!="admin" ) {
+                    //automatic fetch for operative users
+                    showLoading();
+                    verifyToken(function(){
+                        google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",data);
+                    });
+                 }
                  console.log( 'gettoken', data );
                  google.script.run.LIB_FUNC( "AmisMarketApp.FirebaseConnector.setToken", data );
                  // Store in session the token
                  google.script.run.LIB_FUNC( "AmisMarketApp.onLogin" );
                  //google.script.run.LIB_FUNC( "AmisMarketApp.protectSheet",data );
-                 
-                 //binding SAVE function with AMIS MARKET API
-                 $( "#buttonSave" ).bind( "click", function() {
-                     //google.script.run.startSync(data);
-                     showLoading();
-                     verifyToken(function(){
-                         google.script.run.withSuccessHandler(hideLoading).LIB_FUNC( "AmisMarketApp.SyncMasterSheet.startSync", data );
-                     });
-                     //disable the button himself
-                     $( "#addFrc16" ).prop( "disabled", false );
-                     $( "#addFrc17" ).prop( "disabled", false );
-                 } );
-                 $( "#addFrc16" ).bind( "click", function() {
-                     //google.script.run.addForecast(data);
-                     showLoading();
-                     verifyToken(function(){
-                         google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast16_17", data );
-                     });
-                     //disable the button himself
-                     //$( "#addFrc16" ).prop( "disabled", true );
-                 } );
-                 $( "#addFrc17" ).bind( "click", function() {
-                     //google.script.run.addForecast(data);
-                     showLoading();
-                     verifyToken(function(){
-                         google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast17_18", data );
-                     });
-                     //disable the button himself
-                     //$( "#addFrc17" ).prop( "disabled", true );
-                 } );
-                 //binding FETCH function with AMIS MARKET API
-                 $("#buttonFetch").bind( "click", function() {
-                     showLoading();
-                     verifyToken(function(){
-                         google.script.run.withSuccessHandler(hideLoading).LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",data);
-                     });
-                 });
-                 //bind create google sheet function
-                 $( "#createSheetButton" ).bind( "click", function() {
-                 	var countryName = $( "#countryName" ).val();
-                 	var account = $( "#account" ).val();
-                 	//prevent redirect actions
-                 	//google.script.run.createSheet(countryName,account);
-                 	showLoading();
-                 	verifyToken(function(){
-                        google.script.run.withSuccessHandler( hideLoading ).LIB_FUNC( "AmisMarketApp.ShareSheet.createSheet", countryName, account, data );
-                    });
-                 	return false;
-                 } );
-
 
              } );
          });
@@ -228,7 +179,50 @@
            });
 
 
-
+           //binding SAVE function with AMIS MARKET API
+           $( "#buttonSave" ).bind( "click", function() {
+               showLoading();
+               verifyToken(function(){
+                   google.script.run.withSuccessHandler(hideLoading).LIB_FUNC( "AmisMarketApp.SyncMasterSheet.startSync", userToken );
+               });
+               //disable the button himself
+               $( "#addFrc16" ).prop( "disabled", false );
+               $( "#addFrc17" ).prop( "disabled", false );
+           } );
+           $( "#addFrc16" ).bind( "click", function() {
+               showLoading();
+               verifyToken(function(){
+                   google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast16_17", userToken );
+               });
+               //disable the button himself
+               //$( "#addFrc16" ).prop( "disabled", true );
+           } );
+           $( "#addFrc17" ).bind( "click", function() {
+               showLoading();
+               verifyToken(function(){
+                   google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast17_18", userToken );
+               });
+               //disable the button himself
+               //$( "#addFrc17" ).prop( "disabled", true );
+           } );
+           //binding FETCH function with AMIS MARKET API
+           $("#buttonFetch").bind( "click", function() {
+               showLoading();
+               verifyToken(function(){
+                   google.script.run.withSuccessHandler(hideLoading).LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",userToken);
+               });
+           });
+           //bind create google sheet function
+           $( "#createSheetButton" ).bind( "click", function() {
+              var countryName = $( "#countryName" ).val();
+              var account = $( "#account" ).val();
+              //prevent redirect actions
+              showLoading();
+              verifyToken(function(){
+                  google.script.run.withSuccessHandler( hideLoading ).LIB_FUNC( "AmisMarketApp.ShareSheet.createSheet", countryName, account, userToken );
+              });
+              return false;
+           } );
 
 
        } )
