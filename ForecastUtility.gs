@@ -122,9 +122,16 @@ var ForecastUtility=new function(){
 
           // This inserts the new column
           sheet.insertColumnsAfter(newForecastColumnPosition,1);
+          
           //this set the correct formulas for new column
-          ForecastUtility.writeFormulasForNewForecasts(userToken, newForecastColumnPosition+1);
+          //ForecastUtility.writeFormulasForNewForecasts(userToken, newForecastColumnPosition+1);
 
+          var formulasProperties = JSON.parse(PropertiesService.getUserProperties().getProperty("rulesForFormulas"));
+          var newForecastColumnPositionLetter = Utility.numToChar(newForecastColumnPosition+1);
+          
+          //call rebuild formulas
+          ForecastUtility.rebuildFormulas(formulasProperties, newForecastColumnPositionLetter);    
+          
           //MOVE PROTECTED FORMULAS  FRC 16-17
           SyncMasterSheet.moveProtectedFormulasCols16_17(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1);
 
@@ -212,10 +219,17 @@ var ForecastUtility=new function(){
       //set the years of the forecast
       var newCell = sheet.getActiveSheet().getRange(labelRowNumber,newForecastColumnPosition+1).setValue(labelValue);
 
-      ForecastUtility.writeFormulasForNewForecasts(userToken, newForecastColumnPosition+1);
-
-      FirebaseConnector.writeOnFirebase(Utility.numToChar(newForecastColumnPosition+1), lastForeCast, userToken);
-
+      //ForecastUtility.writeFormulasForNewForecasts(userToken, newForecastColumnPosition+1);
+      
+      var formulasProperties = JSON.parse(PropertiesService.getUserProperties().getProperty("rulesForFormulas"));
+      var newForecastColumnPositionLetter = Utility.numToChar(newForecastColumnPosition+1);
+      
+      //call rebuild formulas
+      ForecastUtility.rebuildFormulas(formulasProperties, newForecastColumnPositionLetter);    
+      
+      
+      FirebaseConnector.writeOnFirebase(Utility.numToChar(newForecastColumnPosition+1), lastForeCast, userToken);      
+      
       //MOVE PROTECTED FORMULAS FRC 17-18
       SyncMasterSheet.moveProtectedFormulasCols17_18(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1,1);
 
@@ -498,7 +512,9 @@ var ForecastUtility=new function(){
   // END -- function called to hide all the forecast for previus year except the last one
   //------------------------------------------------------------------------------------------------------------------
 
-  this.writeFormulasForNewForecasts = function (userToken, newForecastColumnPosition){
+  
+  //TODO _ delete
+  this.writeFormulasForNewForecasts_OLD = function (userToken, newForecastColumnPosition){
     var sheet = SpreadsheetApp.getActiveSpreadsheet();
 
     var newForecastColumnPositionLetter = Utility.numToChar(newForecastColumnPosition);
@@ -610,8 +626,9 @@ var ForecastUtility=new function(){
       //get the formula with string to be replaced (eg. _1 )
       var finalFormula =addForecastFormulas[forecastFormulas].formula;
 
+      var lengLoop = addForecastFormulas[forecastFormulas].replacer.length;
       //loop over "replacer" node. It allow to calculate the row position of the cell
-      for (var i=0; i<addForecastFormulas[forecastFormulas].replacer.length;i++){
+      for (var i=0; i<lengLoop;i++){
 
         //sum the row with the content of replecer
         var newValue = newForecastColumnPositionLetter+ (parseInt(splitted)+addForecastFormulas[forecastFormulas].replacer[i]);
