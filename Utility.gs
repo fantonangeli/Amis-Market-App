@@ -63,13 +63,11 @@ var Utility=new (function(){
     Browser.msgBox('Please ensure that popup lock is DISABLED. Then try again.');
   }
 
-  //-----------------------------------------------------------------------------------------------------------------
   /**
    * converts column letter to column number
    * @param  {string} column letter
    * @return {integer} column number
    */
-  //------------------------------------------------------------------------------------------------------------------
   this.letterToColumn = function(letter)
   {
     var column = 0, length = letter.length;
