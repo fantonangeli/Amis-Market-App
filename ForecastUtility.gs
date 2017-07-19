@@ -6,11 +6,12 @@ var ForecastUtility=new function(){
      * @return {object} the data
      */
     this.getPeriodsData = function() {
-      var countryName, periodsNode, userToken;
-      userToken = FirebaseConnector.getToken();
-      countryName = FirebaseConnector.getCountryNameFromSheet(userToken);
-      periodsNode = 'config/addForecast/' + countryName;
-      return JSON.parse(FirebaseConnector.getFireBaseData(periodsNode, userToken));
+        //   var countryName, periodsNode, userToken;
+        //   userToken = FirebaseConnector.getToken();
+        //   countryName = FirebaseConnector.getCountryNameFromSheet(userToken);
+        //   periodsNode = 'config/addForecast/' + countryName;
+        //   return JSON.parse(FirebaseConnector.getFireBaseData(periodsNode, userToken));
+        return JSON.parse(PropertiesService.getUserProperties().getProperty("addForecastConfig"));
     };
 
 
@@ -569,15 +570,15 @@ var ForecastUtility=new function(){
     PropertiesService.getUserProperties().setProperty("rulesForFormulas",rangeFromConfigNotParsed);
 
     var addForecastConfigNotParsed = FirebaseConnector.getFireBaseData('config/addForecast/argentina',userToken);
-    var addForecastConfig=JSON.parse(addForecastConfigNotParsed);	   
+    var addForecastConfig=JSON.parse(addForecastConfigNotParsed);
 
     //store into session the ranges to be protected
     PropertiesService.getUserProperties().setProperty("addForecastConfig",addForecastConfigNotParsed);
 
-    
-    
-    
-    
+
+
+
+
   }
 
   //rebuild the
