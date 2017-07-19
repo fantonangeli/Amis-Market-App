@@ -515,6 +515,15 @@ var ForecastUtility=new function(){
     //store into session the ranges to be protected
     PropertiesService.getUserProperties().setProperty("rulesForFormulas",rangeFromConfigNotParsed);
 
+    var addForecastConfigNotParsed = FirebaseConnector.getFireBaseData('config/addForecast/argentina',userToken);
+    var addForecastConfig=JSON.parse(addForecastConfigNotParsed);	   
+    
+    //store into session the ranges to be protected
+    PropertiesService.getUserProperties().setProperty("addForecastConfig",addForecastConfigNotParsed);
+
+    
+    
+    
     
   }
   
