@@ -1,4 +1,9 @@
 <script>
+//http://mikecostello.github.io/jquery-slide-text-left/
+!function(e){function t(t,n,d,a){n.delay(d).animate({width:"toggle"},e.proxy(n.text,n,t)).animate({width:"toggle"},a)}e.fn.slideTextLeft=function(n,d){var a=!1,o=e.fn.slideTextLeft.defaults;return"number"==typeof d&&(o.delay=d),e.isArray(n)?o.words=n:"string"==typeof n?(o.words=n,a=!0):e.isPlainObject(n)&&(o=e.extend({},e.fn.slideTextLeft.defaults,n)),this.each(function(){var n=e(this),d=n.text(),s=e.meta?e.extend({},o,n.data()):o,i=0;s.words.length&&(n.css({"white-space":"nowrap",overflow:"hidden","vertical-align":"bottom"}),d.length&&d!==s.words[0]||(n.text(s.words[0]),i=1),function e(){var d=a?s.words:s.words[i],o=a?null:e;t(d,n,s.delay,o),i=(i+1)%s.words.length}())})},e.fn.slideTextLeft.defaults={words:[],delay:2e3}}(jQuery);
+</script>
+
+<script>
         var hideLoading, showLoading, userToken;
 
        //-----------------------------------------------------------------
@@ -20,8 +25,12 @@
 
        /**
         * show the loading spinner
+        * @param {array(string)} loadingTextStrings array with the loading texts to show during the loading
         */
-       showLoading = function() {
+       showLoading = function(loadingTextStrings) {
+         loadingTextStrings=(loadingTextStrings || ["Loading"]);
+         $('#loadingText').empty().append("<h4></h4>");
+         $('#loadingText h4').slideTextLeft(loadingTextStrings);
          $('#loading').show();
        };
 
@@ -97,7 +106,7 @@
 
                  if ( user_data.type!="admin" ) {
                     //automatic fetch for operative users
-                    showLoading();
+                    showLoading(["Logging in", "Loading user data"]);
                     verifyToken(function(){
                         google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",data);
                     });
@@ -181,7 +190,7 @@
 
            //binding SAVE function with AMIS MARKET API
            $( "#buttonSave" ).bind( "click", function() {
-               showLoading();
+               showLoading(["Saving data", "Sending data to the database", "Synchronizing the sheet"]);
                verifyToken(function(){
                    google.script.run.withSuccessHandler(hideLoading).LIB_FUNC( "AmisMarketApp.SyncMasterSheet.startSync", userToken );
                });
@@ -190,7 +199,7 @@
                $( "#addFrc17" ).prop( "disabled", false );
            } );
            $( "#addFrc16" ).bind( "click", function() {
-               showLoading();
+               showLoading(["Loading sheet's data","Creating the new forecast", "Saving the data", "Sending data to the database"]);
                verifyToken(function(){
                    google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast16_17", userToken );
                });
@@ -198,7 +207,7 @@
                //$( "#addFrc16" ).prop( "disabled", true );
            } );
            $( "#addFrc17" ).bind( "click", function() {
-               showLoading();
+               showLoading(["Loading sheet's data","Creating the new forecast", "Saving the data", "Sending data to the database"]);
                verifyToken(function(){
                    google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast17_18", userToken );
                });
@@ -207,7 +216,7 @@
            } );
            //binding FETCH function with AMIS MARKET API
            $("#buttonFetch").bind( "click", function() {
-               showLoading();
+               showLoading(["Loading data from the database", "Synchronizing the sheet"]);
                verifyToken(function(){
                    google.script.run.withSuccessHandler(hideLoading).LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",userToken);
                });
@@ -217,7 +226,7 @@
               var countryName = $( "#countryName" ).val();
               var account = $( "#account" ).val();
               //prevent redirect actions
-              showLoading();
+              showLoading(["Creating the sheet", "Sharing the sheet with the user", "Sending the email to the user"]);
               verifyToken(function(){
                   google.script.run.withSuccessHandler( hideLoading ).LIB_FUNC( "AmisMarketApp.ShareSheet.createSheet", countryName, account, userToken );
               });
