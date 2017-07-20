@@ -14,6 +14,12 @@ var LastDateUpdater=new function(){
   }
 
 
+   //------------------------------------------------------------------------------------------------------------------
+  /**
+	 * STORE INTO SESSION THE LABEL ROW FOR LAST DATE
+     * @params  {string} user token
+	 */
+  //------------------------------------------------------------------------------------------------------------------
   this.protectCell = function(userToken){
 
       var labelRowForLastDate=JSON.parse(FirebaseConnector.getFireBaseData('config/labelRowForLastDate/argentina',userToken));
@@ -23,13 +29,16 @@ var LastDateUpdater=new function(){
 
     }
   //------------------------------------------------------------------------------------------------------------------
-  //END --
+  //END -- STORE INTO SESSION THE LABEL ROW FOR LAST DATE
   //------------------------------------------------------------------------------------------------------------------
 
-  //---------------------------------------------------------
-  // END -- GET RANGES TO BE PROTECED NODE
-  //---------------------------------------------------------
-
+  
+  //------------------------------------------------------------------------------------------------------------------
+  /**
+  * CALLED ON EDIT --- This set the last date for column when you edit the sheet
+     * @params  {eventObj} event ON edit object
+	 */
+  //------------------------------------------------------------------------------------------------------------------
   this.onEditSetLastUpdateDate = function (userToken,e) {
 
     var lastDateUpdaterRow = JSON.parse(PropertiesService.getUserProperties().getProperty("labelRowForLastDate"));
@@ -40,14 +49,10 @@ var LastDateUpdater=new function(){
     var thisCol = e.range.getColumn();
 
     var ss = sheet.getSheets()[0];
-
-    //var formulasProtected = JSON.parse(PropertiesService.getUserProperties().getProperty("formulasProtected"));
-    var rangeProtected = JSON.parse(PropertiesService.getUserProperties().getProperty("rangeProtected"));
-    //var mergeRange = formulasProtected.concat(rangeProtected);
-
-    var mergeRange = rangeProtected;
     
-    //var mergeRange = LastDateUpdater.jsonConcat(formulasProtected,rangeProtected);
+    var rangeProtected = JSON.parse(PropertiesService.getUserProperties().getProperty("rangeProtected"));    
+
+    var mergeRange = rangeProtected;        
 
     //used after to determinate if set the last date or not
     var canWrite = true;
@@ -76,14 +81,8 @@ var LastDateUpdater=new function(){
     }
 
   }
-
-  //TODO _ delete
-  //concat two json
-  this.jsonConcat = function(o1, o2) {
-    for (var key in o2) {
-      o1[key] = o2[key];
-    }
-    return o1;
-  }
+  //------------------------------------------------------------------------------------------------------------------  
+  // END -- CALLED ON EDIT This set the last date for column when you edit the sheet
+  //------------------------------------------------------------------------------------------------------------------  
 
 }

@@ -27,8 +27,10 @@ function onEdit(e){
   //this restore old values of protected areas
   ProtectRanges.checkIfValueIsNotProtected(e);
   
+  //
   ForecastingMethodologies.onEdit(e);
   
+  //set the last date on edit event
   LastDateUpdater.onEditSetLastUpdateDate(FirebaseConnector.getToken(),e);
   
 }
@@ -51,11 +53,16 @@ function protectSheet(userToken){
   userToken = userToken ? userToken : FirebaseConnector.getToken();
   if(userToken){
     
+    //store the ranges to be protected
     ProtectRanges.protectCell(userToken);
     
+    //store the ranges where not apply rebuild style, formulas , conditional formatting
     ProtectFormulas.protectCell(userToken);
     
+    //store the last row update label position
     LastDateUpdater.protectCell(userToken);
+    
+    //
     ProtectionMaker.protectCell(userToken);
     
     //store the rules for new formulas
