@@ -12,10 +12,12 @@ var ProtectRanges=new function(){
   
 	
 
-  /**
-   * SET LAST DATE WHEN UPDATING A CELL
-   * @param  {event}  you must call it from OnEdit function and pass 'e' event object
-   */
+    //------------------------------------------------------------------------------------------------------------------
+    /**
+    * STORE INTO SESSION THE PROTECTED RANGES
+    * @params  {string} user token
+    */
+    //------------------------------------------------------------------------------------------------------------------
     this.protectCell = function(userToken){
       var rangeFromConfigNotParsedStd = FirebaseConnector.getFireBaseData('config/rangeToBeProtected/argentina',FirebaseConnector.getToken());      
       //get from firebase the formulas to be protected
@@ -41,42 +43,64 @@ var ProtectRanges=new function(){
       ProtectRanges.storeLocalValuesFromRanges(rangeFromConfig);
       
     }
-    
-  this.storeLocalValuesFromRanges = function(rangesProteced){
-    var sheet = SpreadsheetApp.getActiveSpreadsheet();
-    
-    for (var i=0; i<rangesProteced.length;i++){
-      
-      //get protected values
-      var val= sheet.getRange(rangesProteced[i]).getValues();
-      
-      //store into session the ranges protected... 
-      //KEY = protected range --- VALUE = the values of the protected range
-      PropertiesService.getUserProperties().setProperty(rangesProteced[i]+'_rangePtr', JSON.stringify(val));      
+    //------------------------------------------------------------------------------------------------------------------
+    //END -- STORE INTO SESSION THE PROTECTED RANGES
+    //------------------------------------------------------------------------------------------------------------------
    
+    //------------------------------------------------------------------------------------------------------------------
+    /**
+    * STORE INTO SESSION THE VALUSE FOR ALL THE PROTECTED RANGES
+    * @params  {ARRAY}   rangesProteced
+    */
+    //------------------------------------------------------------------------------------------------------------------  
+    this.storeLocalValuesFromRanges = function(rangesProteced){
+      var sheet = SpreadsheetApp.getActiveSpreadsheet();
+      
+      for (var i=0; i<rangesProteced.length;i++){
+        
+        //get protected values
+        var val= sheet.getRange(rangesProteced[i]).getValues();
+        
+        //store into session the ranges protected... 
+        //KEY = protected range --- VALUE = the values of the protected range
+        PropertiesService.getUserProperties().setProperty(rangesProteced[i]+'_rangePtr', JSON.stringify(val));      
+        
+      }
+      
     }
+    //------------------------------------------------------------------------------------------------------------------
+    //END -- STORE INTO SESSION THE VALUSE FOR ALL THE PROTECTED RANGES
+    //------------------------------------------------------------------------------------------------------------------
     
-  }
-  
-  this.checkIfValueIsNotProtected = function (e) {    
     
-    var sheet = SpreadsheetApp.getActiveSpreadsheet();
-    var activeCell=e.range;
-    var rangesProtectedStored = JSON.parse(PropertiesService.getUserProperties().getProperty("rangeProtected"));
-    
-    for (var i=0; i<rangesProtectedStored.length;i++){
+    //------------------------------------------------------------------------------------------------------------------
+    /**
+    * CALLED ON EDIT --- RESTORE OLD PROTECTED RANGES VALUES
+    * @params  {eventObj} event ON edit object
+    */
+    //------------------------------------------------------------------------------------------------------------------
+    this.checkIfValueIsNotProtected = function (e) {    
       
+      var sheet = SpreadsheetApp.getActiveSpreadsheet();
+      var activeCell=e.range;
+      var rangesProtectedStored = JSON.parse(PropertiesService.getUserProperties().getProperty("rangeProtected"));
       
-      //if a protected cell is update
-      if(Utility.isInRange(rangesProtectedStored[i], activeCell)){        
-        //THIS AVOID PROBLEMS IN CASE SOMEBODY COPY AND PASTE VALUES FROM A CELL WITH VALIDATION
-        e.range.setDataValidation(null);
-        //get old values
-        var oldValues= JSON.parse(PropertiesService.getUserProperties().getProperty(rangesProtectedStored[i]+'_rangePtr'));                
-        //restore old values
-        sheet.getRange(rangesProtectedStored[i]).setValues(oldValues);        
+      for (var i=0; i<rangesProtectedStored.length;i++){
+        
+        
+        //if a protected cell is update
+        if(Utility.isInRange(rangesProtectedStored[i], activeCell)){        
+          //THIS AVOID PROBLEMS IN CASE SOMEBODY COPY AND PASTE VALUES FROM A CELL WITH VALIDATION
+          e.range.setDataValidation(null);
+          //get old values
+          var oldValues= JSON.parse(PropertiesService.getUserProperties().getProperty(rangesProtectedStored[i]+'_rangePtr'));                
+          //restore old values
+          sheet.getRange(rangesProtectedStored[i]).setValues(oldValues);        
+        }
       }
     }
-  }
+    //------------------------------------------------------------------------------------------------------------------
+    //END -- CALLED ON EDIT  RESTORE OLD PROTECTED RANGES VALUES
+    //------------------------------------------------------------------------------------------------------------------
   
 }
