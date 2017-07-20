@@ -323,7 +323,7 @@ var Utility=new (function(){
    }
 
     //condition formatting number four
-    if ( operation2 > 0.1 && sheet.getRange(columnsEdited+interestedRows[1]).getValue() != '' && sheet.getRange(columnsEdited+interestedRows[2]).getValue() != '' ) {
+    if ( (operation2 > 0.1 && sheet.getRange(columnsEdited+interestedRows[2]).getValue() != '' ) || parseFloat(sheet.getRange(columnsEdited+interestedRows[1]).getValue())==0 || parseFloat(sheet.getRange(columnsEdited+interestedRows[1]).getValue()) !='') {
       //set cell 44
       sheet.getRange(columnsEdited+interestedRows[6]).setFontColor('#ff0000');
       sheet.getRange(columnsEdited+interestedRows[6]).setBackground('#d8d8d8');
