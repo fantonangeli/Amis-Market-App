@@ -161,23 +161,62 @@ var ForecastingMethodologies = new( function() {
 			//check if is in a FM range
 			if ( Utility.isInRange( r, activeCell ) ) {
 
-                //THIS AVOID PROBLEMS IN CASE SOMEBODY COPY AND PASTE VALUES FROM A CELL WITH VALIDATION
-                activeCell.setDataValidation(null);
-                //THIS PRESERV THE ALIGNMENT RIGHT in case of copy/paste
-                activeCell.setHorizontalAlignment('right');
+              //THIS AVOID PROBLEMS IN CASE SOMEBODY COPY AND PASTE VALUES FROM A CELL WITH VALIDATION
+              activeCell.setDataValidation(null);
+                
+              //rebuild the style
+              ForecastingMethodologies.rebuildFrcMethodologiesStyle(e);
 
-				activeCellVal = activeCell.getValue();
-
-				//check if cell is not valid and is to open the dialog
-				if ( !ForecastingMethodologies.isValid( activeCellVal ) ) {
-					ForecastingMethodologies.showMethodsDialog( activeCell );
-					activeCell.setValue( "" );
-				} else {
-					activeCell.setValue( ForecastingMethodologies.formatValue( activeCellVal ) );
-				}
+              activeCellVal = activeCell.getValue();
+                
+              
+              var splittedRange = activeCell.getA1Notation().split(':');
+              
+              //check if users paste multiple values -- IF == 2 equals multiple ranges eg. X12:X14             
+              if(splittedRange.length> 1){
+                
+                //simple delete all the new insert but the system preserv the style
+                activeCell.setValue('');
+                
+              }else{
+                //normal forecast methodologies function
+                
+                //check if cell is not valid and is to open the dialog
+                if ( !ForecastingMethodologies.isValid( activeCellVal ) ) {
+                  ForecastingMethodologies.showMethodsDialog( activeCell );
+                  activeCell.setValue( "" );
+                } else {
+                  activeCell.setValue(ForecastingMethodologies.formatValue( activeCellVal ));
+                }
+              }
+				
 			}
 		}
 	};
+  
+  this.rebuildFrcMethodologiesStyle = function (e) {    
+    
+    
+    var sheet = SpreadsheetApp.getActiveSpreadsheet();
+    var ss = sheet.getActiveSheet();
+    
+    var activeCell=e.range;
+    
+    //get the letter of current column edited
+    var currentColumn = Utility.numToChar(activeCell.getColumn());                
+    
+    var restoreStyleRows = JSON.parse(PropertiesService.getUserProperties().getProperty('restoreStyleRows'));        
+    
+    for (var i=0; i<restoreStyleRows.length;i++){
+      
+      //it contains the first and the last row of the range to be style restored
+      var firstAndLastRowToBeRestored = restoreStyleRows[i].split('-');
+      
+      //A:A contain the safe style and the script rebuild that style
+      sheet.getRange('B'+firstAndLastRowToBeRestored[0]+':B'+firstAndLastRowToBeRestored[1]).copyTo(sheet.getRange(currentColumn+firstAndLastRowToBeRestored[0]+':'+currentColumn+firstAndLastRowToBeRestored[1]), {formatOnly:true});
+    }
+    
+  }
 
 
 } );
