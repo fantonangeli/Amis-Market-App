@@ -1,21 +1,28 @@
 var ProtectFormulas=new function(){  
- 
+  
+ //------------------------------------------------------------------------------------------------------------------
   /**
-	 * GET RANGES TO BE PROTECED NODE  
+	 * GET RANGES WHERE RESTORE FORMULAS MUST NOT BE APPLY
      * @params  {string} user token
      * @return  {string} Firebase node of Ranges to be protected  
 	 */
-	this.getRangeToBeProtectedNode = function(userToken){
+  //------------------------------------------------------------------------------------------------------------------
+  this.getRangeToBeProtectedNode = function(userToken){
 		  var sheetId= Utility.getGoogleSheetID();
 		  var dataBaseNodeToRead='config/countries/'+sheetId;	  
 		  return 'config/formulasToBeProtected/'+JSON.parse(FirebaseConnector.getFireBaseData(dataBaseNodeToRead,userToken)).name;
 	  }	
-  
+  //------------------------------------------------------------------------------------------------------------------
+  //END -- GET RANGES WHERE RESTORE FORMULAS MUST NOT BE APPLY  
+  //------------------------------------------------------------------------------------------------------------------
 	
-	/**
-	 * Protecting formulas from not allowed edits
-     * @params  {string} user token     
+  
+  //------------------------------------------------------------------------------------------------------------------
+  /**
+	 * STORE INTO SESSION THE RANGES WHERE RESTORE FORMULAS MUST NOT BE APPLY  
+     * @params  {string} user token
 	 */
+  //------------------------------------------------------------------------------------------------------------------
     this.protectCell = function(userToken){
     
       var rangeFromConfigNotParsedStd = FirebaseConnector.getFireBaseData('config/formulasToBeProtected/argentina',FirebaseConnector.getToken());      
@@ -39,103 +46,57 @@ var ProtectFormulas=new function(){
       //store into session the ranges to be protected
       PropertiesService.getUserProperties().setProperty("formulasProtected", rangeFromConfigNotParsed);
       
-      //store into session the values of protected ranges
-      //ProtectFormulas.storeLocalValuesFromRanges(rangeFromConfig);
-      
     }
-	  
+    //------------------------------------------------------------------------------------------------------------------
+    //END -- STORE INTO SESSION THE RANGES WHERE RESTORE FORMULAS MUST NOT BE APPLY  
+    //------------------------------------------------------------------------------------------------------------------
   
-  this.storeLocalValuesFromRanges = function(rangesProteced){
     
-    var sheet = SpreadsheetApp.getActiveSpreadsheet();
-    
-    for (var i=0; i<rangesProteced.length;i++){
-    
-      //get protected values
-      var val= sheet.getRange(rangesProteced[i]).getFormulas();
-      
-      //get protected background style
-      var valbck = sheet.getRange(rangesProteced[i]).getBackgrounds();
-    
-      //store into session the ranges protected... 
-      //KEY = protected range --- VALUE = the values of the protected range
-      //Utilities.sleep(300);
-      PropertiesService.getUserProperties().setProperty(rangesProteced[i], JSON.stringify(val));      
-      //added 'bck' for background
-      //Utilities.sleep(300);
-      PropertiesService.getUserProperties().setProperty(rangesProteced[i]+'bck', JSON.stringify(valbck));
-    }
-    
-    
-  }
-  
-  this.checkIfValueIsNotProtected_Old = function (e) {    
-	  
-    var sheet = SpreadsheetApp.getActiveSpreadsheet();
-    var activeCell=e.range;
-    var rangesProtectedStored = JSON.parse(PropertiesService.getUserProperties().getProperty("formulasProtected"));
-    
-    for (var i=0; i<rangesProtectedStored.length;i++){
-     
-      //if a protected cell is update
-      if(Utility.isInRange(rangesProtectedStored[i], activeCell)){        
-        
-        //get old values
-        var oldValues= JSON.parse(PropertiesService.getUserProperties().getProperty(rangesProtectedStored[i]));
-        
-        //get old background styles
-        var oldValuesBck= JSON.parse(PropertiesService.getUserProperties().getProperty(rangesProtectedStored[i]+'bck'));
-        
-        //restore old background
-        sheet.getRange(rangesProtectedStored[i]).setBackgrounds(oldValuesBck);
-                
-        //restore old formulas
-        sheet.getRange(rangesProtectedStored[i]).setFormulas(oldValues);
-        
-        //set bold text
-        sheet.getRange(rangesProtectedStored[i]).setFontWeight("bold");
-        
-        //set font size
-        sheet.getRange(rangesProtectedStored[i]).setFontSize(10);
-      }
-      
-    }
-    
-        
-  }
-  
-  
+  //------------------------------------------------------------------------------------------------------------------
+  /**
+  * CALLED ON EDIT --- If the ranges NOT BELONG to FormulaProtected Ranges:  it applyREBUILD STYLE AND FORMULAS
+       and CONTIDIONAL FORMATTING
+     * @params  {eventObj} event ON edit object
+	 */
+  //------------------------------------------------------------------------------------------------------------------
   this.checkIfValueIsNotProtected = function (e) {    
 	  
     var sheet = SpreadsheetApp.getActiveSpreadsheet();
     var activeCell=e.range;
     var rangesProtectedStored = JSON.parse(PropertiesService.getUserProperties().getProperty("formulasProtected"));
     
-    //used after to determinate if set the last date or not
+    //used after to determinate if REBUILD OR NOT STYLE, FORMULAS AND FORMATTING CONDITIONS
     var canWrite = true;
     
     for (var i=0; i<rangesProtectedStored.length;i++){
      
       //if a protected cell is update
-      if(Utility.isInRange(rangesProtectedStored[i], activeCell)){        
-        //if the cell updated is in a protected range I CANT WRITE
+      if(Utility.isInRange(rangesProtectedStored[i], activeCell)){
+        
+        //if FALSE THE SCRIPT MUST NOT REBUILD STYLE, FORMULAS AND FORMATTING CONDITIONS
         canWrite = false;  
       }
       
     }
     if(canWrite){      
+      
       //rebuild Style form current column
       ProtectionMaker.checkIfValueIsNotProtected(e);
+      
       //rebuild the formulas for current column
       ForecastUtility.checkIfValueIsNotProtected(e);
+      
       //rebuild conditional formatting
       Utility.applyConditionalFormatting(e);
        
     }else{
-      
+      //DO NOTHING
     }
     
         
   }
+  //------------------------------------------------------------------------------------------------------------------
+  //END -- * CALLED ON EDIT --- If the ranges NOT BELONG to FormulaProtected Ranges:  it applyREBUILD STYLE AND FORMULAS and CONTIDIONAL FORMATTING  
+  //------------------------------------------------------------------------------------------------------------------
   
 }

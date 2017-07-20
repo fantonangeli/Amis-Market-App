@@ -122,9 +122,16 @@ var ForecastUtility=new function(){
 
           // This inserts the new column
           sheet.insertColumnsAfter(newForecastColumnPosition,1);
+          
           //this set the correct formulas for new column
-          ForecastUtility.writeFormulasForNewForecasts(userToken, newForecastColumnPosition+1);
+          //ForecastUtility.writeFormulasForNewForecasts(userToken, newForecastColumnPosition+1);
 
+          var formulasProperties = JSON.parse(PropertiesService.getUserProperties().getProperty("rulesForFormulas"));
+          var newForecastColumnPositionLetter = Utility.numToChar(newForecastColumnPosition+1);
+          
+          //call rebuild formulas
+          ForecastUtility.rebuildFormulas(formulasProperties, newForecastColumnPositionLetter);    
+          
           //MOVE PROTECTED FORMULAS  FRC 16-17
           SyncMasterSheet.moveProtectedFormulasCols16_17(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1);
 
@@ -212,10 +219,17 @@ var ForecastUtility=new function(){
       //set the years of the forecast
       var newCell = sheet.getActiveSheet().getRange(labelRowNumber,newForecastColumnPosition+1).setValue(labelValue);
 
-      ForecastUtility.writeFormulasForNewForecasts(userToken, newForecastColumnPosition+1);
-
-      FirebaseConnector.writeOnFirebase(Utility.numToChar(newForecastColumnPosition+1), lastForeCast, userToken);
-
+      //ForecastUtility.writeFormulasForNewForecasts(userToken, newForecastColumnPosition+1);
+      
+      var formulasProperties = JSON.parse(PropertiesService.getUserProperties().getProperty("rulesForFormulas"));
+      var newForecastColumnPositionLetter = Utility.numToChar(newForecastColumnPosition+1);
+      
+      //call rebuild formulas
+      ForecastUtility.rebuildFormulas(formulasProperties, newForecastColumnPositionLetter);    
+      
+      
+      FirebaseConnector.writeOnFirebase(Utility.numToChar(newForecastColumnPosition+1), lastForeCast, userToken);      
+      
       //MOVE PROTECTED FORMULAS FRC 17-18
       SyncMasterSheet.moveProtectedFormulasCols17_18(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1,1);
 
@@ -241,147 +255,6 @@ var ForecastUtility=new function(){
     else{
       //do nothing
     }
-
-  }
-  //------------------------------------------------------------------------------------------------------------------
-  // END --   ADD A NEW FORECAST on the google sheet
-  //------------------------------------------------------------------------------------------------------------------
-
-
-  //------------------------------------------------------------------------------------------------------------------
-  /**
-	 * ADD A NEW FORECAST on the google sheet
-     * @param  {string} auth token
-	 */
-  //------------------------------------------------------------------------------------------------------------------
-  this.addForecast= function(periodChoosen,userToken){
-
-    var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);
-    var sheet = SpreadsheetApp.getActiveSpreadsheet();
-
-
-    //datanode from firebase
-    var periodsNode = 'config/addForecast/'+countryName;
-
-    var periodsData= JSON.parse(FirebaseConnector.getFireBaseData(periodsNode,userToken));
-
-    //prevent undo problems for all the add forecasts periods
-    //for (var period in periodsData) {
-      //datanode from firebase
-      //var lastForeCast = 'config/addForecast/'+countryName+'/'+period+'/lastForecast';
-
-     // var newForecastColumnPosition = JSON.parse(FirebaseConnector.getFireBaseData(lastForeCast,userToken));
-      //newForecastColumnPosition = Utility.letterToColumn(newForecastColumnPosition);
-
-      //datanode from firebase
-      //var beginForeCast = 'config/addForecast/'+countryName+'/'+period+'/firstForecast';
-
-      //var firstForecastColumnPosition = JSON.parse(FirebaseConnector.getFireBaseData(beginForeCast,userToken));
-      //firstForecastColumnPosition = Utility.letterToColumn(firstForecastColumnPosition);
-
-      //datanode from firebase
-      //var orderInTheSheetNode = 'config/addForecast/'+countryName+'/'+period+'/orderInTheSheet';
-      //var orderInTheSheet = parseInt(FirebaseConnector.getFireBaseData(orderInTheSheetNode,userToken));
-
-      //SOLVE CTRL+Z PROBLEMS. IF ANY and return the position where put the new column
-      //newForecastColumnPosition =ForecastUtility.preventUndoConflictForNewForecast(newForecastColumnPosition,lastForeCast,userToken,orderInTheSheet,firstForecastColumnPosition,beginForeCast);
-    //}
-
-
-    //datanode from firebase
-    var lastForeCast = 'config/addForecast/'+countryName+'/'+periodChoosen+'/lastForecast';
-
-    var newForecastColumnPosition = JSON.parse(FirebaseConnector.getFireBaseData(lastForeCast,userToken));
-    newForecastColumnPosition = Utility.letterToColumn(newForecastColumnPosition);
-
-    //datanode from firebase
-    var beginForeCast = 'config/addForecast/'+countryName+'/'+periodChoosen+'/firstForecast';
-
-    var firstForecastColumnPosition = JSON.parse(FirebaseConnector.getFireBaseData(beginForeCast,userToken));
-    firstForecastColumnPosition = Utility.letterToColumn(firstForecastColumnPosition);
-
-    //datanode from firebase
-    var orderInTheSheetNode = 'config/addForecast/'+countryName+'/'+periodChoosen+'/orderInTheSheet';
-    var orderInTheSheet = parseInt(FirebaseConnector.getFireBaseData(orderInTheSheetNode,userToken));
-
-    //datanode from firebase
-    var labelNode = 'config/addForecast/'+countryName+'/'+periodChoosen+'/label';
-    var labelValue = JSON.parse(FirebaseConnector.getFireBaseData(labelNode,userToken));
-
-    // This inserts the new column
-    sheet.insertColumnsAfter(newForecastColumnPosition,1);
-
-    //this set the correct formulas for new column
-    //var valuesToBeStored = ForecastUtility.writeFormulasForNewForecasts(userToken, newForecastColumnPosition+1);
-
-    if(orderInTheSheet==0){
-      SyncMasterSheet.moveProtectedFormulasCols(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1,0);
-    }
-    else{
-      SyncMasterSheet.moveProtectedFormulasCols(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1,1);
-    }
-      //store the new formula in PROTECTED FORMULAS
-    //ForecastUtility.storeProtectedFormulasForNewForecasts(userToken,valuesToBeStored)
-
-    //retrive the row where write the new label
-    var labelRowNumberNode = 'config/addForecast/labelRowNumber';
-    //in the database value is stored like range "9:9"... to get column number, i have to split
-    var labelRowNumber = JSON.parse(FirebaseConnector.getFireBaseData(labelRowNumberNode,userToken)).split(":")[0];
-
-    //set the years of the forecast
-    var newCell = sheet.getActiveSheet().getRange(labelRowNumber,newForecastColumnPosition+1).setValue(labelValue);
-
-    //orderInTheSheet ==0  means that I'm adding a new forecast that impact on the other new forecast columns (it "push" other forecast column)
-    if(orderInTheSheet==0){
-
-      //I have to update also ALL other firebase configuration for all the other forecast
-      for (var period in periodsData) {
-
-        var lastForeCast = 'config/addForecast/'+countryName+'/'+period+'/lastForecast';
-
-        var newForecastColumnPosition = JSON.parse(FirebaseConnector.getFireBaseData(lastForeCast,userToken));
-        newForecastColumnPosition = Utility.letterToColumn(newForecastColumnPosition);
-
-        //datanode from firebase
-        var beginForeCast = 'config/addForecast/'+countryName+'/'+period+'/firstForecast';
-
-        var firstForecastColumnPosition = JSON.parse(FirebaseConnector.getFireBaseData(beginForeCast,userToken));
-        firstForecastColumnPosition = Utility.letterToColumn(firstForecastColumnPosition);
-
-        //datanode from firebase
-        var orderInTheSheetNode = 'config/addForecast/'+countryName+'/'+period+'/orderInTheSheet';
-        var orderInTheSheet = parseInt(FirebaseConnector.getFireBaseData(orderInTheSheetNode,userToken));
-
-        //in this case we have also to update firstForecast position
-        if(orderInTheSheet!=0){
-          FirebaseConnector.writeOnFirebase(Utility.numToChar(newForecastColumnPosition+1), lastForeCast, userToken);
-          FirebaseConnector.writeOnFirebase(Utility.numToChar(firstForecastColumnPosition+1), beginForeCast, userToken);
-        }else{
-          FirebaseConnector.writeOnFirebase(Utility.numToChar(newForecastColumnPosition+1), lastForeCast, userToken);
-
-          //get the A1 notation for the column
-          var columnLetter = Utility.numToChar(newForecastColumnPosition+1);
-          //move forecastMetodology column position on firebase (range as input)
-          ForecastingMethodologies.moveFMCols(columnLetter+':'+columnLetter,1);
-        }
-      }
-    }
-    else{
-      FirebaseConnector.writeOnFirebase(Utility.numToChar(newForecastColumnPosition+1), lastForeCast, userToken);
-      //get the A1 notation for the column
-      var columnLetter = Utility.numToChar(newForecastColumnPosition+1);
-      //move forecastMetodology column position on firebase (range as input)
-      ForecastingMethodologies.moveFMCols(columnLetter+':'+columnLetter,1);
-    }
-
-
-    //refetch from firebase the configuration for forecastmetodologies
-    ForecastingMethodologies.getConfig(true);
-
-    //protect again the sheet
-    ProtectRanges.protectCell(userToken);
-    ProtectFormulas.protectCell(userToken);
-    LastDateUpdater.protectCell(userToken);
 
   }
   //------------------------------------------------------------------------------------------------------------------
@@ -496,72 +369,15 @@ var ForecastUtility=new function(){
   }
   //------------------------------------------------------------------------------------------------------------------
   // END -- function called to hide all the forecast for previus year except the last one
+  //------------------------------------------------------------------------------------------------------------------   
+
+
   //------------------------------------------------------------------------------------------------------------------
-
-  this.writeFormulasForNewForecasts = function (userToken, newForecastColumnPosition){
-    var sheet = SpreadsheetApp.getActiveSpreadsheet();
-
-    var newForecastColumnPositionLetter = Utility.numToChar(newForecastColumnPosition);
-    //Browser.msgBox(newForecastColumnPositionLetter);
-
-    //TODO _ take argentina from firebase
-    var addForecastFormulasNode = 'config/addForecastFormulas/argentina';
-
-    //retrive the row containing 'Forecasting  Methodology'. IT MUST BE next the last forecast.
-    var addForecastFormulas = JSON.parse(FirebaseConnector.getFireBaseData(addForecastFormulasNode,userToken));
-
-    //initialize
-    //var newFormulaRangesToBeStored = []
-
-    for (var forecastFormulas in addForecastFormulas) {
-      var splitted = forecastFormulas.split(':')[0];
-      //Browser.msgBox(addForecastFormulas[forecastFormulas].formula);
-
-      //get the formula with string to be replaced (eg. _1 )
-      var finalFormula =addForecastFormulas[forecastFormulas].formula;
-
-      //loop over "replacer" node. It allow to calculate the row position of the cell
-      for (var i=0; i<addForecastFormulas[forecastFormulas].replacer.length;i++){
-
-        //sum the row with the content of replecer
-        var newValue = newForecastColumnPositionLetter+ (parseInt(splitted)+addForecastFormulas[forecastFormulas].replacer[i]);
-
-        //replace loop for all the occurences
-        finalFormula= finalFormula.split('_'+(i+1)).join(newValue);
-
-        //build the cell  (eg if we have newForecastColumnPositionLetter="AA" and  forecastFormulas="10:10"" IT BECOMES AA10 )
-        var cellForNewFormula = newForecastColumnPositionLetter+splitted;
-
-        //set the new formula
-        sheet.getRange(cellForNewFormula).setFormula(finalFormula);
-
-
-    }
-      //push the range into the array to be stored
-      //newFormulaRangesToBeStored.push(newForecastColumnPositionLetter+splitted);
-
-  }
-    //return newFormulaRangesToBeStored;
-
-}
-
-  this.storeProtectedFormulasForNewForecasts = function(userToken,ArrayForNewFormula){
-    //TODO _ take argentina from firebase
-    var newProtectedFormulaRangeNode = 'config/formulasToBeProtected/argentina';
-    var newProtectedFormulaRange = JSON.parse(FirebaseConnector.getFireBaseData(newProtectedFormulaRangeNode,userToken));
-    //avoid override old formulas stored into firebase
-    var newFormulas = newProtectedFormulaRange.concat(ArrayForNewFormula);
-
-    //write new formula to be protected
-    FirebaseConnector.writeOnFirebase(
-			newFormulas,
-			newProtectedFormulaRangeNode,
-			userToken
-		);
-
-  }
-
-
+  /**
+	 * STORE INTO SESSION THE Rules for REBUILD Formulas, and the addForecastConfig (for last update updater)
+     * @param  {string} auth token
+	 */
+  //------------------------------------------------------------------------------------------------------------------
   this.protectCell = function(userToken){
     var rangeFromConfigNotParsed = FirebaseConnector.getFireBaseData('config/addForecastFormulas/argentina',userToken);
     var rangeFromConfig=JSON.parse(rangeFromConfigNotParsed);
@@ -575,13 +391,17 @@ var ForecastUtility=new function(){
     //store into session the ranges to be protected
     PropertiesService.getUserProperties().setProperty("addForecastConfig",addForecastConfigNotParsed);
 
-
-
-
-
   }
+  //------------------------------------------------------------------------------------------------------------------
+  //END -- * STORE INTO SESSION THE Rules for REBUILD Formulas, and the addForecastConfig (for last update updater)
+  //------------------------------------------------------------------------------------------------------------------
 
-  //rebuild the
+  //------------------------------------------------------------------------------------------------------------------
+  /**
+  * CALLED ON EDIT --- IT RESTORED FORMULAS FOR THE COLUMN EDITED
+     * @params  {eventObj} event ON edit object
+	 */
+  //------------------------------------------------------------------------------------------------------------------
   this.checkIfValueIsNotProtected = function (e) {
     var activeCell=e.range;
 
@@ -596,6 +416,9 @@ var ForecastUtility=new function(){
 
   }
 
+  //------------------------------------------------------------------------------------------------------------------
+  //END  -- CALLED ON EDIT IT RESTORED FORMULAS FOR THE COLUMN EDITED
+  //------------------------------------------------------------------------------------------------------------------
   this.rebuildFormulas = function(formulasProperties, columnPositionLetter) {
     var addForecastFormulas = formulasProperties;
     var newForecastColumnPositionLetter = columnPositionLetter;
@@ -610,8 +433,9 @@ var ForecastUtility=new function(){
       //get the formula with string to be replaced (eg. _1 )
       var finalFormula =addForecastFormulas[forecastFormulas].formula;
 
+      var lengLoop = addForecastFormulas[forecastFormulas].replacer.length;
       //loop over "replacer" node. It allow to calculate the row position of the cell
-      for (var i=0; i<addForecastFormulas[forecastFormulas].replacer.length;i++){
+      for (var i=0; i<lengLoop;i++){
 
         //sum the row with the content of replecer
         var newValue = newForecastColumnPositionLetter+ (parseInt(splitted)+addForecastFormulas[forecastFormulas].replacer[i]);
@@ -630,5 +454,8 @@ var ForecastUtility=new function(){
 
     }
   }
+  //------------------------------------------------------------------------------------------------------------------
+  // END -- Rebuild the formulas on the sheet      
+  //------------------------------------------------------------------------------------------------------------------
 
 }

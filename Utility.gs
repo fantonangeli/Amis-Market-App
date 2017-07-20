@@ -341,7 +341,7 @@ var Utility=new (function(){
       sheet.getRange(columnsEdited+interestedRows[13]).setFontColor('#ff0000');
       sheet.getRange(columnsEdited+interestedRows[13]).setBackground('#d8d8d8');
       sheet.getRange(columnsEdited+interestedRows[14]).setNumberFormat('0');
-    }else {
+    }else {      
       //set cell 54
       sheet.getRange(columnsEdited+interestedRows[13]).setFontColor('#000000');
       sheet.getRange(columnsEdited+interestedRows[13]).setBackground('#d8d8d8');
@@ -373,7 +373,6 @@ var Utility=new (function(){
       sheet.getRange(columnsEdited+interestedRows[4]).setBackground('#ffffff');
       sheet.getRange(columnsEdited+interestedRows[16]).setNumberFormat('0');
     }
-
 
   }
   //------------------------------------------------------------------------------------------------------------------
