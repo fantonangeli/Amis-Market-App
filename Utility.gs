@@ -63,13 +63,11 @@ var Utility=new (function(){
     Browser.msgBox('Please ensure that popup lock is DISABLED. Then try again.');
   }
 
-  //-----------------------------------------------------------------------------------------------------------------
   /**
    * converts column letter to column number
    * @param  {string} column letter
    * @return {integer} column number
    */
-  //------------------------------------------------------------------------------------------------------------------
   this.letterToColumn = function(letter)
   {
     var column = 0, length = letter.length;
@@ -267,6 +265,12 @@ var Utility=new (function(){
     //sum 48 50 52
     var operation4 = parseFloat(sheet.getRange(columnsEdited+interestedRows[7]).getValue()) + parseFloat(sheet.getRange(columnsEdited+interestedRows[10]).getValue()) +parseFloat(sheet.getRange(columnsEdited+interestedRows[12]).getValue());
 
+    
+    //CELL 54 = CELL 12
+    sheet.getRange(columnsEdited+interestedRows[13]).setValue(sheet.getRange(columnsEdited+interestedRows[0]).getValue());
+    //CELL 55 = CELL 41
+    sheet.getRange(columnsEdited+interestedRows[14]).setValue(sheet.getRange(columnsEdited+interestedRows[3]).getValue());
+    
     //condition formatting number one and two
     if ( parseFloat(sheet.getRange(columnsEdited+interestedRows[17]).getValue()) != 0) {
 
@@ -332,12 +336,12 @@ var Utility=new (function(){
     }
 
     //condtion formatting number 5
-    if ( sheet.getRange(columnsEdited+interestedRows[13]).getValue() != '' && ( sheet.getRange(columnsEdited+interestedRows[8]).getValue() != '' && sheet.getRange(columnsEdited+interestedRows[9]).getValue() != '' && sheet.getRange(columnsEdited+interestedRows[11]).getValue() != '') && operation3 > parseFloat(sheet.getRange(columnsEdited+interestedRows[13]).getValue())  ) {
+    if ( sheet.getRange(columnsEdited+interestedRows[13]).getValue() != '' && ( sheet.getRange(columnsEdited+interestedRows[8]).getValue() != '' && sheet.getRange(columnsEdited+interestedRows[9]).getValue() != '' && sheet.getRange(columnsEdited+interestedRows[11]).getValue() != '') && operation3 != parseFloat(sheet.getRange(columnsEdited+interestedRows[13]).getValue())  ) {
       //set cell 54
       sheet.getRange(columnsEdited+interestedRows[13]).setFontColor('#ff0000');
       sheet.getRange(columnsEdited+interestedRows[13]).setBackground('#d8d8d8');
       sheet.getRange(columnsEdited+interestedRows[14]).setNumberFormat('0');
-    }else {
+    }else {      
       //set cell 54
       sheet.getRange(columnsEdited+interestedRows[13]).setFontColor('#000000');
       sheet.getRange(columnsEdited+interestedRows[13]).setBackground('#d8d8d8');
@@ -345,11 +349,11 @@ var Utility=new (function(){
     }
 
      //condtion formatting number 6
-    if ( sheet.getRange(columnsEdited+interestedRows[14]).getValue() != '' && ( sheet.getRange(columnsEdited+interestedRows[7]).getValue() != '' && sheet.getRange(columnsEdited+interestedRows[10]).getValue() != '' && sheet.getRange(columnsEdited+interestedRows[12]).getValue() != '') && operation4 > parseFloat(sheet.getRange(columnsEdited+interestedRows[14]).getValue())  ) {
+    if ( sheet.getRange(columnsEdited+interestedRows[14]).getValue() != '' && ( sheet.getRange(columnsEdited+interestedRows[7]).getValue() != '' && sheet.getRange(columnsEdited+interestedRows[10]).getValue() != '' && sheet.getRange(columnsEdited+interestedRows[12]).getValue() != '') && operation4 != parseFloat(sheet.getRange(columnsEdited+interestedRows[14]).getValue())  ) {
       //set cell 55
       sheet.getRange(columnsEdited+interestedRows[14]).setFontColor('#ff0000');
       sheet.getRange(columnsEdited+interestedRows[14]).setBackground('#d8d8d8');
-      sheet.getRange(columnsEdited+interestedRows[14]).setNumberFormat('0.00');
+      sheet.getRange(columnsEdited+interestedRows[14]).setNumberFormat('0');
     }else {
       //set cell 55
       sheet.getRange(columnsEdited+interestedRows[14]).setFontColor('#000000');
@@ -369,7 +373,6 @@ var Utility=new (function(){
       sheet.getRange(columnsEdited+interestedRows[4]).setBackground('#ffffff');
       sheet.getRange(columnsEdited+interestedRows[16]).setNumberFormat('0');
     }
-
 
   }
   //------------------------------------------------------------------------------------------------------------------
@@ -491,7 +494,7 @@ var Utility=new (function(){
      * @return {bool} true if master, false otherwise
      */
     this.isMaster = function() {
-      return SpreadsheetApp.getActiveSpreadsheet().getName().indexOf(Config.masterSpreadSheetNameKeyword)>0;
+      return SpreadsheetApp.getActiveSpreadsheet().getName().indexOf(Config.masterKeyword)>0;
     };
 
 
