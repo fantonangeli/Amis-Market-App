@@ -10,31 +10,6 @@ var ProtectionMaker=new function(){
     return 'config/rangeToBeProtected/'+JSON.parse(FirebaseConnector.getFireBaseData(dataBaseNodeToRead,userToken)).name;
   }
   
-  this.checkIfValueIsNotProtected_OLD = function (e) {    
-    
-    
-    var sheet = SpreadsheetApp.getActiveSpreadsheet();
-    var ss = sheet.getActiveSheet();
-    
-    var sheetName = ss.getName();
-    
-    var tempateSheet = sheet.getSheetByName("Template_"+sheetName);
-    
-    
-    
-    var formulasToBeProtected = JSON.parse(PropertiesService.getUserProperties().getProperty("formulasToBeProtected"));
-    
-    for (var i=0; i<formulasToBeProtected.length;i++){
-      
-      //restore all the formulas      
-      ss.getRange(formulasToBeProtected[i]).setFormulas(tempateSheet.getRange(formulasToBeProtected[i]).getFormulas());
-      
-    }
-    //restore the style from hidden template
-    tempateSheet.getRange('C:AE').copyTo(ss.getRange('C:AE'), {formatOnly:true});
-  }
-  
-  
   this.checkIfValueIsNotProtected = function (e) {    
     var interestedRange = JSON.parse(PropertiesService.getUserProperties().getProperty("sheetProtectionRanges"));
     
