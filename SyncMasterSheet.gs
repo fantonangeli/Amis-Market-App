@@ -129,31 +129,38 @@ var SyncMasterSheet=new function(){
     
     //-------------------------------------------------------------------------------------------------
      //TODO _ move this logic out of here
+     //get the google sheet
+     var ss = SpreadsheetApp.getActiveSpreadsheet();
+     //TODO _ pay attention to multiple sheets
+     var sheet = ss.getActiveSheet();
+     
+     var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue();
+     
      
      var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);
-
+     
      //datanode from firebase
-      var periodsNode = 'config/addForecast/'+countryName;
+      var periodsNode = 'config/addForecast/'+countryName+ '/' +commodityName;
      
      var periodsData= JSON.parse(FirebaseConnector.getFireBaseData(periodsNode,userToken));
      
      for (var period in periodsData) {       
        //datanode from firebase
-       var lastForeCast = 'config/addForecast/'+countryName+'/'+period+'/lastForecast';
-       
+       var lastForeCast = 'config/addForecast/'+countryName+'/'+commodityName+'/'+ period+'/lastForecast';
+     
        //var newForecastColumnPosition = parseInt(FirebaseConnector.getFireBaseData(lastForeCast,userToken));
        var newForecastColumnPosition = JSON.parse(FirebaseConnector.getFireBaseData(lastForeCast,userToken));
        newForecastColumnPosition = Utility.letterToColumn(newForecastColumnPosition);      
        
        //datanode from firebase
-       var beginForeCast = 'config/addForecast/'+countryName+'/'+period+'/firstForecast';
+       var beginForeCast = 'config/addForecast/'+countryName+'/'+ commodityName+'/'+ period+'/firstForecast';
        
        //var firstForecastColumnPosition = parseInt(FirebaseConnector.getFireBaseData(beginForeCast,userToken));
        var firstForecastColumnPosition = JSON.parse(FirebaseConnector.getFireBaseData(beginForeCast,userToken));
        firstForecastColumnPosition = Utility.letterToColumn(firstForecastColumnPosition);
        
        //datanode from firebase
-       var orderInTheSheetNode = 'config/addForecast/'+countryName+'/'+period+'/orderInTheSheet';
+       var orderInTheSheetNode = 'config/addForecast/'+countryName+'/'+ commodityName+ '/'+ +period+'/orderInTheSheet';
        
        var orderInTheSheet = parseInt(FirebaseConnector.getFireBaseData(orderInTheSheetNode,userToken));
        
@@ -202,14 +209,15 @@ var SyncMasterSheet=new function(){
 	  return Utility.getGoogleSheetID();
   }
   
-  this.setLastUpdate = function(userToken){
+  this.setLastUpdate = function(userToken){    
     var sheet = SpreadsheetApp.getActiveSheet();
-    var date = new Date();
-    //var dateFormatted = date.getDate()+"/"+date.getMonth()+"/"+date.getFullYear();
+    var date = new Date();    
+    
+    var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue();    
     
     var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);
     //datanode from firebase
-    var lastUpdateCellNode = 'config/lastUpdateCell/'+countryName;
+    var lastUpdateCellNode = 'config/lastUpdateCell/'+countryName+'/'+commodityName;
     var lastUpdateCell= JSON.parse(FirebaseConnector.getFireBaseData(lastUpdateCellNode,userToken));
     
     //TODO get this range from firebase
