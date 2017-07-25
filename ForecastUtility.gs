@@ -11,7 +11,12 @@ var ForecastUtility=new function(){
         //   countryName = FirebaseConnector.getCountryNameFromSheet(userToken);
         //   periodsNode = 'config/addForecast/' + countryName;
         //   return JSON.parse(FirebaseConnector.getFireBaseData(periodsNode, userToken));
-        return JSON.parse(PropertiesService.getUserProperties().getProperty("addForecastConfig"));
+      //get the google sheet
+      
+      var ss = SpreadsheetApp.getActiveSpreadsheet();      
+      var sheet = ss.getActiveSheet();      
+      var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue();
+      return JSON.parse(PropertiesService.getUserProperties().getProperty(commodityName+"_addForecastConfig"));
     };
 
 
