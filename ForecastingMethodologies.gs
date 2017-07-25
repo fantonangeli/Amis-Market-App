@@ -165,7 +165,7 @@ var ForecastingMethodologies = new( function() {
               activeCell.setDataValidation(null);
                 
               //rebuild the style
-              ForecastingMethodologies.rebuildFrcMethodologiesStyle(e);
+              //ForecastingMethodologies.rebuildFrcMethodologiesStyle(e);
 
               activeCellVal = activeCell.getValue();
                 

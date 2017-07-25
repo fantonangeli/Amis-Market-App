@@ -42,6 +42,12 @@ var ProtectRanges=new function(){
       //store into session the values of protected ranges
       ProtectRanges.storeLocalValuesFromRanges(rangeFromConfig);
       
+      var addForecastConfigNotParsed = FirebaseConnector.getFireBaseData('config/addForecast/argentina',userToken);
+      var addForecastConfig=JSON.parse(addForecastConfigNotParsed);
+      
+      //store into session the ranges to be protected
+      PropertiesService.getUserProperties().setProperty("addForecastConfig",addForecastConfigNotParsed);
+      
     }
     //------------------------------------------------------------------------------------------------------------------
     //END -- STORE INTO SESSION THE PROTECTED RANGES

@@ -280,7 +280,7 @@ var Utility=new (function(){
       sheet.getRange(columnsEdited+interestedRows[17]).setNumberFormat('0');
 
     }else {
-      //set cell 41
+      //set cell 31
       sheet.getRange(columnsEdited+interestedRows[17]).setFontColor('#000000');
       sheet.getRange(columnsEdited+interestedRows[17]).setBackground('#d8d8d8');
       sheet.getRange(columnsEdited+interestedRows[17]).setNumberFormat('0');
