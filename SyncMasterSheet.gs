@@ -219,7 +219,7 @@ var SyncMasterSheet=new function(){
   this.getRangeToBeStoredNode = function(userToken){
 	  var sheetId= this.getSheetId();
 	  var dataBaseNodeToRead='config/countries/'+sheetId;	  
-	  return 'config/rangeToBeStored/'+JSON.parse(FirebaseConnector.getFireBaseData(dataBaseNodeToRead,userToken)).name;
+	  return 'config/rangeToBeStored/'+JSON.parse(FirebaseConnector.getFireBaseData(dataBaseNodeToRead,userToken)).name+'/Maize';
   }
   
   
@@ -238,7 +238,7 @@ var SyncMasterSheet=new function(){
      *  @return  {array} ranges to be stored
 	 */
    //---------------------------------------------------------
-  this.getRangeToBeStored = function(userToken) {
+  this.getRangeToBeStoredOLD = function(userToken) {
     
     var rangeFromConfig=JSON.parse(FirebaseConnector.getFireBaseData(SyncMasterSheet.getRangeToBeStoredNode(userToken),userToken));
     
@@ -255,6 +255,25 @@ var SyncMasterSheet=new function(){
   //---------------------------------------------------------
   // END -- Retrives all the ranges to be stored
   //---------------------------------------------------------
+  
+  //---------------------------------------------------------   
+   /**
+	 * retrive all the ranges to be stored       
+     *  @param  {string} auth token     
+     *  @return  {array} ranges to be stored
+	 */
+   //---------------------------------------------------------
+  this.getRangeToBeStored = function(userToken) {
+    
+    var rangeFromConfig=JSON.parse(FirebaseConnector.getFireBaseData(SyncMasterSheet.getRangeToBeStoredNode(userToken),userToken));
+    
+    return rangeFromConfig
+  }
+  //--------------------------------------------------------- 
+  //---------------------------------------------------------
+  // END -- Retrives all the ranges to be stored
+  //---------------------------------------------------------
+  
   //---------------------------------------------------------
   
   //------------------------------------------------------------------------------------------------------------------
