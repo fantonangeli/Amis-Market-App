@@ -57,7 +57,7 @@ var SyncMasterSheet=new function(){
 	 */
   //---------------------------------------------------------
   this.startSync=function(userToken) {
-    SyncMasterSheet.deleteSavedData();
+    //SyncMasterSheet.deleteSavedData();
     //SyncMasterSheet.moveRangesCols('AC:AC',1);
     
     //hide old forecasts leaving only the last one

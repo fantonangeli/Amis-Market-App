@@ -14,20 +14,29 @@ var LastDateUpdater=new function(){
   }
 
 
-   //------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------
   /**
-	 * STORE INTO SESSION THE LABEL ROW FOR LAST DATE
-     * @params  {string} user token
-	 */
+  * STORE INTO SESSION THE LABEL ROW FOR LAST DATE
+  * @params  {string} user token
+  */
   //------------------------------------------------------------------------------------------------------------------
   this.protectCell = function(userToken){
-
-      var labelRowForLastDate=JSON.parse(FirebaseConnector.getFireBaseData('config/labelRowForLastDate/argentina',userToken));
-      //Utilities.sleep(300);
+    
+    var labelRowForLastDate=JSON.parse(FirebaseConnector.getFireBaseData('config/labelRowForLastDate/argentina',userToken));    
     //store into session the labelRowForLastDate
-      PropertiesService.getUserProperties().setProperty("labelRowForLastDate", labelRowForLastDate);
-
-    }
+    PropertiesService.getUserProperties().setProperty("labelRowForLastDate", labelRowForLastDate);
+    
+    var rangeFromConfigNotParsed = FirebaseConnector.getFireBaseData('config/rangeToBeProtectedFromSettingLastDateUpdate/argentina/Maize',FirebaseConnector.getToken());          
+    //store into session the ranges to be protected
+    PropertiesService.getUserProperties().setProperty("rangeProtected",rangeFromConfigNotParsed);
+    
+    
+    var addForecastConfigNotParsed = FirebaseConnector.getFireBaseData('config/addForecast/argentina',userToken);
+    var addForecastConfig=JSON.parse(addForecastConfigNotParsed);    
+    //store into session the ranges to be protected
+    PropertiesService.getUserProperties().setProperty("addForecastConfig",addForecastConfigNotParsed);
+    
+  }
   //------------------------------------------------------------------------------------------------------------------
   //END -- STORE INTO SESSION THE LABEL ROW FOR LAST DATE
   //------------------------------------------------------------------------------------------------------------------

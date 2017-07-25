@@ -59,7 +59,8 @@ function protectSheet(userToken){
   if(userToken){
     
     //Need for LASTDATE UPDATER -- it set range to be protected from update date and other info
-    ProtectRanges.protectCell(userToken);
+    LastDateUpdater.protectCell(userToken);
+    //ProtectRanges.protectCell(userToken);
     
     //store the ranges where not apply rebuild style, formulas , conditional formatting
     //ProtectFormulas.protectCell(userToken);
