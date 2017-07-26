@@ -41,6 +41,12 @@ var Config={
 	 * the keyword to recognize the master spreadsheet by the filename
 	 * @type {String}
 	 */
-	masterKeyword:"MASTER"
+	masterKeyword:"MASTER",
+
+	/**
+	 * the keyword to recognize the template spreadsheet by the filename
+	 * @type {String}
+	 */
+	templatePrefix:"Template_"
 
 };
