@@ -23,20 +23,25 @@ function openSidebar(){
 }
 
 function onEdit(e){
-  //protect formulas and style for all the sheets
-  ProtectionMaker.checkIfValueIsNotProtected(e);
   
-  //this restore the styles and the formatting condition if necessary
-  //ProtectFormulas.checkIfValueIsNotProtected(e);
-  
-  //this restore old values of protected areas
-  //ProtectRanges.checkIfValueIsNotProtected(e);
-  
-  //forecast methodologies on edit
-  ForecastingMethodologies.onEdit(e);
-  
-  //set the last date on edit event
-  LastDateUpdater.onEditSetLastUpdateDate(FirebaseConnector.getToken(),e);
+  //IF user is NOT editing a Template Sheet. Do normal logic.
+  if( !Utility.isTemplate() ) {
+    
+    //protect formulas and style for all the sheets
+    ProtectionMaker.checkIfValueIsNotProtected(e);
+    
+    //this restore the styles and the formatting condition if necessary
+    //ProtectFormulas.checkIfValueIsNotProtected(e);
+    
+    //this restore old values of protected areas
+    //ProtectRanges.checkIfValueIsNotProtected(e);
+    
+    //forecast methodologies on edit
+    ForecastingMethodologies.onEdit(e);
+    
+    //set the last date on edit event
+    LastDateUpdater.onEditSetLastUpdateDate(FirebaseConnector.getToken(),e); 
+  }  
   
 }
 
