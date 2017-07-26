@@ -34,7 +34,7 @@ var LastDateUpdater=new function(){
       //if is not an hidden template
       if( sheetName.indexOf('Template_') < 0){
         
-        var commodityName = ss.getSheetByName(sheetName).getRange(Config.Sheet.commodityCell).getValue();
+        var commodityName = ss.getSheetByName(sheetName).getRange(Config.Sheet.commodityCell).getValue().toLowerCase();
         
         var labelRowForLastDate=JSON.parse(FirebaseConnector.getFireBaseData('config/labelRowForLastDate/'+FirebaseConnector.getCountryNameFromSheet(userToken)+'/'+commodityName,userToken));    
         //store into session the labelRowForLastDate
@@ -74,7 +74,7 @@ var LastDateUpdater=new function(){
     //TODO _ pay attention to multiple sheets
     var sheet = ss.getActiveSheet();
     
-    var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue();
+    var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue().toLowerCase();
     
     var lastDateUpdaterRow = JSON.parse(PropertiesService.getUserProperties().getProperty(commodityName+"_labelRowForLastDate"));
 

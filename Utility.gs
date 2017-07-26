@@ -379,17 +379,6 @@ var Utility=new (function(){
   // END -- apply conditional formatting and color the cell when it is required
   //------------------------------------------------------------------------------------------------------------------
 
-
-  this.noNegativeValue=function(){
-    //Get the currently active sheet
-    var sheet = SpreadsheetApp.getActiveSheet()
-    //select a range to be validated
-    var newRange = sheet.getRange('Maize!R10:AA26');
-    // Set the data validation for cells to require any value that does not include "-".
-    var rule = SpreadsheetApp.newDataValidation().requireTextDoesNotContain('-').setAllowInvalid(false).build();
-    newRange.setDataValidation(rule);
-  }
-
   /**
    * check if a given cell is in a range
    * @param  {string} range the range eg. "AD11:AD19"

@@ -15,7 +15,7 @@ var ForecastUtility=new function(){
       
       var ss = SpreadsheetApp.getActiveSpreadsheet();      
       var sheet = ss.getActiveSheet();      
-      var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue();
+      var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue().toLowerCase();
       return JSON.parse(PropertiesService.getUserProperties().getProperty(commodityName+"_addForecastConfig"));
     };
 
@@ -354,7 +354,7 @@ var ForecastUtility=new function(){
     //TODO _ pay attention to multiple sheets
     var sheet = ss.getActiveSheet();
     
-    var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue();
+    var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue().toLowerCase();
     
     //datanode from firebase    
     var firstOldFrcFirebasePath = 'config/previousForecast/'+FirebaseConnector.getCountryNameFromSheet(userToken)+'/'+commodityName+'/first';

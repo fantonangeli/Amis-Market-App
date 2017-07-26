@@ -134,7 +134,7 @@ var SyncMasterSheet=new function(){
      //TODO _ pay attention to multiple sheets
      var sheet = ss.getActiveSheet();
      
-     var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue();
+     var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue().toLowerCase();
      
      
      var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);
@@ -213,7 +213,7 @@ var SyncMasterSheet=new function(){
     var sheet = SpreadsheetApp.getActiveSheet();
     var date = new Date();    
     
-    var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue();    
+    var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue().toLowerCase();    
     
     var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);
     //datanode from firebase
@@ -225,9 +225,12 @@ var SyncMasterSheet=new function(){
   }
   
   this.getRangeToBeStoredNode = function(userToken){
-	  var sheetId= this.getSheetId();
-	  var dataBaseNodeToRead='config/countries/'+sheetId;	  
-	  return 'config/rangeToBeStored/'+JSON.parse(FirebaseConnector.getFireBaseData(dataBaseNodeToRead,userToken)).name+'/Maize';
+    var sheet = SpreadsheetApp.getActiveSheet();
+    var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue().toLowerCase();   
+    
+    var sheetId= this.getSheetId();
+    var dataBaseNodeToRead='config/countries/'+sheetId;	  
+    return 'config/rangeToBeStored/'+JSON.parse(FirebaseConnector.getFireBaseData(dataBaseNodeToRead,userToken)).name+'/'+commodityName;
   }
   
   
