@@ -265,12 +265,12 @@ var Utility=new (function(){
     //sum 48 50 52
     var operation4 = parseFloat(sheet.getRange(columnsEdited+interestedRows[7]).getValue()) + parseFloat(sheet.getRange(columnsEdited+interestedRows[10]).getValue()) +parseFloat(sheet.getRange(columnsEdited+interestedRows[12]).getValue());
 
-    
+
     //CELL 54 = CELL 12
     sheet.getRange(columnsEdited+interestedRows[13]).setValue(sheet.getRange(columnsEdited+interestedRows[0]).getValue());
     //CELL 55 = CELL 41
     sheet.getRange(columnsEdited+interestedRows[14]).setValue(sheet.getRange(columnsEdited+interestedRows[3]).getValue());
-    
+
     //condition formatting number one and two
     if ( parseFloat(sheet.getRange(columnsEdited+interestedRows[17]).getValue()) != 0) {
 
@@ -341,7 +341,7 @@ var Utility=new (function(){
       sheet.getRange(columnsEdited+interestedRows[13]).setFontColor('#ff0000');
       sheet.getRange(columnsEdited+interestedRows[13]).setBackground('#d8d8d8');
       sheet.getRange(columnsEdited+interestedRows[14]).setNumberFormat('0');
-    }else {      
+    }else {
       //set cell 54
       sheet.getRange(columnsEdited+interestedRows[13]).setFontColor('#000000');
       sheet.getRange(columnsEdited+interestedRows[13]).setBackground('#d8d8d8');
