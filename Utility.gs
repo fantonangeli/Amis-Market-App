@@ -497,5 +497,13 @@ var Utility=new (function(){
       return SpreadsheetApp.getActiveSpreadsheet().getName().indexOf(Config.masterKeyword)>0;
     };
 
+    /**
+     * check if the current spreadsheet is Master
+     * @return {bool} true if master, false otherwise
+     */
+    this.isTemplate = function() {
+      return SpreadsheetApp.getActiveSpreadsheet().getName().indexOf(Config.templatePrefix)>0;
+    };
+
 
 });
