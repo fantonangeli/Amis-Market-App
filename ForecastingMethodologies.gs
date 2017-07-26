@@ -141,87 +141,100 @@ var ForecastingMethodologies = new( function() {
 			getFbConfigPath()+'/'+commodityName+'/ranges',
 			FirebaseConnector.getToken()
 		);
+
+		//reload the new configuration
+		this.getConfig(true);
 	};
 
 	/**
 	 * function to attach on the onEdit event
 	 * @param  {Object} e
 	 */
-	this.onEdit = function( e ) {
-		var activeCell = e.range,
-			activeCellVal;
+	 this.onEdit = function(e) {
+	   var cell, cellValue, fmRanges, multiple, rangeValues, _i, _len;
+	   rangeValues = void 0;
 
-		//check if master
-		if (Utility.isMaster()) {
-		  return;
-		}
+	   if (Utility.isMaster()) {
+	     return;
+	   }
 
-		var fmRanges = this.getFMRanges();
+	   fmRanges = this.getFMRanges();
 
-		if ( !fmRanges ) return;
+	   if (!fmRanges) {
+	     return;
+	   }
 
+	   rangeValues = e.range.getValues();
+	   multiple = rangeValues.length > 1;
+
+	   for (_i = 0, _len = rangeValues.length; _i < _len; _i++) {
+	     cellValue = rangeValues[_i][0];
+	     cell = e.range.getCell(_i + 1, 1);
+	     rangeValues[_i][0]=this.onEditCell(cell, fmRanges, cellValue, multiple);
+	   }
+
+	   e.range.setValues(rangeValues);
+	 };
+
+	/**
+	 * events called by this.onEdit on the single cell
+	 * @param  {object} cell     current cell
+	 * @param  {array} fmRanges ForecastingMethodologies ranges from firebase
+	 * @param  {string} cellValue value of the cell
+	 * @param  {bool} multiple set to true if the user edited a range
+	 * @return {array}          the value to be writed
+	 */
+    this.onEditCell = function( cell, fmRanges, cellValue, multiple ) {
 		var r;
-		for ( var i = fmRanges.length; i--; ) {
-			r = fmRanges[ i ];
 
-			//check if is in a FM range
-			if ( Utility.isInRange( r, activeCell ) ) {
+    	for ( var i = fmRanges.length; i--; ) {
+    		r = fmRanges[ i ];
 
-              //THIS AVOID PROBLEMS IN CASE SOMEBODY COPY AND PASTE VALUES FROM A CELL WITH VALIDATION
-              activeCell.setDataValidation(null);
-                
-              //rebuild the style
-              //ForecastingMethodologies.rebuildFrcMethodologiesStyle(e);
+    		//check if is in a FM range
+    		if ( Utility.isInRange( r, cell ) ) {
 
-              activeCellVal = activeCell.getValue();
-                
-              
-              var splittedRange = activeCell.getA1Notation().split(':');
-              
-              //check if users paste multiple values -- IF == 2 equals multiple ranges eg. X12:X14             
-              if(splittedRange.length> 1){
-                
-                //simple delete all the new insert but the system preserv the style
-                activeCell.setValue('');
-                
-              }else{
-                //normal forecast methodologies function
-                
-                //check if cell is not valid and is to open the dialog
-                if ( !ForecastingMethodologies.isValid( activeCellVal ) ) {
-                  ForecastingMethodologies.showMethodsDialog( activeCell );
-                  activeCell.setValue( "" );
-                } else {
-                  activeCell.setValue(ForecastingMethodologies.formatValue( activeCellVal ));
-                }
-              }
-				
-			}
-		}
-	};
-  
-  this.rebuildFrcMethodologiesStyle = function (e) {    
-    
-    
+    			//THIS AVOID PROBLEMS IN CASE SOMEBODY COPY AND PASTE VALUES FROM A CELL WITH VALIDATION
+    			cell.setDataValidation( null );
+
+    			//check if cell is not valid and is to open the dialog
+    			if ( !ForecastingMethodologies.isValid( cellValue ) ) {
+    				if(!multiple) {
+						ForecastingMethodologies.showMethodsDialog( cell );
+					}
+    				return "";
+    			} else {
+    				return ForecastingMethodologies.formatValue( cellValue );
+    			}
+    		}
+    	}
+
+		//if cell is not in a fmRanges
+		return cellValue;
+    };
+
+
+  this.rebuildFrcMethodologiesStyle = function (e) {
+
+
     var sheet = SpreadsheetApp.getActiveSpreadsheet();
     var ss = sheet.getActiveSheet();
-    
+
     var activeCell=e.range;
-    
+
     //get the letter of current column edited
-    var currentColumn = Utility.numToChar(activeCell.getColumn());                
-    
-    var restoreStyleRows = JSON.parse(PropertiesService.getUserProperties().getProperty('restoreStyleRows'));        
-    
+    var currentColumn = Utility.numToChar(activeCell.getColumn());
+
+    var restoreStyleRows = JSON.parse(PropertiesService.getUserProperties().getProperty('restoreStyleRows'));
+
     for (var i=0; i<restoreStyleRows.length;i++){
-      
+
       //it contains the first and the last row of the range to be style restored
       var firstAndLastRowToBeRestored = restoreStyleRows[i].split('-');
-      
+
       //A:A contain the safe style and the script rebuild that style
       sheet.getRange('B'+firstAndLastRowToBeRestored[0]+':B'+firstAndLastRowToBeRestored[1]).copyTo(sheet.getRange(currentColumn+firstAndLastRowToBeRestored[0]+':'+currentColumn+firstAndLastRowToBeRestored[1]), {formatOnly:true});
     }
-    
+
   }
 
 
