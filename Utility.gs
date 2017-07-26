@@ -502,7 +502,7 @@ var Utility=new (function(){
      * @return {bool} true if master, false otherwise
      */
     this.isTemplate = function() {
-      return SpreadsheetApp.getActiveSpreadsheet().getName().indexOf(Config.templatePrefix)>0;
+      return SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getName().indexOf(Config.templatePrefix)===0;
     };
 
 
