@@ -11,7 +11,12 @@ var ForecastUtility=new function(){
         //   countryName = FirebaseConnector.getCountryNameFromSheet(userToken);
         //   periodsNode = 'config/addForecast/' + countryName;
         //   return JSON.parse(FirebaseConnector.getFireBaseData(periodsNode, userToken));
-        return JSON.parse(PropertiesService.getUserProperties().getProperty("addForecastConfig"));
+      //get the google sheet
+      
+      var ss = SpreadsheetApp.getActiveSpreadsheet();      
+      var sheet = ss.getActiveSheet();      
+      var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue().toLowerCase();
+      return JSON.parse(PropertiesService.getUserProperties().getProperty(commodityName+"_addForecastConfig"));
     };
 
 
@@ -347,18 +352,19 @@ var ForecastUtility=new function(){
     //get the google sheet
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     //TODO _ pay attention to multiple sheets
-    var sheet = ss.getSheets()[0];
-
-    //TODO _ take from firebase
-    //datanode from firebase
-    var firstOldFrcFirebasePath = 'config/previousForecast/argentina/first';
+    var sheet = ss.getActiveSheet();
+    
+    var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue().toLowerCase();
+    
+    //datanode from firebase    
+    var firstOldFrcFirebasePath = 'config/previousForecast/'+FirebaseConnector.getCountryNameFromSheet(userToken)+'/'+commodityName+'/first';
 
     //retrive the row containing 'Forecasting  Methodology'. IT MUST BE next the last forecast.
     var firstFrc = JSON.parse(FirebaseConnector.getFireBaseData(firstOldFrcFirebasePath,userToken));
 
     //TODO _ take from firebase
     //datanode from firebase
-    var lastOldFrcFirebasePath = 'config/previousForecast/argentina/last';
+    var lastOldFrcFirebasePath = 'config/previousForecast/'+FirebaseConnector.getCountryNameFromSheet(userToken)+'/'+commodityName+'/last';
 
     //retrive the row containing 'Forecasting  Methodology'. IT MUST BE next the last forecast.
     var lastFrc = JSON.parse(FirebaseConnector.getFireBaseData(lastOldFrcFirebasePath,userToken));
@@ -370,92 +376,4 @@ var ForecastUtility=new function(){
   //------------------------------------------------------------------------------------------------------------------
   // END -- function called to hide all the forecast for previus year except the last one
   //------------------------------------------------------------------------------------------------------------------   
-
-
-  //------------------------------------------------------------------------------------------------------------------
-  /**
-	 * STORE INTO SESSION THE Rules for REBUILD Formulas, and the addForecastConfig (for last update updater)
-     * @param  {string} auth token
-	 */
-  //------------------------------------------------------------------------------------------------------------------
-  this.protectCell = function(userToken){
-    var rangeFromConfigNotParsed = FirebaseConnector.getFireBaseData('config/addForecastFormulas/argentina',userToken);
-    var rangeFromConfig=JSON.parse(rangeFromConfigNotParsed);
-
-    //store into session the ranges to be protected
-    PropertiesService.getUserProperties().setProperty("rulesForFormulas",rangeFromConfigNotParsed);
-
-    var addForecastConfigNotParsed = FirebaseConnector.getFireBaseData('config/addForecast/argentina',userToken);
-    var addForecastConfig=JSON.parse(addForecastConfigNotParsed);
-
-    //store into session the ranges to be protected
-    PropertiesService.getUserProperties().setProperty("addForecastConfig",addForecastConfigNotParsed);
-
-  }
-  //------------------------------------------------------------------------------------------------------------------
-  //END -- * STORE INTO SESSION THE Rules for REBUILD Formulas, and the addForecastConfig (for last update updater)
-  //------------------------------------------------------------------------------------------------------------------
-
-  //------------------------------------------------------------------------------------------------------------------
-  /**
-  * CALLED ON EDIT --- IT RESTORED FORMULAS FOR THE COLUMN EDITED
-     * @params  {eventObj} event ON edit object
-	 */
-  //------------------------------------------------------------------------------------------------------------------
-  this.checkIfValueIsNotProtected = function (e) {
-    var activeCell=e.range;
-
-    var columnPositionLetter = Utility.numToChar(activeCell.getColumn());
-    //get the letter of current column edited
-
-    var formulasProperties = JSON.parse(PropertiesService.getUserProperties().getProperty("rulesForFormulas"));
-    //Browser.msgBox(rangesProtectedStored);
-
-    //call rebuild formulas
-    ForecastUtility.rebuildFormulas(formulasProperties, columnPositionLetter);
-
-  }
-
-  //------------------------------------------------------------------------------------------------------------------
-  //END  -- CALLED ON EDIT IT RESTORED FORMULAS FOR THE COLUMN EDITED
-  //------------------------------------------------------------------------------------------------------------------
-  this.rebuildFormulas = function(formulasProperties, columnPositionLetter) {
-    var addForecastFormulas = formulasProperties;
-    var newForecastColumnPositionLetter = columnPositionLetter;
-
-    var sheet = SpreadsheetApp.getActiveSpreadsheet();
-
-    for (var forecastFormulas in addForecastFormulas) {
-      var splitted = forecastFormulas.split(':')[0];
-
-      //Browser.msgBox(addForecastFormulas[forecastFormulas].formula);
-
-      //get the formula with string to be replaced (eg. _1 )
-      var finalFormula =addForecastFormulas[forecastFormulas].formula;
-
-      var lengLoop = addForecastFormulas[forecastFormulas].replacer.length;
-      //loop over "replacer" node. It allow to calculate the row position of the cell
-      for (var i=0; i<lengLoop;i++){
-
-        //sum the row with the content of replecer
-        var newValue = newForecastColumnPositionLetter+ (parseInt(splitted)+addForecastFormulas[forecastFormulas].replacer[i]);
-
-        //replace loop for all the occurences
-        finalFormula= finalFormula.split('_'+(i+1)).join(newValue);
-
-        //build the cell  (eg if we have newForecastColumnPositionLetter="AA" and  forecastFormulas="10:10"" IT BECOMES AA10 )
-        var cellForNewFormula = newForecastColumnPositionLetter+splitted;
-
-        //set the new formula
-        sheet.getRange(cellForNewFormula).setFormula(finalFormula);
-
-
-      }
-
-    }
-  }
-  //------------------------------------------------------------------------------------------------------------------
-  // END -- Rebuild the formulas on the sheet      
-  //------------------------------------------------------------------------------------------------------------------
-
 }

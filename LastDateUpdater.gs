@@ -14,20 +14,49 @@ var LastDateUpdater=new function(){
   }
 
 
-   //------------------------------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------------------------
   /**
-	 * STORE INTO SESSION THE LABEL ROW FOR LAST DATE
-     * @params  {string} user token
-	 */
+  * STORE INTO SESSION THE LABEL ROW FOR LAST DATE
+  * @params  {string} user token
+  */
   //------------------------------------------------------------------------------------------------------------------
   this.protectCell = function(userToken){
-
-      var labelRowForLastDate=JSON.parse(FirebaseConnector.getFireBaseData('config/labelRowForLastDate/argentina',userToken));
-      //Utilities.sleep(300);
-    //store into session the labelRowForLastDate
-      PropertiesService.getUserProperties().setProperty("labelRowForLastDate", labelRowForLastDate);
-
-    }
+  
+    //get the google spreadSheet
+    var ss = SpreadsheetApp.getActiveSpreadsheet();    
+    //get all the sheets
+    var allSheets = ss.getSheets();
+    //loop all the sheets and set all the properties needed
+    for(var i=0; i< allSheets.length; i++){
+      
+      var sheetName = allSheets[i].getName();
+      
+      //if is not an hidden template
+      if( sheetName.indexOf('Template_') < 0){
+        
+        var commodityName = ss.getSheetByName(sheetName).getRange(Config.Sheet.commodityCell).getValue().toLowerCase();
+        
+        var labelRowForLastDate=JSON.parse(FirebaseConnector.getFireBaseData('config/labelRowForLastDate/'+FirebaseConnector.getCountryNameFromSheet(userToken)+'/'+commodityName,userToken));    
+        //store into session the labelRowForLastDate
+        PropertiesService.getUserProperties().setProperty(commodityName+"_labelRowForLastDate", labelRowForLastDate);
+        
+        var rangeFromConfigNotParsed = FirebaseConnector.getFireBaseData('config/rangeToBeProtectedFromSettingLastDateUpdate/'+FirebaseConnector.getCountryNameFromSheet(userToken)+'/'+commodityName,FirebaseConnector.getToken());          
+        //store into session the ranges to be protected
+        PropertiesService.getUserProperties().setProperty(commodityName+"_rangeProtected",rangeFromConfigNotParsed);
+        
+        
+        var addForecastConfigNotParsed = FirebaseConnector.getFireBaseData('config/addForecast/'+FirebaseConnector.getCountryNameFromSheet(userToken)+'/'+commodityName,userToken);
+        var addForecastConfig=JSON.parse(addForecastConfigNotParsed);    
+        //store into session the ranges to be protected
+        PropertiesService.getUserProperties().setProperty(commodityName+"_addForecastConfig",addForecastConfigNotParsed);
+        
+      }
+      
+      
+    }    
+   
+    
+  }
   //------------------------------------------------------------------------------------------------------------------
   //END -- STORE INTO SESSION THE LABEL ROW FOR LAST DATE
   //------------------------------------------------------------------------------------------------------------------
@@ -40,8 +69,14 @@ var LastDateUpdater=new function(){
 	 */
   //------------------------------------------------------------------------------------------------------------------
   this.onEditSetLastUpdateDate = function (userToken,e) {
-
-    var lastDateUpdaterRow = JSON.parse(PropertiesService.getUserProperties().getProperty("labelRowForLastDate"));
+    //get the google sheet
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    //TODO _ pay attention to multiple sheets
+    var sheet = ss.getActiveSheet();
+    
+    var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue().toLowerCase();
+    
+    var lastDateUpdaterRow = JSON.parse(PropertiesService.getUserProperties().getProperty(commodityName+"_labelRowForLastDate"));
 
     var sheet = SpreadsheetApp.getActiveSpreadsheet();
 
@@ -50,7 +85,7 @@ var LastDateUpdater=new function(){
 
     var ss = sheet.getSheets()[0];
     
-    var rangeProtected = JSON.parse(PropertiesService.getUserProperties().getProperty("rangeProtected"));    
+    var rangeProtected = JSON.parse(PropertiesService.getUserProperties().getProperty(commodityName+"_rangeProtected"));    
 
     var mergeRange = rangeProtected;        
 

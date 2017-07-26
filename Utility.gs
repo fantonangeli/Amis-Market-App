@@ -280,7 +280,7 @@ var Utility=new (function(){
       sheet.getRange(columnsEdited+interestedRows[17]).setNumberFormat('0');
 
     }else {
-      //set cell 41
+      //set cell 31
       sheet.getRange(columnsEdited+interestedRows[17]).setFontColor('#000000');
       sheet.getRange(columnsEdited+interestedRows[17]).setBackground('#d8d8d8');
       sheet.getRange(columnsEdited+interestedRows[17]).setNumberFormat('0');
@@ -378,17 +378,6 @@ var Utility=new (function(){
   //------------------------------------------------------------------------------------------------------------------
   // END -- apply conditional formatting and color the cell when it is required
   //------------------------------------------------------------------------------------------------------------------
-
-
-  this.noNegativeValue=function(){
-    //Get the currently active sheet
-    var sheet = SpreadsheetApp.getActiveSheet()
-    //select a range to be validated
-    var newRange = sheet.getRange('Maize!R10:AA26');
-    // Set the data validation for cells to require any value that does not include "-".
-    var rule = SpreadsheetApp.newDataValidation().requireTextDoesNotContain('-').setAllowInvalid(false).build();
-    newRange.setDataValidation(rule);
-  }
 
   /**
    * check if a given cell is in a range

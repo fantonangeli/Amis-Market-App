@@ -95,12 +95,15 @@ var ForecastingMethodologies = new( function() {
 			Browser.msgBox( "You must be logged to use this functionality!" );
 			return null;
 		}
+      
+       var sheet = SpreadsheetApp.getActiveSheet();
+       var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue().toLowerCase(); 
 
 		config=ForecastingMethodologies.getConfig();
 
 		if(!config) return null;
 
-		return config.maize.ranges;
+		return config[commodityName].ranges;
 
 	};
 
@@ -112,6 +115,9 @@ var ForecastingMethodologies = new( function() {
  	 * @return {bool}       true if ok, false otherwise
  	 */
 	this.moveFMCols = function( range, columnOffset ) {
+        var sheet = SpreadsheetApp.getActiveSheet();
+        var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue().toLowerCase();; 
+      
 		var movedColNum, newFmRanges = [];
 		var fmRanges = this.getFMRanges();
 		range = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( range );
@@ -132,7 +138,7 @@ var ForecastingMethodologies = new( function() {
 
 		FirebaseConnector.writeOnFirebase(
 			newFmRanges,
-			getFbConfigPath()+'/maize/ranges',
+			getFbConfigPath()+'/'+commodityName+'/ranges',
 			FirebaseConnector.getToken()
 		);
 

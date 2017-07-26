@@ -57,7 +57,7 @@ var SyncMasterSheet=new function(){
 	 */
   //---------------------------------------------------------
   this.startSync=function(userToken) {
-    SyncMasterSheet.deleteSavedData();
+    //SyncMasterSheet.deleteSavedData();
     //SyncMasterSheet.moveRangesCols('AC:AC',1);
     
     //hide old forecasts leaving only the last one
@@ -129,31 +129,38 @@ var SyncMasterSheet=new function(){
     
     //-------------------------------------------------------------------------------------------------
      //TODO _ move this logic out of here
+     //get the google sheet
+     var ss = SpreadsheetApp.getActiveSpreadsheet();
+     //TODO _ pay attention to multiple sheets
+     var sheet = ss.getActiveSheet();
+     
+     var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue().toLowerCase();
+     
      
      var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);
-
+     
      //datanode from firebase
-      var periodsNode = 'config/addForecast/'+countryName;
+      var periodsNode = 'config/addForecast/'+countryName+ '/' +commodityName;
      
      var periodsData= JSON.parse(FirebaseConnector.getFireBaseData(periodsNode,userToken));
      
      for (var period in periodsData) {       
        //datanode from firebase
-       var lastForeCast = 'config/addForecast/'+countryName+'/'+period+'/lastForecast';
-       
+       var lastForeCast = 'config/addForecast/'+countryName+'/'+commodityName+'/'+ period+'/lastForecast';
+     
        //var newForecastColumnPosition = parseInt(FirebaseConnector.getFireBaseData(lastForeCast,userToken));
        var newForecastColumnPosition = JSON.parse(FirebaseConnector.getFireBaseData(lastForeCast,userToken));
        newForecastColumnPosition = Utility.letterToColumn(newForecastColumnPosition);      
        
        //datanode from firebase
-       var beginForeCast = 'config/addForecast/'+countryName+'/'+period+'/firstForecast';
+       var beginForeCast = 'config/addForecast/'+countryName+'/'+ commodityName+'/'+ period+'/firstForecast';
        
        //var firstForecastColumnPosition = parseInt(FirebaseConnector.getFireBaseData(beginForeCast,userToken));
        var firstForecastColumnPosition = JSON.parse(FirebaseConnector.getFireBaseData(beginForeCast,userToken));
        firstForecastColumnPosition = Utility.letterToColumn(firstForecastColumnPosition);
        
        //datanode from firebase
-       var orderInTheSheetNode = 'config/addForecast/'+countryName+'/'+period+'/orderInTheSheet';
+       var orderInTheSheetNode = 'config/addForecast/'+countryName+'/'+ commodityName+ '/'+ +period+'/orderInTheSheet';
        
        var orderInTheSheet = parseInt(FirebaseConnector.getFireBaseData(orderInTheSheetNode,userToken));
        
@@ -202,14 +209,15 @@ var SyncMasterSheet=new function(){
 	  return Utility.getGoogleSheetID();
   }
   
-  this.setLastUpdate = function(userToken){
+  this.setLastUpdate = function(userToken){    
     var sheet = SpreadsheetApp.getActiveSheet();
-    var date = new Date();
-    //var dateFormatted = date.getDate()+"/"+date.getMonth()+"/"+date.getFullYear();
+    var date = new Date();    
+    
+    var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue().toLowerCase();    
     
     var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);
     //datanode from firebase
-    var lastUpdateCellNode = 'config/lastUpdateCell/'+countryName;
+    var lastUpdateCellNode = 'config/lastUpdateCell/'+countryName+'/'+commodityName;
     var lastUpdateCell= JSON.parse(FirebaseConnector.getFireBaseData(lastUpdateCellNode,userToken));
     
     //TODO get this range from firebase
@@ -217,9 +225,12 @@ var SyncMasterSheet=new function(){
   }
   
   this.getRangeToBeStoredNode = function(userToken){
-	  var sheetId= this.getSheetId();
-	  var dataBaseNodeToRead='config/countries/'+sheetId;	  
-	  return 'config/rangeToBeStored/'+JSON.parse(FirebaseConnector.getFireBaseData(dataBaseNodeToRead,userToken)).name;
+    var sheet = SpreadsheetApp.getActiveSheet();
+    var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue().toLowerCase();   
+    
+    var sheetId= this.getSheetId();
+    var dataBaseNodeToRead='config/countries/'+sheetId;	  
+    return 'config/rangeToBeStored/'+JSON.parse(FirebaseConnector.getFireBaseData(dataBaseNodeToRead,userToken)).name+'/'+commodityName;
   }
   
   
@@ -238,7 +249,7 @@ var SyncMasterSheet=new function(){
      *  @return  {array} ranges to be stored
 	 */
    //---------------------------------------------------------
-  this.getRangeToBeStored = function(userToken) {
+  this.getRangeToBeStoredOLD = function(userToken) {
     
     var rangeFromConfig=JSON.parse(FirebaseConnector.getFireBaseData(SyncMasterSheet.getRangeToBeStoredNode(userToken),userToken));
     
@@ -255,296 +266,24 @@ var SyncMasterSheet=new function(){
   //---------------------------------------------------------
   // END -- Retrives all the ranges to be stored
   //---------------------------------------------------------
+  
+  //---------------------------------------------------------   
+   /**
+	 * retrive all the ranges to be stored       
+     *  @param  {string} auth token     
+     *  @return  {array} ranges to be stored
+	 */
+   //---------------------------------------------------------
+  this.getRangeToBeStored = function(userToken) {
+    
+    var rangeFromConfig=JSON.parse(FirebaseConnector.getFireBaseData(SyncMasterSheet.getRangeToBeStoredNode(userToken),userToken));
+    
+    return rangeFromConfig
+  }
+  //--------------------------------------------------------- 
   //---------------------------------------------------------
-  
-  //------------------------------------------------------------------------------------------------------------------
-  /**
- 	 * move PROTECTED FORMULAS 
- 	 * @param  {string} range range in A1 notation
-	 * @param  {number} columnOffset   number of columns right from the range's top-left cell; negative values represent columns left from the range's top-left cell
- 	 * @return {bool}       true if ok, false otherwise
- 	 */
-  //------------------------------------------------------------------------------------------------------------------
-  this.moveProtectedFormulasCols16_17 = function( range, columnOffset){
-    
-      //TODO _ take argentina from firebase
-      var rangeToBeStoredNode = 'config/formulasToBeProtectedFrc16-17/argentina';
-      
-      //retrive the row containing 'Forecasting  Methodology'. IT MUST BE next the last forecast.
-      var rangeToBeStored = JSON.parse(FirebaseConnector.getFireBaseData(rangeToBeStoredNode,FirebaseConnector.getToken()));    
-      
-      
-		var movedColNum, newFmRanges = [];
-		var fmRanges = rangeToBeStored;
-		range = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( range );
-		movedColNum = range.getLastColumn();
-        //Browser.msgBox('movedCL '+ movedColNum);
-   
-		if ( !fmRanges ) return;
-
-		var r;
-		for ( var i = fmRanges.length; i--; ) {
-			r = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( fmRanges[ i ] );            
-          //Browser.msgBox('ASSTL '+  r.getLastColumn());
-			if ( r.getLastColumn() >= movedColNum ) {              
-                r = r.offset( 0, columnOffset );
-			}
-
-			newFmRanges.unshift( r.getA1Notation() );
-		}
-
-		FirebaseConnector.writeOnFirebase(
-			newFmRanges,
-			'config/formulasToBeProtectedFrc16-17/argentina',
-			FirebaseConnector.getToken()
-		);
-    };
-  //------------------------------------------------------------------------------------------------------------------  
-  // END -- move RANGES TO BE STORED	
-  //------------------------------------------------------------------------------------------------------------------
-  
-  
-  //------------------------------------------------------------------------------------------------------------------
-  /**
- 	 * move moveProtectedFormulasCols for FORECAST 17_18
- 	 * @param  {string} range range in A1 notation
-	 * @param  {number} columnOffset   number of columns right from the range's top-left cell; negative values represent columns left from the range's top-left cell
- 	 * @param  {number} 0 if you have to move only the end of the range , 1 if you have to slide all the range
- 	 */
-  //------------------------------------------------------------------------------------------------------------------
-  this.moveProtectedFormulasCols17_18 = function( range, columnOffset, type ){
-    
-      //TODO _ take argentina from firebase
-      var rangeToBeStoredNode = 'config/formulasToBeProtectedFrc17-18/argentina';
-      
-      //retrive the row containing 'Forecasting  Methodology'. IT MUST BE next the last forecast.
-      var rangeToBeStored = JSON.parse(FirebaseConnector.getFireBaseData(rangeToBeStoredNode,FirebaseConnector.getToken()));    
-      
-      
-		var movedColNum, newFmRanges = [];
-		var fmRanges = rangeToBeStored;
-		range = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( range );
-		movedColNum = range.getLastColumn();
-        //Browser.msgBox('movedCL '+ movedColNum);
-   
-		if ( !fmRanges ) return;
-
-		var r;
-		for ( var i = fmRanges.length; i--; ) {
-			r = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( fmRanges[ i ] );            
-          //Browser.msgBox('ASSTL '+  r.getLastColumn());
-			if ( r.getLastColumn() >= movedColNum ) {              
-              if(type == 0){
-                r = r.offset( 0, 0, r.getNumRows() , r.getNumColumns()+1 );
-              }else{
-                r = r.offset( 0, columnOffset );
-              }          
-			}
-
-			newFmRanges.unshift( r.getA1Notation() );
-		}
-
-		FirebaseConnector.writeOnFirebase(
-			newFmRanges,
-			'config/formulasToBeProtectedFrc17-18/argentina',
-			FirebaseConnector.getToken()
-		);
-    };
-  //------------------------------------------------------------------------------------------------------------------  
-  // END --  move moveProtectedFormulasCols for FORECAST 17_18	
-  //------------------------------------------------------------------------------------------------------------------
-  
-  //------------------------------------------------------------------------------------------------------------------
-  /**
- 	 * move RANGE TO BE STORED FRC 16-17
- 	 * @param  {string} range range in A1 notation
-	 * @param  {number} columnOffset   number of columns right from the range's top-left cell; negative values represent columns left from the range's top-left cell
- 	 * @return {bool}       true if ok, false otherwise
- 	 */
-  //------------------------------------------------------------------------------------------------------------------
-  this.moveRangeToBeStored16_17 = function( range, columnOffset){
-    
-      //TODO _ take argentina from firebase
-      var rangeToBeStoredNode = 'config/rangeToBeStored16-17/argentina';
-      
-      //retrive the row containing 'Forecasting  Methodology'. IT MUST BE next the last forecast.
-      var rangeToBeStored = JSON.parse(FirebaseConnector.getFireBaseData(rangeToBeStoredNode,FirebaseConnector.getToken()));    
-      
-      
-		var movedColNum, newFmRanges = [];
-		var fmRanges = rangeToBeStored;
-		range = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( range );
-		movedColNum = range.getLastColumn();
-        //Browser.msgBox('movedCL '+ movedColNum);
-   
-		if ( !fmRanges ) return;
-
-		var r;
-		for ( var i = fmRanges.length; i--; ) {
-			r = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( fmRanges[ i ] );            
-          //Browser.msgBox('ASSTL '+  r.getLastColumn());
-			if ( r.getLastColumn() >= movedColNum ) {              
-                r = r.offset( 0, 0, r.getNumRows() , r.getNumColumns()+1 );              
-			}
-
-			newFmRanges.unshift( r.getA1Notation() );
-		}
-
-		FirebaseConnector.writeOnFirebase(
-			newFmRanges,
-			'config/rangeToBeStored16-17/argentina',
-			FirebaseConnector.getToken()
-		);
-    };
-  //------------------------------------------------------------------------------------------------------------------  
-  // END -- move RANGES TO BE STORED	
-  //------------------------------------------------------------------------------------------------------------------
-  
-  //------------------------------------------------------------------------------------------------------------------
-  /**
- 	 * move RANGE TO BE STORED FRC 17-18
- 	 * @param  {string} range range in A1 notation
-	 * @param  {number} columnOffset   number of columns right from the range's top-left cell; negative values represent columns left from the range's top-left cell
- 	 * @param  {number} 0 if you have to move only the end of the range , 1 if you have to slide all the range
- 	 */
-  //------------------------------------------------------------------------------------------------------------------
-  this.moveRangeToBeStored17_18 = function( range, columnOffset, type ){
-    
-      //TODO _ take argentina from firebase
-      var rangeToBeStoredNode = 'config/rangeToBeStored17-18/argentina';
-      
-      //retrive the row containing 'Forecasting  Methodology'. IT MUST BE next the last forecast.
-      var rangeToBeStored = JSON.parse(FirebaseConnector.getFireBaseData(rangeToBeStoredNode,FirebaseConnector.getToken()));    
-      
-      
-		var movedColNum, newFmRanges = [];
-		var fmRanges = rangeToBeStored;
-		range = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( range );
-		movedColNum = range.getLastColumn();
-        //Browser.msgBox('movedCL '+ movedColNum);
-   
-		if ( !fmRanges ) return;
-
-		var r;
-		for ( var i = fmRanges.length; i--; ) {
-			r = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( fmRanges[ i ] );            
-          //Browser.msgBox('ASSTL '+  r.getLastColumn());
-			if ( r.getLastColumn() >= movedColNum ) {              
-              if(type == 0){
-                r = r.offset( 0, 0, r.getNumRows() , r.getNumColumns()+1 );
-              }else{
-                r = r.offset( 0, columnOffset );
-              }          
-			}
-
-			newFmRanges.unshift( r.getA1Notation() );
-		}
-
-		FirebaseConnector.writeOnFirebase(
-			newFmRanges,
-			'config/rangeToBeStored17-18/argentina',
-			FirebaseConnector.getToken()
-		);
-    };
-  //------------------------------------------------------------------------------------------------------------------  
-  // END --  move moveProtectedFormulasCols for FORECAST 17_18	
-  //------------------------------------------------------------------------------------------------------------------
-  
-  //------------------------------------------------------------------------------------------------------------------
-  /**
-  * move RANGE TO BE PROTECTED FRC 16-17
-  * @param  {string} range range in A1 notation
-  * @param  {number} columnOffset   number of columns right from the range's top-left cell; negative values represent columns left from the range's top-left cell
-  * @return {bool}       true if ok, false otherwise
-  */
-  //------------------------------------------------------------------------------------------------------------------
-  this.moveRangeToBeProtected16_17 = function( range, columnOffset){    
-    //TODO _ take argentina from firebase
-    var rangeToBeStoredNode = 'config/rangeToBeProtected16-17/argentina';
-    
-    //retrive the row containing 'Forecasting  Methodology'. IT MUST BE next the last forecast.
-    var rangeToBeStored = JSON.parse(FirebaseConnector.getFireBaseData(rangeToBeStoredNode,FirebaseConnector.getToken()));    
-    
-    
-    var movedColNum, newFmRanges = [];
-    var fmRanges = rangeToBeStored;
-    range = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( range );
-    movedColNum = range.getLastColumn();
-    //Browser.msgBox('movedCL '+ movedColNum);
-    
-    if ( !fmRanges ) return;
-    
-    var r;
-    for ( var i = fmRanges.length; i--; ) {
-      r = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( fmRanges[ i ] );            
-      //Browser.msgBox('ASSTL '+  r.getLastColumn());
-      if ( r.getLastColumn() >= movedColNum ) {              
-        r = r.offset( 0, 0, r.getNumRows() , r.getNumColumns()+1 );              
-      }
-      
-      newFmRanges.unshift( r.getA1Notation() );
-    }
-    
-    FirebaseConnector.writeOnFirebase(
-      newFmRanges,
-      'config/rangeToBeProtected16-17/argentina',
-      FirebaseConnector.getToken()
-    );
-  };
-  //------------------------------------------------------------------------------------------------------------------  
-  // END -- move RANGES TO BE PROTECTED
-  //------------------------------------------------------------------------------------------------------------------
-  
-  //------------------------------------------------------------------------------------------------------------------
-  /**
-  * move RANGE TO BE PROTECTED FRC 17-18
-  * @param  {string} range range in A1 notation
-  * @param  {number} columnOffset   number of columns right from the range's top-left cell; negative values represent columns left from the range's top-left cell
-  * @param  {number} 0 if you have to move only the end of the range , 1 if you have to slide all the range
-  */
-  //------------------------------------------------------------------------------------------------------------------
-  this.moveRangeToBeProtected17_18 = function( range, columnOffset, type ){
-    
-    //TODO _ take argentina from firebase
-    var rangeToBeStoredNode = 'config/rangeToBeProtected17-18/argentina';
-    
-    //retrive the row containing 'Forecasting  Methodology'. IT MUST BE next the last forecast.
-    var rangeToBeStored = JSON.parse(FirebaseConnector.getFireBaseData(rangeToBeStoredNode,FirebaseConnector.getToken()));    
-    
-    
-    var movedColNum, newFmRanges = [];
-    var fmRanges = rangeToBeStored;
-    range = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( range );
-    movedColNum = range.getLastColumn();
-    //Browser.msgBox('movedCL '+ movedColNum);
-    
-    if ( !fmRanges ) return;
-    
-    var r;
-    for ( var i = fmRanges.length; i--; ) {
-      r = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( fmRanges[ i ] );            
-      //Browser.msgBox('ASSTL '+  r.getLastColumn());
-      if ( r.getLastColumn() >= movedColNum ) {              
-        if(type == 0){
-          r = r.offset( 0, 0, r.getNumRows() , r.getNumColumns()+1 );
-        }else{
-          r = r.offset( 0, columnOffset );
-        }          
-      }
-      
-      newFmRanges.unshift( r.getA1Notation() );
-    }
-    
-    FirebaseConnector.writeOnFirebase(
-      newFmRanges,
-      'config/rangeToBeProtected17-18/argentina',
-      FirebaseConnector.getToken()
-    );
-  };
-  //------------------------------------------------------------------------------------------------------------------  
-  // END --  move RANGE TO BE PROTECTED for FORECAST 17_18	
-  //------------------------------------------------------------------------------------------------------------------
-
+  // END -- Retrives all the ranges to be stored
+  //---------------------------------------------------------
   
   //------------------------------------------------------------------------------------------------------------------  
   // delete saved data
