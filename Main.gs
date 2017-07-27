@@ -6,7 +6,9 @@ function onOpen() {
   Utility.createAmisMenu();
   
   //alert for amis menu
+  if (!Config.devMode) {
   Browser.msgBox('To Open AMIS click on "AMIS" in the menu');
+  }
   
   //create Amis sidebar
   //Utility.openSidebar();
