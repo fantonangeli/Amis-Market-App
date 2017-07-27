@@ -41,10 +41,12 @@ var ForecastingMethodologies = new( function() {
 
 	/**
 	 * show the Forecasting  Methodology's dialog
+	 * @param  {string} CellNotation cell in A1Notation
+	 * @param  {string} CellValue    cell value
 	 */
-	this.showMethodsDialog = function( currCell ) {
-		currCellNotation = currCell.getA1Notation();
-		currCellValue = currCell.getValue();
+	this.showMethodsDialog = function( CellNotation,CellValue ) {
+		currCellNotation = CellNotation;
+		currCellValue = CellValue;
 
 		var html = HtmlService.createTemplateFromFile( 'MethodsDialog' )
 			.evaluate()
@@ -52,7 +54,6 @@ var ForecastingMethodologies = new( function() {
 			.setHeight( 400 );
 		SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
 			.showModalDialog( html, 'Forecasting Methodologies' );
-		return true;
 	};
 
 	/**
@@ -95,9 +96,9 @@ var ForecastingMethodologies = new( function() {
 			Browser.msgBox( "You must be logged to use this functionality!" );
 			return null;
 		}
-      
+
        var sheet = SpreadsheetApp.getActiveSheet();
-       var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue().toLowerCase(); 
+       var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue().toLowerCase();
 
 		config=ForecastingMethodologies.getConfig();
 
@@ -116,8 +117,8 @@ var ForecastingMethodologies = new( function() {
  	 */
 	this.moveFMCols = function( range, columnOffset ) {
         var sheet = SpreadsheetApp.getActiveSheet();
-        var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue().toLowerCase();; 
-      
+        var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue().toLowerCase();;
+
 		var movedColNum, newFmRanges = [];
 		var fmRanges = this.getFMRanges();
 		range = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( range );
@@ -151,7 +152,7 @@ var ForecastingMethodologies = new( function() {
 	 * @param  {Object} e
 	 */
 	 this.onEdit = function(e) {
-	   var cell, cellValue, fmRanges, multiple, rangeValues, _i, _len;
+	   var cell, cellValue, fmRanges, multiple, rangeValues, _i, _len, dataValidations=[];
 	   rangeValues = void 0;
 
 	   if (Utility.isMaster()) {
@@ -165,15 +166,18 @@ var ForecastingMethodologies = new( function() {
 	   }
 
 	   rangeValues = e.range.getValues();
+
 	   multiple = rangeValues.length > 1;
 
 	   for (_i = 0, _len = rangeValues.length; _i < _len; _i++) {
 	     cellValue = rangeValues[_i][0];
 	     cell = e.range.getCell(_i + 1, 1);
+		 dataValidations.push([null]);
 	     rangeValues[_i][0]=this.onEditCell(cell, fmRanges, cellValue, multiple);
 	   }
 
 	   e.range.setValues(rangeValues);
+	   e.range.setDataValidations(dataValidations);
 	 };
 
 	/**
@@ -185,21 +189,23 @@ var ForecastingMethodologies = new( function() {
 	 * @return {array}          the value to be writed
 	 */
     this.onEditCell = function( cell, fmRanges, cellValue, multiple ) {
-		var r;
+		var r, cellA1;
+
+		cellA1=cell.getA1Notation();
 
     	for ( var i = fmRanges.length; i--; ) {
     		r = fmRanges[ i ];
 
     		//check if is in a FM range
-    		if ( Utility.isInRange( r, cell ) ) {
+    		if ( Utility.isInRange( r, cellA1 ) ) {
 
     			//THIS AVOID PROBLEMS IN CASE SOMEBODY COPY AND PASTE VALUES FROM A CELL WITH VALIDATION
-    			cell.setDataValidation( null );
+    			//cell.setDataValidation( null );
 
     			//check if cell is not valid and is to open the dialog
     			if ( !ForecastingMethodologies.isValid( cellValue ) ) {
     				if(!multiple) {
-						ForecastingMethodologies.showMethodsDialog( cell );
+						ForecastingMethodologies.showMethodsDialog( cellA1, cellValue );
 					}
     				return "";
     			} else {
