@@ -105,6 +105,43 @@ var SyncMasterSheet=new function(){
         
       }
     
+    var commodityName = FirebaseConnector.getCommodityName();
+    
+    
+    var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);
+    
+    //datanode from firebase
+    var periodsNode = 'config/addForecast/'+countryName+ '/' +commodityName;
+    
+    var periodsData= JSON.parse(FirebaseConnector.getFireBaseData(periodsNode,userToken));
+    
+    for (var period in periodsData) {            
+      
+      //read config from firebase
+      var periodConfNode = 'config/addForecast/'+countryName+'/'+commodityName +'/'+period;
+      
+      var periodConf = JSON.parse(FirebaseConnector.getFireBaseData(periodConfNode,userToken));
+      
+      //last frc
+      var lastForecastColumnPosition = periodConf.lastForecast;
+      lastForecastColumnPosition = Utility.letterToColumn(lastForecastColumnPosition);
+      
+      //first frc    
+      var firstForecastColumnPosition = periodConf.firstForecast;
+      firstForecastColumnPosition = Utility.letterToColumn(firstForecastColumnPosition);
+      
+      //actual frc
+      var actualForecastColumnPosition = periodConf.actualPosition;
+      actualForecastColumnPosition = Utility.letterToColumn(actualForecastColumnPosition);
+      
+      
+      //SOLVE CTRL+Z PROBLEMS. IF ANY and return the position where put the new column
+      //newForecastColumnPosition =ForecastUtility.preventUndoConflictForNewForecast(newForecastColumnPosition,lastForeCast,userToken,orderInTheSheet,firstForecastColumnPosition,beginForeCast);       
+      
+      //hide all the last forecast -- this.findeValueIntoRow(lastForeCast) is called again because moveNewForecastFinder moves that value      
+      ForecastUtility.hideColumnForNewForecasts(firstForecastColumnPosition,lastForecastColumnPosition, actualForecastColumnPosition);
+    }
+    
     Utility.toastInfo('Data successfully saved to the AMIS database', 'DATA SAVED');
     
     //protect again the sheet
@@ -115,65 +152,22 @@ var SyncMasterSheet=new function(){
   //---------------------------------------------------------
   
   //---------------------------------------------------------   
-   /**
-	 * logic for saving Excel on firebase
-     *  @param  excel data
-     *  @param  {string} auth token     
-	 */
-   //---------------------------------------------------------
-   this.syncMasterSheet=function(excelData,userToken, saveNode) {
+  /**
+  * logic for saving Excel on firebase
+  *  @param  excel data
+  *  @param  {string} auth token     
+  */
+  //---------------------------------------------------------
+  this.syncMasterSheet=function(excelData,userToken, saveNode) {
     
     FirebaseConnector.writeOnFirebase(excelData,saveNode,userToken);
-     
+    
     SyncMasterSheet.setLastUpdate(userToken);
     
-    //-------------------------------------------------------------------------------------------------
-     //TODO _ move this logic out of here
-     //get the google sheet
-     var ss = SpreadsheetApp.getActiveSpreadsheet();
-     //TODO _ pay attention to multiple sheets
-     var sheet = ss.getActiveSheet();
-     
-     var commodityName = FirebaseConnector.getCommodityName();
-     
-     
-     var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);
-     
-     //datanode from firebase
-      var periodsNode = 'config/addForecast/'+countryName+ '/' +commodityName;
-     
-     var periodsData= JSON.parse(FirebaseConnector.getFireBaseData(periodsNode,userToken));
-     
-     for (var period in periodsData) {       
-       //datanode from firebase
-       var lastForeCast = 'config/addForecast/'+countryName+'/'+commodityName+'/'+ period+'/lastForecast';
-     
-       //var newForecastColumnPosition = parseInt(FirebaseConnector.getFireBaseData(lastForeCast,userToken));
-       var newForecastColumnPosition = JSON.parse(FirebaseConnector.getFireBaseData(lastForeCast,userToken));
-       newForecastColumnPosition = Utility.letterToColumn(newForecastColumnPosition);      
-       
-       //datanode from firebase
-       var beginForeCast = 'config/addForecast/'+countryName+'/'+ commodityName+'/'+ period+'/firstForecast';
-       
-       //var firstForecastColumnPosition = parseInt(FirebaseConnector.getFireBaseData(beginForeCast,userToken));
-       var firstForecastColumnPosition = JSON.parse(FirebaseConnector.getFireBaseData(beginForeCast,userToken));
-       firstForecastColumnPosition = Utility.letterToColumn(firstForecastColumnPosition);
-       
-       //datanode from firebase
-       var orderInTheSheetNode = 'config/addForecast/'+countryName+'/'+ commodityName+ '/'+ +period+'/orderInTheSheet';
-       
-       var orderInTheSheet = parseInt(FirebaseConnector.getFireBaseData(orderInTheSheetNode,userToken));
-       
-       //SOLVE CTRL+Z PROBLEMS. IF ANY and return the position where put the new column
-       //newForecastColumnPosition =ForecastUtility.preventUndoConflictForNewForecast(newForecastColumnPosition,lastForeCast,userToken,orderInTheSheet,firstForecastColumnPosition,beginForeCast);       
-       
-       //hide all the last forecast -- this.findeValueIntoRow(lastForeCast) is called again because moveNewForecastFinder moves that value
-       ForecastUtility.hideOldForecasts(firstForecastColumnPosition, newForecastColumnPosition,2 );
-     }
     
-    //-------------------------------------------------------------------------------------------------
     
-   }
+    
+  }
   //---------------------------------------------------------
   // END --- logic for saving Excel on firebase
   //---------------------------------------------------------

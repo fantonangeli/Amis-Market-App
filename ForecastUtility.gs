@@ -462,8 +462,7 @@ var ForecastUtility=new function(){
     }else {
       
       var letterClm = Utility.numToChar(actualForecastColumnPosition);
-      letterClm = letterClm+':'+letterClm;
-      
+      letterClm = letterClm+':'+letterClm;      
       //unhide the new actualPosition column. the function TAKES RANGE as paramaeter!
       sheet.unhideColumn(sheet.getRange(letterClm));
       
