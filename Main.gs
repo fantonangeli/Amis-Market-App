@@ -25,7 +25,7 @@ function openSidebar(){
 function onEdit(e){
   
   //IF user is NOT editing a Template Sheet. Do normal logic.
-  if( !Utility.isTemplate() ) {
+  if( !Utility.isTemplate() && !Utility.isMaster() ) {
     
     //protect formulas and style for all the sheets
     ProtectionMaker.checkIfValueIsNotProtected(e);

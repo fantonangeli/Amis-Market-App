@@ -120,6 +120,24 @@ var FirebaseConnector=new function(){
   //---------------------------------------------------------
   // END -- fetch country name from google sheet ID
   //---------------------------------------------------------
+  
+  //---------------------------------------------------------
+  /**
+	 * find the commodity name     
+     * @return {string}  it return the commodation name (eg. maize ) 
+	 */
+  //---------------------------------------------------------
+  this.getCommodityName= function() {
+    //get the google sheet
+    var ss = SpreadsheetApp.getActiveSpreadsheet();    
+    var sheet = ss.getActiveSheet();
+    
+    //it return the commodation name (eg. maize ) 
+    return sheet.getRange(Config.Sheet.commodityCell).getValue().toLowerCase();
+  };
+  //---------------------------------------------------------
+  // END -- find the commodity name     
+  //---------------------------------------------------------  
 
 
 };

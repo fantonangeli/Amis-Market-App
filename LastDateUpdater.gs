@@ -74,7 +74,7 @@ var LastDateUpdater=new function(){
     //TODO _ pay attention to multiple sheets
     var sheet = ss.getActiveSheet();
     
-    var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue().toLowerCase();
+    var commodityName = FirebaseConnector.getCommodityName();
     
     var lastDateUpdaterRow = JSON.parse(PropertiesService.getUserProperties().getProperty(commodityName+"_labelRowForLastDate"));
 

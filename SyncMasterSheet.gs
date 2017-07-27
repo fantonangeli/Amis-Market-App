@@ -134,7 +134,7 @@ var SyncMasterSheet=new function(){
      //TODO _ pay attention to multiple sheets
      var sheet = ss.getActiveSheet();
      
-     var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue().toLowerCase();
+     var commodityName = FirebaseConnector.getCommodityName();
      
      
      var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);
@@ -213,7 +213,7 @@ var SyncMasterSheet=new function(){
     var sheet = SpreadsheetApp.getActiveSheet();
     var date = new Date();    
     
-    var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue().toLowerCase();    
+    var commodityName = FirebaseConnector.getCommodityName();  
     
     var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);
     //datanode from firebase
@@ -226,7 +226,7 @@ var SyncMasterSheet=new function(){
   
   this.getRangeToBeStoredNode = function(userToken){
     var sheet = SpreadsheetApp.getActiveSheet();
-    var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue().toLowerCase();   
+    var commodityName = FirebaseConnector.getCommodityName();
     
     var sheetId= this.getSheetId();
     var dataBaseNodeToRead='config/countries/'+sheetId;	  
