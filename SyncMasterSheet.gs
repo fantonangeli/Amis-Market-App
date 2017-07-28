@@ -29,7 +29,7 @@ var SyncMasterSheet=new function(){
           for (var i=0; i<rangeFromConfig.length;i++){
 
         	  //get Firebase node name to be fetch
-              var fireBaseNodeData= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/' + JSON.parse(SyncMasterSheet.getNodeToWriteData(userToken)).dataSheetNode+ '/' + rangeFromConfig[i];                        
+              var fireBaseNodeData= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/' + JSON.parse(SyncMasterSheet.getNodeToWriteData(userToken)).dataSheetNode + '/' + FirebaseConnector.getCommodityName() + '/' + rangeFromConfig[i];                        
               
               var fireBaseValues = JSON.parse(FirebaseConnector.getFireBaseData(fireBaseNodeData,userToken));	    	    
               
@@ -98,7 +98,7 @@ var SyncMasterSheet=new function(){
   	    }
           //store node for data in firebase -- it contains the rangeDefinition
         if(baseOfSaveNode ===''){
-            baseOfSaveNode= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/' + JSON.parse(SyncMasterSheet.getNodeToWriteData(userToken)).dataSheetNode;
+            baseOfSaveNode= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/'+ JSON.parse(SyncMasterSheet.getNodeToWriteData(userToken)).dataSheetNode+ '/' + FirebaseConnector.getCommodityName();
         }
           saveNode = baseOfSaveNode+ '/' + rangeFromConfig[p];
           SyncMasterSheet.syncMasterSheet(dataToBeStored,userToken,saveNode);
