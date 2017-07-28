@@ -63,75 +63,97 @@ var ForecastUtility=new function(){
   this.addForecast16_17= function(userToken){
     var period = '16-17';
     ForecastUtility.addForecast(period,userToken);
-  }
+  };
   //------------------------------------------------------------------------------------------------------------------
   // END --   ADD A NEW FORECAST on the google sheet
   //------------------------------------------------------------------------------------------------------------------
-  
+
   //------------------------------------------------------------------------------------------------------------------
   /**
   * ADD A NEW FORECAST 17-18
   * @param  {string} auth token
   */
   //------------------------------------------------------------------------------------------------------------------
-  this.addForecast17_18= function(userToken){        
+  this.addForecast17_18= function(userToken){
     var period = '17-18';
     ForecastUtility.addForecast(period,userToken);
-  }
+  };
   //------------------------------------------------------------------------------------------------------------------
   // END --   ADD A NEW FORECAST on the google sheet
   //------------------------------------------------------------------------------------------------------------------
-  
+
+  /**
+   * hide period's unactive columns
+   * @param  {object} periodConf configuration of the period from the db
+   */
+  this.hidePeriodColumns=function(periodConf){
+      //last frc
+      var lastForecastColumnPosition = periodConf.lastForecast;
+      lastForecastColumnPosition = Utility.letterToColumn(lastForecastColumnPosition);
+
+      //first frc
+      var firstForecastColumnPosition = periodConf.firstForecast;
+      firstForecastColumnPosition = Utility.letterToColumn(firstForecastColumnPosition);
+
+      //actual frc
+      var actualForecastColumnPosition = periodConf.actualPosition;
+      actualForecastColumnPosition = Utility.letterToColumn(actualForecastColumnPosition);
+
+      //hide correctly the new column
+      ForecastUtility.hideColumnForNewForecasts(firstForecastColumnPosition,lastForecastColumnPosition, actualForecastColumnPosition);
+  };
+
+
   //------------------------------------------------------------------------------------------------------------------
   /**
 	 * ADD A NEW FORECAST on the google sheet
      * @param  {string} auth token
 	 */
   //------------------------------------------------------------------------------------------------------------------
-  this.addForecast= function(period,userToken){    
-    
+  this.addForecast= function(period,userToken){
+
     var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);
     var sheet = SpreadsheetApp.getActiveSpreadsheet();
     var commodity = FirebaseConnector.getCommodityName();
-    
+
     //read config from firebase
     var periodConfNode = 'config/addForecast/'+countryName+'/'+commodity +'/'+period;
-    
+
     var periodConf = JSON.parse(FirebaseConnector.getFireBaseData(periodConfNode,userToken));
-    
+
     //last frc
     var lastForecastColumnPosition = periodConf.lastForecast;
     lastForecastColumnPosition = Utility.letterToColumn(lastForecastColumnPosition);
-    
-    //first frc    
+
+    //first frc
     var firstForecastColumnPosition = periodConf.firstForecast;
     firstForecastColumnPosition = Utility.letterToColumn(firstForecastColumnPosition);
-    
+
     //actual frc
     var actualForecastColumnPosition = periodConf.actualPosition;
     actualForecastColumnPosition = Utility.letterToColumn(actualForecastColumnPosition);
-    
+
     //if we cannot add new FRC.. break the script
     if(actualForecastColumnPosition == lastForecastColumnPosition)
       return 0;
-    
-    //increase actual position 
+
+    //increase actual position
     actualForecastColumnPosition = actualForecastColumnPosition +1;
-    
+
     var actualForecastColumnPositionNode = periodConfNode + '/actualPosition';
-    
+
     //update the actualPositon in FIREBASE
     FirebaseConnector.writeOnFirebase(Utility.numToChar(actualForecastColumnPosition), actualForecastColumnPositionNode, userToken);
-        
+
     //hide correctly the new column
     ForecastUtility.hideColumnForNewForecasts(firstForecastColumnPosition,lastForecastColumnPosition, actualForecastColumnPosition);
 
-  }
+  };
   //------------------------------------------------------------------------------------------------------------------
   // END --   ADD A NEW FORECAST on the google sheet
   //------------------------------------------------------------------------------------------------------------------
-  
-  
+
+
 
   //------------------------------------------------------------------------------------------------------------------
   /**
@@ -202,16 +224,16 @@ var ForecastUtility=new function(){
 
           // This inserts the new column
           sheet.insertColumnsAfter(newForecastColumnPosition,1);
-          
+
           //this set the correct formulas for new column
           //ForecastUtility.writeFormulasForNewForecasts(userToken, newForecastColumnPosition+1);
 
           var formulasProperties = JSON.parse(PropertiesService.getUserProperties().getProperty("rulesForFormulas"));
           var newForecastColumnPositionLetter = Utility.numToChar(newForecastColumnPosition+1);
-          
+
           //call rebuild formulas
-          ForecastUtility.rebuildFormulas(formulasProperties, newForecastColumnPositionLetter);    
-          
+          ForecastUtility.rebuildFormulas(formulasProperties, newForecastColumnPositionLetter);
+
           //MOVE PROTECTED FORMULAS  FRC 16-17
           SyncMasterSheet.moveProtectedFormulasCols16_17(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1);
 
@@ -245,7 +267,7 @@ var ForecastUtility=new function(){
 
 
 
-  }
+  };
   //------------------------------------------------------------------------------------------------------------------
   // END --   ADD A NEW FORECAST on the google sheet
   //------------------------------------------------------------------------------------------------------------------
@@ -300,16 +322,16 @@ var ForecastUtility=new function(){
       var newCell = sheet.getActiveSheet().getRange(labelRowNumber,newForecastColumnPosition+1).setValue(labelValue);
 
       //ForecastUtility.writeFormulasForNewForecasts(userToken, newForecastColumnPosition+1);
-      
+
       var formulasProperties = JSON.parse(PropertiesService.getUserProperties().getProperty("rulesForFormulas"));
       var newForecastColumnPositionLetter = Utility.numToChar(newForecastColumnPosition+1);
-      
+
       //call rebuild formulas
-      ForecastUtility.rebuildFormulas(formulasProperties, newForecastColumnPositionLetter);    
-      
-      
-      FirebaseConnector.writeOnFirebase(Utility.numToChar(newForecastColumnPosition+1), lastForeCast, userToken);      
-      
+      ForecastUtility.rebuildFormulas(formulasProperties, newForecastColumnPositionLetter);
+
+
+      FirebaseConnector.writeOnFirebase(Utility.numToChar(newForecastColumnPosition+1), lastForeCast, userToken);
+
       //MOVE PROTECTED FORMULAS FRC 17-18
       SyncMasterSheet.moveProtectedFormulasCols17_18(Utility.numToChar(newForecastColumnPosition)+':'+Utility.numToChar(newForecastColumnPosition),1,1);
 
@@ -336,19 +358,17 @@ var ForecastUtility=new function(){
       //do nothing
     }
 
-  }
+  };
   //------------------------------------------------------------------------------------------------------------------
   // END --   ADD A NEW FORECAST on the google sheet
   //------------------------------------------------------------------------------------------------------------------
 
-  //------------------------------------------------------------------------------------------------------------------
   /**
 	 * hide old forecast except the last 2
-     * @param  {string} first forecast position
-     * @param  {string} last forecast position
-     * @param  {string} number of column you want to be shown
-	 */
-  //------------------------------------------------------------------------------------------------------------------
+     * @param  {number} beginingPosition forecast position
+     * @param  {number} lastPosition forecast position
+     * @param  {number} numberOfColumnVisibleInTheRange of column you want to be shown
+  */
   this.hideOldForecasts= function (beginingPosition, lastPosition, numberOfColumnVisibleInTheRange){
 
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
@@ -357,7 +377,7 @@ var ForecastUtility=new function(){
 
     if(columnToBeHidden >-1)
       sheet.hideColumns(beginingPosition, columnToBeHidden+1);
-  }
+  };
   //------------------------------------------------------------------------------------------------------------------
   // END hide old forecast except the last 2
   //------------------------------------------------------------------------------------------------------------------
@@ -412,7 +432,7 @@ var ForecastUtility=new function(){
       return newForecastColumnPosition;
 
     }
-  }
+  };
   //------------------------------------------------------------------------------------------------------------------
   // END -- Solve CTRL+Z problems for 'add new forecast'
   //------------------------------------------------------------------------------------------------------------------
@@ -428,10 +448,10 @@ var ForecastUtility=new function(){
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     //TODO _ pay attention to multiple sheets
     var sheet = ss.getActiveSheet();
-    
+
     var commodityName = FirebaseConnector.getCommodityName();
-    
-    //datanode from firebase    
+
+    //datanode from firebase
     var firstOldFrcFirebasePath = 'config/previousForecast/'+FirebaseConnector.getCountryNameFromSheet(userToken)+'/'+commodityName+'/first';
 
     //retrive the row containing 'Forecasting  Methodology'. IT MUST BE next the last forecast.
@@ -447,30 +467,49 @@ var ForecastUtility=new function(){
     //with charToNum(letterOfTheColumn) I get the column number
     ForecastUtility.hideOldForecasts(sheet.getRange(firstFrc).getColumn(),sheet.getRange(lastFrc).getColumn(),1);
 
-  }
+  };
   //------------------------------------------------------------------------------------------------------------------
   // END -- function called to hide all the forecast for previus year except the last one
   //------------------------------------------------------------------------------------------------------------------
-  
+
   this.hideColumnForNewForecasts= function (firstForecastColumnPosition,lastForecastColumnPosition, actualForecastColumnPosition){
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-    
+
     //in this case just simple hide every thing after the actual position
-    if(actualForecastColumnPosition - firstForecastColumnPosition <2 ) {      
-      ForecastUtility.hideOldForecasts(actualForecastColumnPosition+1, lastForecastColumnPosition,0 );  
-      
+    if(actualForecastColumnPosition - firstForecastColumnPosition <2 ) {
+      ForecastUtility.hideOldForecasts(actualForecastColumnPosition+1, lastForecastColumnPosition,0 );
+
     }else {
-      
+
       var letterClm = Utility.numToChar(actualForecastColumnPosition);
-      letterClm = letterClm+':'+letterClm;      
+      letterClm = letterClm+':'+letterClm;
       //unhide the new actualPosition column. the function TAKES RANGE as paramaeter!
       sheet.unhideColumn(sheet.getRange(letterClm));
-      
-      //hide the previus frc 
-      ForecastUtility.hideOldForecasts(firstForecastColumnPosition, actualForecastColumnPosition,2 );  
+
+      //hide the previus frc
+      ForecastUtility.hideOldForecasts(firstForecastColumnPosition, actualForecastColumnPosition,2 );
       //hide the still to much new forecast
-      ForecastUtility.hideOldForecasts(actualForecastColumnPosition+1, lastForecastColumnPosition,0 );  
-    }        
-  }
-  
-}
+      ForecastUtility.hideOldForecasts(actualForecastColumnPosition+1, lastForecastColumnPosition,0 );
+    }
+  };
+
+  /**
+   * hide all the forecast for previus year except the last one and all unactive columns of all periods
+   */
+  this.hideOldAndUnactiveForecast = function(userToken) {
+    var allPeriodConf, allPeriodConfNode, commodity, countryName, periodConf, _i, _len;
+
+    countryName = FirebaseConnector.getCountryNameFromSheet(userToken);
+    commodity = FirebaseConnector.getCommodityName();
+    allPeriodConfNode = 'config/addForecast/' + countryName + '/' + commodity;
+    allPeriodConf = JSON.parse(FirebaseConnector.getFireBaseData(periodConfNode, userToken));
+
+    for (_i = 0, _len = allPeriodConf.length; _i < _len; _i++) {
+      periodConf = allPeriodConf[_i];
+      this.hidePeriodColumns(periodConf);
+    }
+
+    this.hideAllPreviousForecasts();
+  };
+
+};

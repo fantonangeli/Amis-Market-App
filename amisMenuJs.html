@@ -243,7 +243,7 @@
            $("#hideHistoricalSeries").click(function(event) {
                showLoading([]);
                verifyToken(function(){
-                   google.script.run.withSuccessHandler( hideLoading ).LIB_FUNC( "AmisMarketApp.HistoricalSeries.hide", userToken );
+                   google.script.run.withSuccessHandler( hideLoading ).LIB_FUNC( "AmisMarketApp.ForecastUtility.hideOldAndUnactiveForecast", userToken );
                });
            });
 
