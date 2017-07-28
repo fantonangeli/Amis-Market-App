@@ -178,6 +178,8 @@ var ForecastingMethodologies = new( function() {
 
 	   e.range.setValues(rangeValues);
 	   e.range.setDataValidations(dataValidations);
+
+	   return rangeValues;
 	 };
 
 	/**

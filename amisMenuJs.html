@@ -233,6 +233,20 @@
               return false;
            } );
 
+           //bind Show/hide historical series
+           $("#showHistoricalSeries").click(function(event) {
+               showLoading([]);
+               verifyToken(function(){
+                   google.script.run.withSuccessHandler( hideLoading ).LIB_FUNC( "AmisMarketApp.HistoricalSeries.show", userToken );
+               });
+           });
+           $("#hideHistoricalSeries").click(function(event) {
+               showLoading([]);
+               verifyToken(function(){
+                   google.script.run.withSuccessHandler( hideLoading ).LIB_FUNC( "AmisMarketApp.HistoricalSeries.hide", userToken );
+               });
+           });
+
 
        } )
 </script>

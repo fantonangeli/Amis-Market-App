@@ -36,7 +36,7 @@ ConvertA1 = new function() {
 			left:c1.col,
 			right:c2.col
 		};
-	}
+	};
 
 	/**
 	 * Convert a cell reference from A1Notation to 0-based indices (for arrays)
@@ -68,7 +68,7 @@ ConvertA1 = new function() {
 			row: this.rowA1ToIndex( rowA1, index ),
 			col: this.colA1ToIndex( colA1, index )
 		};
-	}
+	};
 
 	/**
 	 * Return a 0-based array index corresponding to a spreadsheet column
@@ -96,7 +96,7 @@ ConvertA1 = new function() {
 			number += 26 * ( colA1.charCodeAt( 0 ) - A + 1 );
 		}
 		return number + index;
-	}
+	};
 
 
 
@@ -116,7 +116,7 @@ ConvertA1 = new function() {
 		index = ( index == 0 ) ? 0 : 1;
 
 		return rowA1 - 1 + index;
-	}
+	};
 
 
 }
