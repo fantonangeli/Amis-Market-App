@@ -16,7 +16,9 @@ var ProtectionMaker=new function(){
     var sheet = SpreadsheetApp.getActiveSpreadsheet();
     var ss = sheet.getActiveSheet();
     
-    ss.getRange('C:AE').setDataValidation(null);
+    var rangeToBeRestored = 'C:AO';
+    
+    ss.getRange(rangeToBeRestored).setDataValidation(null);
     
     //destroy eventually CONDITIONS FORMATTING COPIED AND PASTED
     e.range.clearFormat();
@@ -25,14 +27,14 @@ var ProtectionMaker=new function(){
     
     var templateSheet = sheet.getSheetByName("Template_"+sheetName);
     
-    var sheetValues = ss.getRange('C:AE').getValues();
-    var sheetFormulas = ss.getRange('C:AE').getFormulas();
+    var sheetValues = ss.getRange(rangeToBeRestored).getValues();
+    var sheetFormulas = ss.getRange(rangeToBeRestored).getFormulas();
     
-    var tmpDataValidation = templateSheet.getRange('C:AE').getDataValidations();
+    var tmpDataValidation = templateSheet.getRange(rangeToBeRestored).getDataValidations();
     
-    var tmpFormulas = templateSheet.getRange('C:AE').getFormulas();
+    var tmpFormulas = templateSheet.getRange(rangeToBeRestored).getFormulas();
     
-    var tmpValues = templateSheet.getRange('C:AE').getValues();
+    var tmpValues = templateSheet.getRange(rangeToBeRestored).getValues();
     //var lenght=  tmpValues.length
     var row,cell;
     
@@ -49,13 +51,13 @@ var ProtectionMaker=new function(){
     }
     
     //restore FORMULAS and VALUES not EDITABLE
-    ss.getRange('C:AE').setValues(sheetValues); 
+    ss.getRange(rangeToBeRestored).setValues(sheetValues); 
     
     //restore the style from hidden template
-    templateSheet.getRange('C:AE').copyTo(ss.getRange('C:AE'), {formatOnly:true});
+    templateSheet.getRange(rangeToBeRestored).copyTo(ss.getRange(rangeToBeRestored), {formatOnly:true});
     
     //restore data validations
-    ss.getRange('C:AE').setDataValidations(tmpDataValidation);
+    ss.getRange(rangeToBeRestored).setDataValidations(tmpDataValidation);
     
     
   }    
