@@ -12,10 +12,7 @@ var ForecastUtility=new function(){
         //   periodsNode = 'config/addForecast/' + countryName;
         //   return JSON.parse(FirebaseConnector.getFireBaseData(periodsNode, userToken));
       //get the google sheet
-      
-      var ss = SpreadsheetApp.getActiveSpreadsheet();      
-      var sheet = ss.getActiveSheet();      
-      var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue().toLowerCase();
+      var commodityName = FirebaseConnector.getCommodityName();
       return JSON.parse(PropertiesService.getUserProperties().getProperty(commodityName+"_addForecastConfig"));
     };
 
@@ -57,6 +54,84 @@ var ForecastUtility=new function(){
       }
     };
 
+  //------------------------------------------------------------------------------------------------------------------
+  /**
+  * ADD A NEW FORECAST on the google sheet
+  * @param  {string} auth token
+  */
+  //------------------------------------------------------------------------------------------------------------------
+  this.addForecast16_17= function(userToken){
+    var period = '16-17';
+    ForecastUtility.addForecast(period,userToken);
+  }
+  //------------------------------------------------------------------------------------------------------------------
+  // END --   ADD A NEW FORECAST on the google sheet
+  //------------------------------------------------------------------------------------------------------------------
+  
+  //------------------------------------------------------------------------------------------------------------------
+  /**
+  * ADD A NEW FORECAST 17-18
+  * @param  {string} auth token
+  */
+  //------------------------------------------------------------------------------------------------------------------
+  this.addForecast17_18= function(userToken){        
+    var period = '17-18';
+    ForecastUtility.addForecast(period,userToken);
+  }
+  //------------------------------------------------------------------------------------------------------------------
+  // END --   ADD A NEW FORECAST on the google sheet
+  //------------------------------------------------------------------------------------------------------------------
+  
+  //------------------------------------------------------------------------------------------------------------------
+  /**
+	 * ADD A NEW FORECAST on the google sheet
+     * @param  {string} auth token
+	 */
+  //------------------------------------------------------------------------------------------------------------------
+  this.addForecast= function(period,userToken){    
+    
+    var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);
+    var sheet = SpreadsheetApp.getActiveSpreadsheet();
+    var commodity = FirebaseConnector.getCommodityName();
+    
+    //read config from firebase
+    var periodConfNode = 'config/addForecast/'+countryName+'/'+commodity +'/'+period;
+    
+    var periodConf = JSON.parse(FirebaseConnector.getFireBaseData(periodConfNode,userToken));
+    
+    //last frc
+    var lastForecastColumnPosition = periodConf.lastForecast;
+    lastForecastColumnPosition = Utility.letterToColumn(lastForecastColumnPosition);
+    
+    //first frc    
+    var firstForecastColumnPosition = periodConf.firstForecast;
+    firstForecastColumnPosition = Utility.letterToColumn(firstForecastColumnPosition);
+    
+    //actual frc
+    var actualForecastColumnPosition = periodConf.actualPosition;
+    actualForecastColumnPosition = Utility.letterToColumn(actualForecastColumnPosition);
+    
+    //if we cannot add new FRC.. break the script
+    if(actualForecastColumnPosition == lastForecastColumnPosition)
+      return 0;
+    
+    //increase actual position 
+    actualForecastColumnPosition = actualForecastColumnPosition +1;
+    
+    var actualForecastColumnPositionNode = periodConfNode + '/actualPosition';
+    
+    //update the actualPositon in FIREBASE
+    FirebaseConnector.writeOnFirebase(Utility.numToChar(actualForecastColumnPosition), actualForecastColumnPositionNode, userToken);
+        
+    //hide correctly the new column
+    ForecastUtility.hideColumnForNewForecasts(firstForecastColumnPosition,lastForecastColumnPosition, actualForecastColumnPosition);
+
+  }
+  //------------------------------------------------------------------------------------------------------------------
+  // END --   ADD A NEW FORECAST on the google sheet
+  //------------------------------------------------------------------------------------------------------------------
+  
+  
 
   //------------------------------------------------------------------------------------------------------------------
   /**
@@ -64,7 +139,7 @@ var ForecastUtility=new function(){
      * @param  {string} auth token
 	 */
   //------------------------------------------------------------------------------------------------------------------
-  this.addForecast16_17= function(userToken){
+  this.addForecast16_17_OLD= function(userToken){
 
     var userChoise = Browser.msgBox('Adding New Forecast', 'Adding a new Forecast will automatically save data. Do you want to proceed?', Browser.Buttons.YES_NO);
 
@@ -182,7 +257,7 @@ var ForecastUtility=new function(){
      * @param  {string} auth token
 	 */
   //------------------------------------------------------------------------------------------------------------------
-  this.addForecast17_18= function(userToken){
+  this.addForecast17_18_OLD = function(userToken){
 
     var userChoise = Browser.msgBox('Adding New Forecast', 'Adding a new Forecast will automatically save data. Do you want to proceed?', Browser.Buttons.YES_NO);
 
@@ -354,7 +429,7 @@ var ForecastUtility=new function(){
     //TODO _ pay attention to multiple sheets
     var sheet = ss.getActiveSheet();
     
-    var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue().toLowerCase();
+    var commodityName = FirebaseConnector.getCommodityName();
     
     //datanode from firebase    
     var firstOldFrcFirebasePath = 'config/previousForecast/'+FirebaseConnector.getCountryNameFromSheet(userToken)+'/'+commodityName+'/first';
@@ -375,5 +450,27 @@ var ForecastUtility=new function(){
   }
   //------------------------------------------------------------------------------------------------------------------
   // END -- function called to hide all the forecast for previus year except the last one
-  //------------------------------------------------------------------------------------------------------------------   
+  //------------------------------------------------------------------------------------------------------------------
+  
+  this.hideColumnForNewForecasts= function (firstForecastColumnPosition,lastForecastColumnPosition, actualForecastColumnPosition){
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    
+    //in this case just simple hide every thing after the actual position
+    if(actualForecastColumnPosition - firstForecastColumnPosition <2 ) {      
+      ForecastUtility.hideOldForecasts(actualForecastColumnPosition+1, lastForecastColumnPosition,0 );  
+      
+    }else {
+      
+      var letterClm = Utility.numToChar(actualForecastColumnPosition);
+      letterClm = letterClm+':'+letterClm;      
+      //unhide the new actualPosition column. the function TAKES RANGE as paramaeter!
+      sheet.unhideColumn(sheet.getRange(letterClm));
+      
+      //hide the previus frc 
+      ForecastUtility.hideOldForecasts(firstForecastColumnPosition, actualForecastColumnPosition,2 );  
+      //hide the still to much new forecast
+      ForecastUtility.hideOldForecasts(actualForecastColumnPosition+1, lastForecastColumnPosition,0 );  
+    }        
+  }
+  
 }

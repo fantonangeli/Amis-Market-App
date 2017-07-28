@@ -104,7 +104,7 @@ var ForecastingMethodologies = new( function() {
 
 		if(!config) return null;
 
-		return config[commodityName].ranges;
+		return config[FirebaseConnector.getCommodityName()].ranges;
 
 	};
 
@@ -116,8 +116,6 @@ var ForecastingMethodologies = new( function() {
  	 * @return {bool}       true if ok, false otherwise
  	 */
 	this.moveFMCols = function( range, columnOffset ) {
-        var sheet = SpreadsheetApp.getActiveSheet();
-        var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue().toLowerCase();;
 
 		var movedColNum, newFmRanges = [];
 		var fmRanges = this.getFMRanges();
@@ -139,7 +137,7 @@ var ForecastingMethodologies = new( function() {
 
 		FirebaseConnector.writeOnFirebase(
 			newFmRanges,
-			getFbConfigPath()+'/'+commodityName+'/ranges',
+			getFbConfigPath()+'/'+FirebaseConnector.getCommodityName()+'/ranges',
 			FirebaseConnector.getToken()
 		);
 
