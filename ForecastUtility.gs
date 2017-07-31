@@ -378,6 +378,25 @@ var ForecastUtility=new function(){
     if(columnToBeHidden >-1)
       sheet.hideColumns(beginingPosition, columnToBeHidden+1);
   };
+
+  /**
+	 * show old forecast
+  */
+  this.showOldForecasts= function (){
+    var config, firstCol, lastCol;
+    var sheet = SpreadSheetCache.getActiveSheet();
+    var commodityName = FirebaseConnector.getCommodityName();
+    var userToken=FirebaseConnector.getToken();
+    var firebasePath = 'config/previousForecast/'+FirebaseConnector.getCountryNameFromSheet(userToken)+'/'+commodityName;
+
+    config = JSON.parse(FirebaseConnector.getFireBaseData(firebasePath,userToken));
+
+    firstCol=ConvertA1.colA1ToIndex(config.first.split(":")[0],1);
+    lastCol=ConvertA1.colA1ToIndex(config.last.split(":")[0],1);
+
+    sheet.showColumns(firstCol, lastCol-firstCol);
+
+  };
   //------------------------------------------------------------------------------------------------------------------
   // END hide old forecast except the last 2
   //------------------------------------------------------------------------------------------------------------------
@@ -495,21 +514,26 @@ var ForecastUtility=new function(){
 
   /**
    * hide all the forecast for previus year except the last one and all unactive columns of all periods
+   * @param {string} userToken firebase token
    */
   this.hideOldAndUnactiveForecast = function(userToken) {
-    var allPeriodConf, allPeriodConfNode, commodity, countryName, periodConf, _i, _len;
+    var allPeriodConf, allPeriodConfNode, commodity, countryName, period;
 
     countryName = FirebaseConnector.getCountryNameFromSheet(userToken);
     commodity = FirebaseConnector.getCommodityName();
     allPeriodConfNode = 'config/addForecast/' + countryName + '/' + commodity;
-    allPeriodConf = JSON.parse(FirebaseConnector.getFireBaseData(periodConfNode, userToken));
+    allPeriodConf = JSON.parse(FirebaseConnector.getFireBaseData(allPeriodConfNode, userToken));
 
-    for (_i = 0, _len = allPeriodConf.length; _i < _len; _i++) {
-      periodConf = allPeriodConf[_i];
-      this.hidePeriodColumns(periodConf);
+    for (var _i in allPeriodConf) {
+      period=allPeriodConf[_i];
+      ForecastUtility.hidePeriodColumns(period);
     }
 
-    this.hideAllPreviousForecasts();
+    ForecastUtility.hideAllPreviousForecasts(userToken);
   };
+
+
+  @showOldForecast=()->
+
 
 };

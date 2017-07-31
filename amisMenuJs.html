@@ -237,7 +237,7 @@
            $("#showHistoricalSeries").click(function(event) {
                showLoading([]);
                verifyToken(function(){
-                   google.script.run.withSuccessHandler( hideLoading ).LIB_FUNC( "AmisMarketApp.HistoricalSeries.show", userToken );
+                   google.script.run.withSuccessHandler( hideLoading ).LIB_FUNC( "AmisMarketApp.HistoricalSeries.showOldForecasts", userToken );
                });
            });
            $("#hideHistoricalSeries").click(function(event) {
