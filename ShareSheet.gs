@@ -64,7 +64,7 @@ var ShareSheet=new function(){
 	  //get current file master file to be cloned
 	  var file = DriveApp.getFileById(ss.getId());	  
 	  
-	  return file.makeCopy(countryName);  
+	  return file.makeCopy(countryName+ ' National');  
   }
   //---------------------------------------------------------
   // END -- CLONE THE MASTER TEMPLATE
