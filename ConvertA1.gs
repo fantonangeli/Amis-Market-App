@@ -23,12 +23,16 @@ ConvertA1 = new function() {
 
 		exVal=/^([A-Z]+\d+):([A-Z]+\d+)$/.exec(rangeA1);
 
-		if(!exVal) throw new Error("Invalid range");
+		if(!exVal) {
+			throw new Error("Invalid range");
+		}
 
 		c1=this.cellA1ToIndex(exVal[1],index);
 		c2=this.cellA1ToIndex(exVal[2],index);
 
-		if((c1.row>c2.row) || (c1.col>c2.col)) throw new Error("Invalid range");
+		if((c1.row>c2.row) || (c1.col>c2.col)) {
+			throw new Error("Invalid range");
+		}
 
 		return {
 			top:c1.row,
@@ -119,4 +123,4 @@ ConvertA1 = new function() {
 	};
 
 
-}
+};

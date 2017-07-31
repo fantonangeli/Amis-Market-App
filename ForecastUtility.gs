@@ -44,15 +44,39 @@ var ForecastUtility=new function(){
      * @param  {number} lastDateUpdaterRow row number of the date row
      */
     this.updateDataOfEndOfPeriod = function(cell,lastDateUpdaterRow) {
-      var cellPos, currLastForecastPos, period, periodsData, dataCells;
+      var cellPos, actualPosition, lastForecastPosition, period, periodsData, dataCells, sheet,notesPosition, rangeCells, rowValues=[];
+      sheet=SpreadSheetCache.getActiveSheet();
       periodsData=this.getPeriodsData();
       cellPos = cell.getColumn();
+
       for (period in periodsData) {
-          
-        currLastForecastPos = Utility.letterToColumn(periodsData[period].lastForecast);
-        if (currLastForecastPos <= cellPos && cellPos <= (currLastForecastPos + 2)) {
-          dataCells=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange(lastDateUpdaterRow, currLastForecastPos, 1, 3);
-          dataCells.setValue(new Date());
+        if(periodsData[period])  {
+            actualPosition = ConvertA1.colA1ToIndex(periodsData[period].actualPosition, 1);
+            lastForecastPosition = ConvertA1.colA1ToIndex(periodsData[period].lastForecast, 1);
+
+            //cell is the actualPosition or ForecastingMethodologies or Notes
+            if (
+                (cellPos===actualPosition) || //cell is the actualPosition
+                (cellPos===lastForecastPosition+1) || //cell is ForecastingMethodologies
+                (cellPos===lastForecastPosition+2) //cell is Notes
+            ) {
+                notesPosition=(lastForecastPosition+2);
+                rangeCells=notesPosition-actualPosition;
+                dataCells=sheet.getRange(lastDateUpdaterRow, actualPosition, 1, rangeCells);
+
+                //Initialize the array of values
+                for (var i = rangeCells-1; i--;) {
+                    rowValues.push(null);
+                }
+
+                //set the new date in the array
+                rowValues[rangeCells]=rowValues[rangeCells-1]=rowValues[0]=new Date();
+                
+                var da=dataCells.getValues();
+                dataCells.setValues([rowValues]);
+
+                return;
+            }
         }
       }
     };

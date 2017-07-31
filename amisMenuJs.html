@@ -235,13 +235,13 @@
 
            //bind Show/hide historical series
            $("#showHistoricalSeries").click(function(event) {
-               showLoading([]);
+               showLoading(["Showing historical series"]);
                verifyToken(function(){
-                   google.script.run.withSuccessHandler( hideLoading ).LIB_FUNC( "AmisMarketApp.HistoricalSeries.showOldForecasts", userToken );
+                   google.script.run.withSuccessHandler( hideLoading ).LIB_FUNC( "AmisMarketApp.ForecastUtility.showOldForecasts", userToken );
                });
            });
            $("#hideHistoricalSeries").click(function(event) {
-               showLoading([]);
+               showLoading(["Hiding historical series","Hiding forecasts"]);
                verifyToken(function(){
                    google.script.run.withSuccessHandler( hideLoading ).LIB_FUNC( "AmisMarketApp.ForecastUtility.hideOldAndUnactiveForecast", userToken );
                });
