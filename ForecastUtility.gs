@@ -27,10 +27,12 @@ var ForecastUtility=new function(){
       periodsData=this.getPeriodsData();
       cellPos = cell.getColumn();
       for (period in periodsData) {
-        currLastForecastPos = Utility.letterToColumn(periodsData[period].lastForecast);
-        if (currLastForecastPos <= cellPos && cellPos <= (currLastForecastPos + 2)) {
-          return true;
-        }
+          if(periodsData.hasOwnProperty(period)){
+                currLastForecastPos = Utility.letterToColumn(periodsData[period].lastForecast);
+                if (currLastForecastPos <= cellPos && cellPos <= (currLastForecastPos + 2)) {
+                  return true;
+              }
+          }
       }
       return false;
     };
@@ -46,6 +48,7 @@ var ForecastUtility=new function(){
       periodsData=this.getPeriodsData();
       cellPos = cell.getColumn();
       for (period in periodsData) {
+          
         currLastForecastPos = Utility.letterToColumn(periodsData[period].lastForecast);
         if (currLastForecastPos <= cellPos && cellPos <= (currLastForecastPos + 2)) {
           dataCells=SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange(lastDateUpdaterRow, currLastForecastPos, 1, 3);
@@ -531,9 +534,6 @@ var ForecastUtility=new function(){
 
     ForecastUtility.hideAllPreviousForecasts(userToken);
   };
-
-
-  @showOldForecast=()->
 
 
 };
