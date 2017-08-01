@@ -49,6 +49,7 @@ var ForecastUtility=new function(){
       periodsData=this.getPeriodsData();
       cellPos = cell.getColumn();
 
+
       for (period in periodsData) {
         if(periodsData[period])  {
             actualPosition = ConvertA1.colA1ToIndex(periodsData[period].actualPosition, 1);
@@ -61,18 +62,18 @@ var ForecastUtility=new function(){
                 (cellPos===lastForecastPosition+2) //cell is Notes
             ) {
                 notesPosition=(lastForecastPosition+2);
-                rangeCells=notesPosition-actualPosition;
+                rangeCells=notesPosition-actualPosition+1;
                 dataCells=sheet.getRange(lastDateUpdaterRow, actualPosition, 1, rangeCells);
+      var da=dataCells.getValues();  //ONLY 4 DEBUG, TO REMOVE
 
                 //Initialize the array of values
-                for (var i = rangeCells-1; i--;) {
+                for (var i = rangeCells; i--;) {
                     rowValues.push(null);
                 }
 
                 //set the new date in the array
-                rowValues[rangeCells]=rowValues[rangeCells-1]=rowValues[0]=new Date();
-                
-                var da=dataCells.getValues();
+                rowValues[rangeCells-1]=rowValues[rangeCells-2]=rowValues[0]=new Date();
+
                 dataCells.setValues([rowValues]);
 
                 return;
