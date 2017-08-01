@@ -111,10 +111,30 @@ var ForecastUtility=new function(){
   //------------------------------------------------------------------------------------------------------------------
 
   /**
+   * hide period's unactive columns for ALL period
+   * @param  {string} userToken firebase token
+   */
+  this.hideAllPeriodUnactiveColumns=function(userToken) {
+      var allPeriodConf, allPeriodConfNode, commodity, countryName, period;
+
+      countryName = FirebaseConnector.getCountryNameFromSheet(userToken);
+      commodity = FirebaseConnector.getCommodityName();
+      allPeriodConfNode = 'config/addForecast/' + countryName + '/' + commodity;
+      allPeriodConf = JSON.parse(FirebaseConnector.getFireBaseData(allPeriodConfNode, userToken));
+
+      for (var _i in allPeriodConf) {
+        if (allPeriodConf[_i]) {
+            period=allPeriodConf[_i];
+            ForecastUtility.hidePeriodUnactiveColumns(period);
+        }
+      }
+  };
+
+  /**
    * hide period's unactive columns
    * @param  {object} periodConf configuration of the period from the db
    */
-  this.hidePeriodColumns=function(periodConf){
+  this.hidePeriodUnactiveColumns=function(periodConf){
       //last frc
       var lastForecastColumnPosition = periodConf.lastForecast;
       lastForecastColumnPosition = Utility.letterToColumn(lastForecastColumnPosition);
@@ -422,6 +442,8 @@ var ForecastUtility=new function(){
     firstCol=ConvertA1.colA1ToIndex(config.first.split(":")[0],1);
     lastCol=ConvertA1.colA1ToIndex(config.last.split(":")[0],1);
 
+    ForecastUtility.hideAllPeriodUnactiveColumns(userToken);
+
     sheet.showColumns(firstCol, lastCol-firstCol);
 
   };
@@ -545,17 +567,7 @@ var ForecastUtility=new function(){
    * @param {string} userToken firebase token
    */
   this.hideOldAndUnactiveForecast = function(userToken) {
-    var allPeriodConf, allPeriodConfNode, commodity, countryName, period;
-
-    countryName = FirebaseConnector.getCountryNameFromSheet(userToken);
-    commodity = FirebaseConnector.getCommodityName();
-    allPeriodConfNode = 'config/addForecast/' + countryName + '/' + commodity;
-    allPeriodConf = JSON.parse(FirebaseConnector.getFireBaseData(allPeriodConfNode, userToken));
-
-    for (var _i in allPeriodConf) {
-      period=allPeriodConf[_i];
-      ForecastUtility.hidePeriodColumns(period);
-    }
+    ForecastUtility.hideAllPeriodUnactiveColumns(userToken)
 
     ForecastUtility.hideAllPreviousForecasts(userToken);
   };
