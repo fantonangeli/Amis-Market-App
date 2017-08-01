@@ -64,7 +64,6 @@ var ForecastUtility=new function(){
                 notesPosition=(lastForecastPosition+2);
                 rangeCells=notesPosition-actualPosition+1;
                 dataCells=sheet.getRange(lastDateUpdaterRow, actualPosition, 1, rangeCells);
-      var da=dataCells.getValues();  //ONLY 4 DEBUG, TO REMOVE
 
                 //Initialize the array of values
                 for (var i = rangeCells; i--;) {
