@@ -23,12 +23,16 @@ ConvertA1 = new function() {
 
 		exVal=/^([A-Z]+\d+):([A-Z]+\d+)$/.exec(rangeA1);
 
-		if(!exVal) throw new Error("Invalid range");
+		if(!exVal) {
+			throw new Error("Invalid range");
+		}
 
 		c1=this.cellA1ToIndex(exVal[1],index);
 		c2=this.cellA1ToIndex(exVal[2],index);
 
-		if((c1.row>c2.row) || (c1.col>c2.col)) throw new Error("Invalid range");
+		if((c1.row>c2.row) || (c1.col>c2.col)) {
+			throw new Error("Invalid range");
+		}
 
 		return {
 			top:c1.row,
@@ -36,7 +40,7 @@ ConvertA1 = new function() {
 			left:c1.col,
 			right:c2.col
 		};
-	}
+	};
 
 	/**
 	 * Convert a cell reference from A1Notation to 0-based indices (for arrays)
@@ -68,7 +72,7 @@ ConvertA1 = new function() {
 			row: this.rowA1ToIndex( rowA1, index ),
 			col: this.colA1ToIndex( colA1, index )
 		};
-	}
+	};
 
 	/**
 	 * Return a 0-based array index corresponding to a spreadsheet column
@@ -96,7 +100,7 @@ ConvertA1 = new function() {
 			number += 26 * ( colA1.charCodeAt( 0 ) - A + 1 );
 		}
 		return number + index;
-	}
+	};
 
 
 
@@ -116,7 +120,7 @@ ConvertA1 = new function() {
 		index = ( index == 0 ) ? 0 : 1;
 
 		return rowA1 - 1 + index;
-	}
+	};
 
 
-}
+};
