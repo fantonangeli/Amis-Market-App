@@ -24,6 +24,10 @@ var ShareSheet=new function(){
 	  
 	  ShareSheet.shareSheet(newFile,countryAccount);
       
+      //empty the template
+      MasterUtility.writeNoteAndDataForCountries(countryName,true)
+      
+      
       Utility.toastInfo('Sheet created', 'Sheet created and shared');
 	  	  	  
     }else{
@@ -33,10 +37,17 @@ var ShareSheet=new function(){
         //retrive the existing file
         var existingFileToBeShared = DriveApp.getFileById(countryRegister);
         ShareSheet.shareSheet(existingFileToBeShared,countryAccount);
+        
+        //empty the template
+        MasterUtility.writeNoteAndDataForCountries(countryName,true)
+        
         //finish operation 
         Utility.toastInfo('Sheet created', 'Sheet created and shared');	  
       }
       catch(err) {
+        //empty the template
+        MasterUtility.writeNoteAndDataForCountries(countryName,true)
+        
         //FAIL operation
         Utility.toastInfo('Share Failed', 'The file could be deleted');	  
       }      

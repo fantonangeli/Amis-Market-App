@@ -246,6 +246,19 @@
                    google.script.run.withSuccessHandler( hideLoading ).LIB_FUNC( "AmisMarketApp.ForecastUtility.hideOldAndUnactiveForecast", userToken );
                });
            });
+           //on change event on COUNTRY SELECTED
+           $("#countryName").on('change', function() {
+               
+               showLoading(["Updating Master","Updating Master"]);
+               //selected value
+               var valueSelected = this.value;               
+               verifyToken(function(){
+                    console.info( valueSelected);
+                    if(valueSelected != '') {
+                       google.script.run.withSuccessHandler(hideLoading).LIB_FUNC("AmisMarketApp.MasterUtility.writeNoteAndDataForCountries",valueSelected,false);
+                   }
+               });
+           });
 
 
        } )
