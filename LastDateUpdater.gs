@@ -83,7 +83,7 @@ var LastDateUpdater=new function(){
     var activeCell=e.range;
     var thisCol = e.range.getColumn();
 
-    var ss = sheet.getSheets()[0];
+    var ss = SpreadSheetCache.getActiveSheet();
     
     var rangeProtected = JSON.parse(PropertiesService.getUserProperties().getProperty(commodityName+"_rangeProtected"));    
 
