@@ -532,4 +532,36 @@ var Utility=new (function(){
     };
 
 
+    /**
+     * Returns a two-dimensional array of values, indexed by row, then by column. Same as Range.getValues() but faster and works on an array rappresenting the sheet data.
+     * @param  {array} sheetValues all the data in the sheet. from first column to the last
+     * @param  {string} range       range in A1Notation
+     * @return {array}             a two-dimensional array of values,  indexed by row, then by column
+     */
+    this.getValuesFromArray = function(sheetValues, range) {
+          var rangeIndexes, rangeVals, row, rows, _i, _len;
+          rangeVals = [];
+          rangeIndexes = ConvertA1.rangeA1ToIndex(range);
+          rows = sheetValues.slice(rangeIndexes.top, rangeIndexes.bottom+1);
+          for (_i = 0, _len = rows.length; _i < _len; _i++) {
+            row = rows[_i];
+            rangeVals.push(row.slice(rangeIndexes.left, rangeIndexes.right+1));
+          }
+          return rangeVals;
+    };
+
+    /**
+     * Returns the value of a cell. Same as Range.getValue() but faster and works on an array rappresenting the sheet data.
+     * @param  {array} sheetValues all the data in the sheet. from first column to the last
+     * @param  {string} cellA1       cell in A1Notation
+     * @return {string}             the value
+     */
+    this.getCellValueFromArray = function(sheetValues, cellA1) {
+          var cellIndexes;
+
+          cellIndexes = ConvertA1.cellA1ToIndex(cellA1);
+
+          return sheetValues[cellIndexes.row][cellIndexes.col];
+    };
+
 });
