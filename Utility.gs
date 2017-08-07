@@ -409,25 +409,33 @@ var Utility=new (function(){
 
     /**
      * check if a given cell is in a range
-     * @param  {string} range the range eg. "AD11:AD19"
+     * @param  {string} range the range  eg: F14:G34, B:D
      * @param  {range|string} cell  the cell to check or A1Notation for better performance
      * @return {bool}       true if the cell is in the range, false otherwise
      */
     this.isInRange = function(range, cell) {
           var editRange, thisRow,thisCol, cellIndex, cellA1;
 
-          if(typeof cell!=="string") cellA1=cell.getA1Notation();
-          else cellA1=cell;
+          if(typeof cell!=="string") {
+              cellA1=cell.getA1Notation();
+          }
+          else {
+              cellA1=cell;
+          }
 
           editRange=ConvertA1.rangeA1ToIndex(range,1);
-          cellIndex=ConvertA1.cellA1ToIndex(cellA1,1)
+          cellIndex=ConvertA1.cellA1ToIndex(cellA1,1);
 
           // Exit if we're out of range
           thisRow = cellIndex.row;
-          if (thisRow < editRange.top || thisRow > editRange.bottom) return false;
+          if ((editRange.top) && (editRange.top) && (thisRow < editRange.top || thisRow > editRange.bottom)) {
+              return false;
+          }
 
           thisCol = cellIndex.col;
-          if (thisCol < editRange.left || thisCol > editRange.right) return false;
+          if (thisCol < editRange.left || thisCol > editRange.right) {
+              return false;
+          }
 
           return true;
 

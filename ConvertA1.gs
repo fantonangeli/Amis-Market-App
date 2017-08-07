@@ -11,7 +11,7 @@ ConvertA1 = new function() {
 	 * Convert a range reference from A1Notation to 0-based indices (for arrays)
 	 * or 1-based indices (for Spreadsheet Service methods).
 	 *
-	 * @param {String}    rangeA1   Range reference to be converted.
+	 * @param {String}    rangeA1   Range reference to be converted. eg: F14:G34, B:D
 	 * @param {Number}    index    (optional, default 0) Indicate 0 or 1 indexing
 	 *
 	 * @return {object}            {top, bottom, left, right}, both 0-based array indices.
@@ -19,27 +19,46 @@ ConvertA1 = new function() {
 	 * @throws                     Error if invalid parameter
 	 */
 	this.rangeA1ToIndex=function(rangeA1, index){
-		var exVal, c1,c2;
+		var exValA, exValB, c1,c2;
 
-		exVal=/^([A-Z]+\d+):([A-Z]+\d+)$/.exec(rangeA1);
+		exValA=/^([A-Z]+\d+):([A-Z]+\d+)$/.exec(rangeA1);
+		exValB=/^([A-Z]+):([A-Z]+)$/.exec(rangeA1);
 
-		if(!exVal) {
+		if(!exValA && !exValB) {
 			throw new Error("Invalid range");
 		}
 
-		c1=this.cellA1ToIndex(exVal[1],index);
-		c2=this.cellA1ToIndex(exVal[2],index);
+		if(exValA){
+			c1=this.cellA1ToIndex(exValA[1],index);
+			c2=this.cellA1ToIndex(exValA[2],index);
 
-		if((c1.row>c2.row) || (c1.col>c2.col)) {
-			throw new Error("Invalid range");
+			if((c1.row>c2.row) || (c1.col>c2.col)) {
+				throw new Error("Invalid range");
+			}
+
+			return {
+				top:c1.row,
+				bottom:c2.row,
+				left:c1.col,
+				right:c2.col
+			};
 		}
 
-		return {
-			top:c1.row,
-			bottom:c2.row,
-			left:c1.col,
-			right:c2.col
-		};
+		if(exValB){
+			c1=this.colA1ToIndex(exValB[1],index);
+			c2=this.colA1ToIndex(exValB[2],index);
+
+			if(c1>c2) {
+				throw new Error("Invalid range");
+			}
+
+			return {
+				left:c1,
+				right:c2
+			};
+		}
+
+
 	};
 
 	/**
