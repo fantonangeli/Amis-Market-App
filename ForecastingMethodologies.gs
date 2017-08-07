@@ -219,29 +219,7 @@ var ForecastingMethodologies = new( function() {
     };
 
 
-  this.rebuildFrcMethodologiesStyle = function (e) {
 
-
-    var sheet = SpreadsheetApp.getActiveSpreadsheet();
-    var ss = sheet.getActiveSheet();
-
-    var activeCell=e.range;
-
-    //get the letter of current column edited
-    var currentColumn = Utility.numToChar(activeCell.getColumn());
-
-    var restoreStyleRows = JSON.parse(PropertiesService.getUserProperties().getProperty('restoreStyleRows'));
-
-    for (var i=0; i<restoreStyleRows.length;i++){
-
-      //it contains the first and the last row of the range to be style restored
-      var firstAndLastRowToBeRestored = restoreStyleRows[i].split('-');
-
-      //A:A contain the safe style and the script rebuild that style
-      sheet.getRange('B'+firstAndLastRowToBeRestored[0]+':B'+firstAndLastRowToBeRestored[1]).copyTo(sheet.getRange(currentColumn+firstAndLastRowToBeRestored[0]+':'+currentColumn+firstAndLastRowToBeRestored[1]), {formatOnly:true});
-    }
-
-  }
 
 
 } );
