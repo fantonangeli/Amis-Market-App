@@ -538,7 +538,7 @@ var Utility=new (function(){
      * @param  {string} range       range in A1Notation
      * @return {array}             a two-dimensional array of values,  indexed by row, then by column
      */
-    this.getValuesFromArray = function(sheetValues, range) {
+    this.getRangeValuesFromArray = function(sheetValues, range) {
           var rangeIndexes, rangeVals, row, rows, _i, _len;
           rangeVals = [];
           rangeIndexes = ConvertA1.rangeA1ToIndex(range);
