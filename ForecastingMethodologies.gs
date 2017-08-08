@@ -182,7 +182,7 @@ var ForecastingMethodologies = new( function() {
 
 	/**
 	 * events called by this.onEdit on the single cell
-	 * @param  {object} cell     current cell
+	 * @param  {object|string} cell     current cell or current cell in A1Notation (for better performance)
 	 * @param  {array} fmRanges ForecastingMethodologies ranges from firebase
 	 * @param  {string} cellValue value of the cell
 	 * @param  {bool} multiple set to true if the user edited a range
@@ -191,7 +191,7 @@ var ForecastingMethodologies = new( function() {
     this.onEditCell = function( cell, fmRanges, cellValue, multiple ) {
 		var r, cellA1;
 
-		cellA1=cell.getA1Notation();
+		cellA1=(typeof cell==="string")?cell:cell.getA1Notation();
 
     	for ( var i = fmRanges.length; i--; ) {
     		r = fmRanges[ i ];
