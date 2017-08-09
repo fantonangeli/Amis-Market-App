@@ -59,8 +59,16 @@ var Utility=new (function(){
        };
 
 
-  this.popUpAlert = function () {
-    Browser.msgBox('Please ensure that popup lock is DISABLED. Then try again.');
+  /**
+   * show a msgBox
+   * @param  {string} message the message
+   * @return {bool} false if error
+   */
+  this.popUpAlert = function (message) {
+    if (!message) {
+        return false;
+    }
+    Browser.msgBox(message);
   }
 
   /**
