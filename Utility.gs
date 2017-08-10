@@ -1,7 +1,9 @@
+Utility=new AmisLib.UtilityClass();
+
 /**
  * open amis Sidebar
  */
-AmisLib.Utility.prototype.openSidebar = function() {
+Utility.openSidebar = function() {
 	dbName = Config.dbName;
 	apiKey = Config.apiKey;
 	countryCell = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( Config.Sheet.countryCell ).getValue();
@@ -19,7 +21,7 @@ AmisLib.Utility.prototype.openSidebar = function() {
 /**
  * create Amisi menu
  */
-AmisLib.Utility.prototype.createAmisMenu = function() {
+Utility.createAmisMenu = function() {
 
 	//create the menu voice
 	SpreadsheetApp.getUi()
@@ -32,7 +34,7 @@ AmisLib.Utility.prototype.createAmisMenu = function() {
  * check if the current spreadsheet is Master
  * @return {bool} true if master, false otherwise
  */
-AmisLib.Utility.prototype.isMaster = function() {
+Utility.isMaster = function() {
 	return SpreadsheetApp.getActiveSpreadsheet().getName().indexOf( Config.masterKeyword ) > 0;
 };
 
@@ -40,14 +42,10 @@ AmisLib.Utility.prototype.isMaster = function() {
  * check if the current spreadsheet is Master
  * @return {bool} true if master, false otherwise
  */
-AmisLib.Utility.prototype.isTemplate = function() {
+Utility.isTemplate = function() {
 	return SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getName().indexOf( Config.templatePrefix ) === 0;
 };
 
-
-
-
-Utility=new AmisLib.Utility();
 
 /**
  * includes html files into an html

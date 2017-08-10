@@ -7,13 +7,13 @@ var Config={
 	 * dbName on firebase
 	 * @type {String}
 	 */
-	dbName:"amis-9189b",
+	dbName:"amis-market-antonangeli",
 
 	/**
 	 * apiKey on firebase
 	 * @type {String}
 	 */
-	apiKey: "AIzaSyA3aklD6VK81sc6ui_vjf1IceAi_Zgtjqo",
+	apiKey: "AIzaSyCSkTNjFVSnnN3qeZMeqLvxiV2sHzEp4bE",
 
 	/**
 	 * spreadsheet config
@@ -29,7 +29,7 @@ var Config={
 	 * developer mode
 	 * @type {bool}
 	 */
-	devMode:false,
+	devMode:true,
 
 	/**
 	 * email address for errors informations
