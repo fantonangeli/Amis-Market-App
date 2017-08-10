@@ -29,3 +29,4 @@
 
 FirebaseConnector=new AmisLib.FirebaseConnector(Config.dbName);
 ConvertA1=new AmisLib.ConvertA1Class();
+SpreadSheetCache=new AmisLib.SpreadSheetCache();
