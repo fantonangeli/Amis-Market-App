@@ -95,7 +95,7 @@ var ShareSheet=new function(){
 	  newfile.addEditor(countryAccount);
 
 	  DriveApp.getFileById(Config.amisMarketAppId).addViewer(countryAccount);
-	  DriveApp.getFileById(Config.amisLibApiId).addViewer(countryAccount);
+	  DriveApp.getFileById(Config.amisLibId).addViewer(countryAccount);
 
 	  //my version of AMIS MARKET APP API
       //DriveApp.getFileById('1hxYNjnVdM7hSmjvaJeoiRV6EQuZki-7c1mHkOQ-USat5uUwOL3uc26EI').addViewer(countryAccount);
