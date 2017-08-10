@@ -16,6 +16,19 @@ var Config={
 	apiKey: "AIzaSyA3aklD6VK81sc6ui_vjf1IceAi_Zgtjqo",
 
 	/**
+	 *  id of AmisMarketApp
+	 * @type {String}
+	 */
+	amisMarketAppId:"1OJQBydtovPhuO5-PwYdmzIe6977jVqcRuk3d3ZfvHCNWWWaLjpB8kLeg",
+
+	/**
+	 * AmisLib id
+	 * @type {String}
+	 */
+	amisLibId:"1Tk72CLnrvAoLNSh1he9BBTjDpxsSjFeOTk9PPIsnAGTPhWlwG1xOyAv3",
+
+
+	/**
 	 * spreadsheet config
 	 * @type {Object}
 	 */
