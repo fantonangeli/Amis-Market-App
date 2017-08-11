@@ -15,6 +15,9 @@ var SyncMasterSheet=new function(){
 
           //hide old forecasts leaving only the last one
           ForecastUtility.hideAllPreviousForecasts(userToken);
+          
+          //hide new frc unactive columns
+          ForecastUtility.hideAllPeriodUnactiveColumns(userToken);
 
           //Get the currently active sheet
           var sheet = SpreadsheetApp.getActiveSheet();
@@ -103,6 +106,8 @@ var SyncMasterSheet=new function(){
 
     //hide old forecasts leaving only the last one
     ForecastUtility.hideAllPreviousForecasts(userToken);
+    //hide new frc unactive columns
+    ForecastUtility.hideAllPeriodUnactiveColumns(userToken);
 
     //Get the currently active sheet
     var sheetValues=SpreadSheetCache.getActiveSheetValues();
@@ -125,39 +130,7 @@ var SyncMasterSheet=new function(){
     var commodityName = FirebaseConnector.getCommodityName();
 
 
-    var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);
-
-    //datanode from firebase
-    var periodsNode = 'config/addForecast/'+countryName+ '/' +commodityName;
-
-    var periodsData= JSON.parse(FirebaseConnector.getFireBaseData(periodsNode,userToken));
-
-    for (var period in periodsData) {
-
-      //read config from firebase
-      var periodConfNode = 'config/addForecast/'+countryName+'/'+commodityName +'/'+period;
-
-      var periodConf = JSON.parse(FirebaseConnector.getFireBaseData(periodConfNode,userToken));
-
-      //last frc
-      var lastForecastColumnPosition = periodConf.lastForecast;
-      lastForecastColumnPosition = Utility.letterToColumn(lastForecastColumnPosition);
-
-      //first frc
-      var firstForecastColumnPosition = periodConf.firstForecast;
-      firstForecastColumnPosition = Utility.letterToColumn(firstForecastColumnPosition);
-
-      //actual frc
-      var actualForecastColumnPosition = periodConf.actualPosition;
-      actualForecastColumnPosition = Utility.letterToColumn(actualForecastColumnPosition);
-
-
-      //SOLVE CTRL+Z PROBLEMS. IF ANY and return the position where put the new column
-      //newForecastColumnPosition =ForecastUtility.preventUndoConflictForNewForecast(newForecastColumnPosition,lastForeCast,userToken,orderInTheSheet,firstForecastColumnPosition,beginForeCast);
-
-      //hide all the last forecast -- this.findeValueIntoRow(lastForeCast) is called again because moveNewForecastFinder moves that value
-      ForecastUtility.hideColumnForNewForecasts(firstForecastColumnPosition,lastForecastColumnPosition, actualForecastColumnPosition);
-    }
+    var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);    
 
     Utility.toastInfo('Data successfully saved to the AMIS database', 'DATA SAVED');
 
