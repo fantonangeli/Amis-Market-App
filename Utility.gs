@@ -40,10 +40,31 @@ Utility.isMaster = function() {
 
 /**
  * check if the current spreadsheet is Master
- * @return {bool} true if master, false otherwise
+ * @param {object} sheet [optional] the sheet
+ * @return {bool} true if template, false otherwise
  */
-Utility.isTemplate = function() {
-	return SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getName().indexOf( Config.templatePrefix ) === 0;
+Utility.isTemplate = function(sheet) {
+	sheet=sheet||SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+	return sheet.getName().indexOf( Config.templatePrefix ) === 0;
+};
+
+/**
+ * show/hide all templates in the spreadsheet
+ * @param  {bool} show true to show all templates, false to hide
+ */
+Utility.toggleTemplates=function(show){
+	var sheets=SpreadSheetCache.getActiveSpreadsheet().getSheets(),s;
+
+	for (var _i = 0, sheets_length=sheets.length; _i<sheets_length; _i++) {
+		s=sheets[_i];
+		if(this.isTemplate(s)){
+			if (show) {
+				s.showSheet();
+			} else {
+				s.hideSheet();
+			}
+		}
+	}
 };
 
 
