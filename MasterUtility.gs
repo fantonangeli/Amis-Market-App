@@ -21,7 +21,10 @@ var MasterUtility=new function(){
       valuesNode = 'config/templateCompiler/'+countrySelected+'/'+values;
       valuesToBeWritten = JSON.parse(FirebaseConnector.getFireBaseData(valuesNode,FirebaseConnector.getToken()));      
       
+      //for sheet
       var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(values);
+      //for TEMPLATE sheet
+      var templateSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Template_'+values);
       
       for (var subNode in valuesToBeWritten) {
         //contain the range
@@ -32,10 +35,12 @@ var MasterUtility=new function(){
         
         if(isReset){
           //delete all the data/notes. The master will be restored
-          sheet.getRange(valuesToBeWritten[subNode][0]).setValue('')
+          sheet.getRange(valuesToBeWritten[subNode][0]).setValue('');
+          templateSheet.getRange(valuesToBeWritten[subNode][0]).setValue('');
         }else{
           //set the values from Firebase
-          sheet.getRange(valuesToBeWritten[subNode][0]).setValue(valuesToBeWritten[subNode][1])
+          sheet.getRange(valuesToBeWritten[subNode][0]).setValue(valuesToBeWritten[subNode][1]);
+          templateSheet.getRange(valuesToBeWritten[subNode][0]).setValue(valuesToBeWritten[subNode][1]);
         }
         
         
