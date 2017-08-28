@@ -33,9 +33,11 @@
            </div>
             <div class="col-xs-8">
             	<br>
+                 <? if (!secretariatMode) { ?>
             	<h4><b><?= countryCell ?></b></h4>
             	<br><br>
                 <?= datasourceCell ?>
+                <? } ?>
             	<br>
             </div>
        </div>
@@ -48,8 +50,40 @@
            <button onclick="console.clear()">console.clear</button>
    </div>
    <!-- hidden part -->
+    <!-- <div id="userActionsDiv" hidden class="container"> -->
     <div id="userActionsDiv" hidden class="container">
-
+    
+    <? if (secretariatMode) { ?>
+    <div class="row">
+            <div class="col-xs-12 text-left">
+                Please chose a country:
+            </div>
+    </div>
+    <br>
+    <select class="form-control" id="countryName">
+       <option value="">Choose a Country</option>
+       <option value="argentina">Argentina</option>
+       <option value="brazil">Brazil</option>
+       <option value="canada">Canada</option>
+       <option value="egypt">egypt</option>
+       <option value="european union">european union</option>
+       <option value="india">india</option>
+       <option value="indonesia">indonesia</option>
+       <option value="japan">japan</option>
+       <option value="mexico">mexico</option>
+       <option value="philippines">philippines</option>
+       <option value="republic of korea">republic of korea</option>
+       <option value="russian federation">russian federation</option>
+       <option value="saudi arabia">saudi arabia</option>
+       <option value="south africa">south africa</option>
+       <option value="thailand">thailand</option>
+       <option value="turkey">turkey</option>
+       <option value="ukraine">ukraine</option>
+       <option value="viet nam">viet nam</option>       
+    </select>
+    <br/>
+    <? } ?>
+    
         <div class="row">
             <div class="col-xs-12 text-left">
                 Load data from the AMIS database:
@@ -113,6 +147,7 @@
                 <button id="hideHistoricalSeries" class="btn btn-primary btn-lg">Hide <i class="mdi mdi-eye-off"></i></button>
         	</div>
         </div>
+        <br/><br/><br/>
     </div>
     </div>
    <!-- END hidden part -->
@@ -128,7 +163,7 @@
    	</div>
    </div>
 
-
+   
    <!-- Begin # create sheet form -->
     <form id="create-sheet-form" hidden class="container">
         <div class="row">
@@ -153,6 +188,7 @@
                     <!-- <input id="countryName" class="form-control" type="text" placeholder="Country Name" required> -->
                     <select class="form-control" id="countryName">
                         <option value="">Choose a Country</option>
+                        <option value="secretariat">SECRETARIAT</option>
                         <option value="argentina">Argentina</option>
                         <option value="brazil">Brazil</option>
                         <option value="india">India</option>
@@ -162,6 +198,7 @@
                     <select class="form-control" id="account">
                         <option value="">Choose an Account</option>
                         <option value="arg.national.amis@gmail.com">arg.national.amis@gmail.com</option>
+                        <option value="secretariat.amis@gmail.com">secretariat.amis@gmail.com</option>
                         <? if (devMode) { ?>
                             <option value="fabrizio.antonangeli@gmail.com">fabrizio.antonangeli@gmail.com</option>
                             <option value="sabbadini.misael@gmail.com">sabbadini.misael@gmail.com</option>

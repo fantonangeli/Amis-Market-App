@@ -20,11 +20,19 @@ var MasterUtility=new function(){
     for (var values in templateCompiler) {
       valuesNode = 'config/templateCompiler/'+countrySelected+'/'+values;
       valuesToBeWritten = JSON.parse(FirebaseConnector.getFireBaseData(valuesNode,FirebaseConnector.getToken()));      
-      
+      //Browser.msgBox(valuesNode);
       //for sheet
       var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(values);
+      Utility.unhudeAllColumns(sheet);
+      if(!isReset){
+        SyncMasterSheet.startFetchSecretariet(false, true, sheet);
+      }else{
+        //empty all data into template
+        SyncMasterSheet.startFetchEmptyAllData(false, true, sheet);
+      }
       //for TEMPLATE sheet
       var templateSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Template_'+values);
+      Utility.unhudeAllColumns(templateSheet);
       
       for (var subNode in valuesToBeWritten) {
         //contain the range
@@ -42,8 +50,6 @@ var MasterUtility=new function(){
           sheet.getRange(valuesToBeWritten[subNode][0]).setValue(valuesToBeWritten[subNode][1]);
           templateSheet.getRange(valuesToBeWritten[subNode][0]).setValue(valuesToBeWritten[subNode][1]);
         }
-        
-        
         
       }
       

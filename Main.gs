@@ -82,3 +82,15 @@ function protectSheet(userToken){
   }
 
 }
+
+    /**
+     * setter for the firebase token
+     * @param  {string} token
+     */
+   function setSecretariatCountry (chosenCountry ) {      
+        PropertiesService.getUserProperties().setProperty("secretariatCountry", chosenCountry);
+    };
+
+    function getSecretariatCountry(  ) {
+        return PropertiesService.getUserProperties().getProperty("secretariatCountry");
+    };

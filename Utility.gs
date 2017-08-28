@@ -9,6 +9,7 @@ Utility.openSidebar = function() {
 	countryCell = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( Config.Sheet.countryCell ).getValue();
 	datasourceCell = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( Config.Sheet.datasourceCell ).getValue();
 	devMode = Config.devMode;
+    secretariatMode = Utility.isSecretariat();
 	var html = HtmlService.createTemplateFromFile( 'amisMenu' )
 		.evaluate()
 		.setTitle( 'Amis' )
@@ -35,8 +36,18 @@ Utility.createAmisMenu = function() {
  * @return {bool} true if master, false otherwise
  */
 Utility.isMaster = function() {
-	return SpreadsheetApp.getActiveSpreadsheet().getName().indexOf( Config.masterKeyword ) > 0;
+	return SpreadsheetApp.getActiveSpreadsheet().getName().indexOf( Config.masterKeyword ) > -1;
 };
+
+/**
+ * check if the current spreadsheet is Master
+ * @return {bool} true if master, false otherwise
+ */
+Utility.isSecretariat = function() {  
+	return SpreadsheetApp.getActiveSpreadsheet().getName().indexOf( Config.secretariatKeyword ) > -1;
+};
+
+
 
 /**
  * check if the current spreadsheet is Master
@@ -65,6 +76,17 @@ Utility.toggleTemplates=function(show){
 			}
 		}
 	}
+};
+
+
+/**
+ * unhide all column
+ * @param  
+ * @return  
+ */
+Utility.unhudeAllColumns = function(sheet) { 
+  var range = sheet.getRange(1, 1, sheet.getLastRow(), sheet.getLastColumn());  
+  sheet.unhideColumn(range);
 };
 
 

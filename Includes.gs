@@ -35,3 +35,14 @@ FirebaseConnector.getCommodityName = function() {
 	//it return the commodation name (eg. maize )
 	return sheet.getRange( Config.Sheet.commodityCell ).getValue().toLowerCase();
 };
+
+/**
+ * find the commodity name FOR SECRETARIAT
+ * @return {string}  it return the commodation name (eg. maize )
+ */
+//---------------------------------------------------------
+FirebaseConnector.getCommodityNameSecretariat = function(sheet) {
+	//it return the commodation name (eg. maize )
+//Browser.msgBox(sheet.getRange( Config.Sheet.commodityCell ).getValue().toLowerCase());
+	return sheet.getRange( Config.Sheet.commodityCell ).getValue().toLowerCase();
+};

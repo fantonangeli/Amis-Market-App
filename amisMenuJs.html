@@ -48,6 +48,15 @@
          //this protect the sheet and avoid script error
          google.script.run.withSuccessHandler(hideLoadingDiv).LIB_FUNC( "AmisMarketApp.protectSheet");
        };
+       
+       /**
+        * callback WITH AUTOMATIC LOAD DATA FOR COUNTRY (secretariat)
+        */
+       hideLoadingSecretariatWithAutoLoadData = function() {       
+        var chosenCountry = $( "#countryName option:selected" ).val();          
+        //this protect the sheet and avoid script error
+        //google.script.run.withSuccessHandler(hideLoadingDiv).LIB_FUNC( "AmisMarketApp.SyncMasterSheet.startFetchSecretariet", false);
+       };
 
        /**
         * hide the loading spinner
@@ -106,11 +115,21 @@
                  userToken=data;
 
                  if ( user_data.type!="admin" ) {
-                    //automatic fetch for operative users
-                    showLoading(["Logging in", "Loading user data"]);
-                    verifyToken(function(){
-                        google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",data);
-                    });
+                    
+                    //if user is 'secretariat' user
+                    if(user_data.type =="secretariat"){
+                       showLoading(["Please wait", "Loading configurations"]);
+                       verifyToken(function(){
+                          //reset metadata and notes
+                          google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC("AmisMarketApp.MasterUtility.writeNoteAndDataForCountries","secretariat",true);
+                       });
+                    }else{
+                      //automatic fetch for operative users
+                      showLoading(["Logging in", "Loading user data"]);
+                      verifyToken(function(){
+                         google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",data);
+                      });
+                    }
                  }
                  console.log( 'gettoken', data );
                  google.script.run.LIB_FUNC( "AmisMarketApp.FirebaseConnector.setToken", data );
@@ -175,7 +194,7 @@
 
 
 
-       $( document ).ready( function() {
+       $( document ).ready( function() {              
            var unsubOnAuthStateChanged=firebase.auth().onAuthStateChanged(function(user) {
              console.log('UNSUBONAUTHSTATECHANGED');
              window.user=user;
@@ -188,7 +207,20 @@
              }
            });
 
-
+           //if is secretariatMode i have to change the save function by pass the country choosen
+           <? if (secretariatMode) { ?>
+           //binding SAVE function with AMIS MARKET API
+           $( "#buttonSave" ).bind( "click", function() {
+           var chosenCountry = $( "#countryName option:selected" ).val();                      
+           showLoading(["Saving data", "Sending data to the database", "Synchronizing the sheet"]);
+               verifyToken(function(){
+                   google.script.run.withSuccessHandler(hideLoading).LIB_FUNC( "AmisMarketApp.SyncMasterSheet.startSyncSecretariet", userToken,chosenCountry );
+               });
+               //disable the button himself
+               $( "#addFrc16" ).prop( "disabled", false );
+               $( "#addFrc17" ).prop( "disabled", false );
+           } );
+           <? }else{ ?>
            //binding SAVE function with AMIS MARKET API
            $( "#buttonSave" ).bind( "click", function() {
                showLoading(["Saving data", "Sending data to the database", "Synchronizing the sheet"]);
@@ -199,28 +231,60 @@
                $( "#addFrc16" ).prop( "disabled", false );
                $( "#addFrc17" ).prop( "disabled", false );
            } );
+           <? } ?>
+
            $( "#addFrc16" ).bind( "click", function() {
+           
                showLoading(["Loading sheet's data","Creating the new forecast", "Saving the data", "Sending data to the database"]);
-               verifyToken(function(){
-                   google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast16_17", userToken );
-               });
+               
+               <? if (secretariatMode) { ?>
+                 var chosenCountry = $( "#countryName option:selected" ).val();               
+                 verifyToken(function(){
+                     google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast16_17_Secretariet", userToken, chosenCountry);
+                 });
+               
+               <? }else { ?>
+                  verifyToken(function(){
+                     google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast16_17", userToken);
+                 });
+               <? }?>
+               
                //disable the button himself
-               //$( "#addFrc16" ).prop( "disabled", true );
+               $( "#addFrc16" ).prop( "disabled", true );
            } );
            $( "#addFrc17" ).bind( "click", function() {
-               showLoading(["Loading sheet's data","Creating the new forecast", "Saving the data", "Sending data to the database"]);
-               verifyToken(function(){
-                   google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast17_18", userToken );
-               });
+           
+               showLoading(["Loading sheet's data","Creating the new forecast", "Saving the data", "Sending data to the database"]);               
+               
+               <? if (secretariatMode) { ?>
+                 var chosenCountry = $( "#countryName option:selected" ).val();               
+                 verifyToken(function(){
+                     google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast17_18_Secretariet", userToken, chosenCountry);
+                 });
+               
+               <? }else { ?>
+                  verifyToken(function(){
+                     google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast17_18", userToken);
+                 });
+               <? }?>
+               
                //disable the button himself
-               //$( "#addFrc17" ).prop( "disabled", true );
+               $( "#addFrc17" ).prop( "disabled", true );
            } );
            //binding FETCH function with AMIS MARKET API
            $("#buttonFetch").bind( "click", function() {
                showLoading(["Loading data from the database", "Synchronizing the sheet"]);
-               verifyToken(function(){
-                   google.script.run.withSuccessHandler(hideLoading).LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",userToken);
-               });
+               <? if (secretariatMode) { ?>
+                     var chosenCountry = $( "#countryName option:selected" ).val();  
+                     verifyToken(function(){
+                       google.script.run.withSuccessHandler(hideLoading).LIB_FUNC( "AmisMarketApp.SyncMasterSheet.startFetchSecretariet", true, false, '');
+                    });               
+               <? }else { ?>
+                    verifyToken(function(){
+                       google.script.run.withSuccessHandler(hideLoading).LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",userToken);
+                    });
+               <? } ?>
+               
            });
            //bind create google sheet function
            $( "#createSheetButton" ).bind( "click", function() {
@@ -238,25 +302,42 @@
            $("#showHistoricalSeries").click(function(event) {
                showLoading(["Showing historical series"]);
                verifyToken(function(){
-                   google.script.run.withSuccessHandler( hideLoading ).LIB_FUNC( "AmisMarketApp.ForecastUtility.showOldForecasts", userToken );
+                   <? if (secretariatMode) { ?>
+                        google.script.run.withSuccessHandler( hideLoading ).LIB_FUNC( "AmisMarketApp.ForecastUtility.showOldForecastsSecretariat", userToken );
+                   <? }else { ?>
+                        google.script.run.withSuccessHandler( hideLoading ).LIB_FUNC( "AmisMarketApp.ForecastUtility.showOldForecasts", userToken );
+                   <? } ?>
                });
            });
            $("#hideHistoricalSeries").click(function(event) {
                showLoading(["Hiding historical series","Hiding forecasts"]);
                verifyToken(function(){
-                   google.script.run.withSuccessHandler( hideLoading ).LIB_FUNC( "AmisMarketApp.ForecastUtility.hideOldAndUnactiveForecast", userToken );
+                   <? if (secretariatMode) { ?>
+                        google.script.run.withSuccessHandler( hideLoading ).LIB_FUNC( "AmisMarketApp.ForecastUtility.hideOldAndUnactiveForecastSecretariat", userToken );
+                   <? }else { ?>
+                        google.script.run.withSuccessHandler( hideLoading ).LIB_FUNC( "AmisMarketApp.ForecastUtility.hideOldAndUnactiveForecast", userToken );
+                   <? } ?>
                });
            });
            //on change event on COUNTRY SELECTED
            $("#countryName").on('change', function() {
-
-               showLoading(["Updating Master","Updating Master"]);
                //selected value
                var valueSelected = this.value;
                verifyToken(function(){
                     console.info( valueSelected);
                     if(valueSelected != '') {
-                       google.script.run.withSuccessHandler(hideLoading).LIB_FUNC("AmisMarketApp.MasterUtility.writeNoteAndDataForCountries",valueSelected,false);
+                       
+                       //secretariat
+                       <? if (secretariatMode) { ?>
+                            google.script.run.LIB_FUNC( "AmisMarketApp.setSecretariatCountry", valueSelected );
+                            
+                            showLoading(["Updating Master","Loading Data"]);
+                            //if secretariat changing withSuccessHandler function: system will automatic load data for chosen country 
+                            google.script.run.withSuccessHandler(hideLoading).LIB_FUNC("AmisMarketApp.MasterUtility.writeNoteAndDataForCountries",valueSelected,false);
+                       <? } else{?>
+                            showLoading(["Updating Master","Updating Master"]);
+                            google.script.run.withSuccessHandler(hideLoading).LIB_FUNC("AmisMarketApp.MasterUtility.writeNoteAndDataForCountries",valueSelected,false);
+                       <? }?>
                    }
                });
            });
