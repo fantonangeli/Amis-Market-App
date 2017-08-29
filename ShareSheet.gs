@@ -25,7 +25,7 @@ var ShareSheet=new function(){
 	  ShareSheet.shareSheet(newFile,countryAccount);
 
       //empty the template
-      MasterUtility.writeNoteAndDataForCountries(countryName,true)
+      MasterUtility.writeNoteAndDataForCountriesMaster(countryName,true)
 
 
       Utility.toastInfo('Sheet created', 'Sheet created and shared');
