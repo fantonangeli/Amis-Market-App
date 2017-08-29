@@ -70,7 +70,7 @@ var SyncMasterSheet=new function(){
         if (userChoise == 'yes' || userChoise == 'si') {
           
           var sheet;
-          var rangeFromConfig
+          var rangeFromConfig;
           
           if(!isNeedingCommodityName){
             //Get the currently active sheet
