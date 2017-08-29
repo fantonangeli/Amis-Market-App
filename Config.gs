@@ -55,7 +55,7 @@ var Config={
 	 * @type {String}
 	 */
 	masterKeyword:"MASTER",
-  
+
     /**
 	 * the keyword to recognize the master spreadsheet by the filename
 	 * @type {String}
@@ -66,6 +66,12 @@ var Config={
 	 * the keyword to recognize the template spreadsheet by the filename
 	 * @type {String}
 	 */
-	templatePrefix:"Template_"
+	templatePrefix:"Template_",
+
+	/**
+	 * Cache expiration in seconds. The minimum is 1 second and the maximum is 21600 seconds (6 hours).
+	 * @type {number}
+	 */
+	cacheExpirationInSeconds:600
 
 };

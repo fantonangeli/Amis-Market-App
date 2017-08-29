@@ -43,7 +43,7 @@ Utility.isMaster = function() {
  * check if the current spreadsheet is Master
  * @return {bool} true if master, false otherwise
  */
-Utility.isSecretariat = function() {  
+Utility.isSecretariat = function() {
 	return SpreadsheetApp.getActiveSpreadsheet().getName().indexOf( Config.secretariatKeyword ) > -1;
 };
 
@@ -81,11 +81,11 @@ Utility.toggleTemplates=function(show){
 
 /**
  * unhide all column
- * @param  
- * @return  
+ * @param
+ * @return
  */
-Utility.unhudeAllColumns = function(sheet) { 
-  var range = sheet.getRange(1, 1, sheet.getLastRow(), sheet.getLastColumn());  
+Utility.unhudeAllColumns = function(sheet) {
+  var range = sheet.getRange(1, 1, sheet.getLastRow(), sheet.getLastColumn());
   sheet.unhideColumn(range);
 };
 
@@ -98,4 +98,42 @@ Utility.unhudeAllColumns = function(sheet) {
  */
 Utility.include = function( filename ) {
 	return HtmlService.createTemplateFromFile( filename ).evaluate().getContent();
+};
+
+
+
+/**
+ * parse all named range in the whole Spreadsheet
+ * @return {object} an object representing the named ranges: {commodity: {type: [index]}}
+ */
+Utility.parseAllNamedRanges=function() {
+	var s=SpreadsheetApp.getActiveSpreadsheet();
+	var rs=s.getNamedRanges();
+	var retVal={}, _rangeName, _rangeNameMatch, _sheetName, _type, _index, _a1;
+
+	var r;
+	for (var i = rs.length; i--;) {
+		r=rs[i];
+		_rangeName=r.getName();
+		_rangeNameMatch=_rangeName.match(/^(\w+)_(\w+)_((\d+)|(\w+))$/);
+		_sheetName=_rangeNameMatch[1];
+		_type=_rangeNameMatch[2],
+		_index=_rangeNameMatch[3];
+		_a1=r.getRange().getA1Notation();
+
+
+		retVal[_sheetName]=(retVal[_sheetName] || {});
+
+		//if the index is numeric
+		if(_rangeNameMatch[4]){
+			retVal[_sheetName][_type]=(retVal[_sheetName][_type] || []);
+			retVal[_sheetName][_type].push(_a1);
+		}
+		//the index is a key
+		else{
+			retVal[_sheetName][_type]=(retVal[_sheetName][_type] || {});
+			retVal[_sheetName][_type][_index]=_a1;
+		}
+	}
+	return retVal;
 };

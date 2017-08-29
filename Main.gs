@@ -9,6 +9,9 @@ function onOpen() {
   Browser.msgBox('To Open AMIS click on "AMIS" in the menu');
   }
 
+  //read all the named ranges and put in cache
+  APPCache.put("namedRanges", Utility.parseAllNamedRanges());
+
   //create Amis sidebar
   //Utility.openSidebar();
 
@@ -87,7 +90,7 @@ function protectSheet(userToken){
      * setter for the firebase token
      * @param  {string} token
      */
-   function setSecretariatCountry (chosenCountry ) {      
+   function setSecretariatCountry (chosenCountry ) {
         PropertiesService.getUserProperties().setProperty("secretariatCountry", chosenCountry);
     };
 
