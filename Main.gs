@@ -10,7 +10,7 @@ function onOpen() {
   }
 
   //read all the named ranges and put in cache
-  APPCache.put("namedRanges", Utility.parseAllNamedRanges());
+  Utility.getAllNamedRanges();
 
   //create Amis sidebar
   //Utility.openSidebar();
@@ -57,7 +57,7 @@ function onLogin(){
       return;
     }
 
-    ForecastingMethodologies.getConfig(true);
+    //ForecastingMethodologies.getConfig(true);
 }
 
 /**

@@ -137,3 +137,16 @@ Utility.parseAllNamedRanges=function() {
 	}
 	return retVal;
 };
+
+/**
+ * reads all named range in the whole Spreadsheet. If they are cached it will use the cache
+ * @return {object} an object representing the named ranges: {commodity: {type: [index]}}
+ */
+Utility.getAllNamedRanges=function() {
+	var namedRanges=APPCache.get("namedRanges");
+	if (!namedRanges) {
+		namedRanges=Utility.parseAllNamedRanges();
+		APPCache.put("namedRanges", namedRanges);
+	}
+	return namedRanges;
+};

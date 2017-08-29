@@ -108,7 +108,7 @@ var ForecastUtility=new function(){
   //------------------------------------------------------------------------------------------------------------------
   // END --   ADD A NEW FORECAST on the google sheet
   //------------------------------------------------------------------------------------------------------------------
-  
+
     //------------------------------------------------------------------------------------------------------------------
   /**
   * ADD A NEW FORECAST on the google sheet FOR SECRETARIET
@@ -117,7 +117,7 @@ var ForecastUtility=new function(){
   //------------------------------------------------------------------------------------------------------------------
   this.addForecast16_17_Secretariet= function(userToken,chosenCountry){
     chosenCountry = getSecretariatCountry();
-    var period = '16-17';    
+    var period = '16-17';
     ForecastUtility.addForecastSecretariet(period,userToken,chosenCountry);
   };
   //------------------------------------------------------------------------------------------------------------------
@@ -158,7 +158,7 @@ var ForecastUtility=new function(){
         }
       }
   };
-  
+
   /**
    * hide period's unactive columns for ALL period FOR SECRETARIAT
    * @param  {string} userToken firebase token
@@ -178,7 +178,7 @@ var ForecastUtility=new function(){
         }
       }
   };
-  
+
   /**
    * hide period's unactive columns for ALL period FOR SECRETARIAT
    * @param  {string} userToken firebase token
@@ -190,7 +190,7 @@ var ForecastUtility=new function(){
       commodity = FirebaseConnector.getCommodityNameSecretariat(sheetChosenCommodityName);
       allPeriodConfNode = 'config/addForecast/' + countryName + '/' + commodity;
       allPeriodConf = JSON.parse(FirebaseConnector.getFireBaseData(allPeriodConfNode, userToken));
-      
+
       for (var _i in allPeriodConf) {
         if (allPeriodConf[_i]) {
             period=allPeriodConf[_i];
@@ -219,10 +219,10 @@ var ForecastUtility=new function(){
       //hide correctly the new column
       ForecastUtility.hideColumnForNewForecasts(firstForecastColumnPosition,lastForecastColumnPosition, actualForecastColumnPosition);
   };
-  
-  
+
+
   /**
-   * hide period's unactive columns FOR SECRETARIAT WITH SHEET 
+   * hide period's unactive columns FOR SECRETARIAT WITH SHEET
    * @param  {object} periodConf configuration of the period from the db
    * @param  {sheet} the sheet chosen
    */
@@ -292,7 +292,7 @@ var ForecastUtility=new function(){
   //------------------------------------------------------------------------------------------------------------------
   // END --   ADD A NEW FORECAST on the google sheet
   //------------------------------------------------------------------------------------------------------------------
-  
+
   //------------------------------------------------------------------------------------------------------------------
   /**
 	 * ADD A NEW FORECAST on the google sheet FOR SECRETARIET
@@ -357,7 +357,7 @@ var ForecastUtility=new function(){
     if(columnToBeHidden >-1)
       sheet.hideColumns(beginingPosition, columnToBeHidden+1);
   };
-  
+
   /**
 	 * hide old forecast except the last 2 FOR SECRETARIAT WithChosenCommodityName
      * @param  {number} beginingPosition forecast position
@@ -397,13 +397,13 @@ var ForecastUtility=new function(){
   //------------------------------------------------------------------------------------------------------------------
   // END hide old forecast except the last 2
   //------------------------------------------------------------------------------------------------------------------
-  
-  
+
+
    /**
 	 * show old forecast FOR SECRETARIAT
   */
   this.showOldForecastsSecretariat= function (){
-    
+
     var config, firstCol, lastCol;
     var sheet = SpreadSheetCache.getActiveSheet();
     var commodityName = FirebaseConnector.getCommodityName();
@@ -420,17 +420,16 @@ var ForecastUtility=new function(){
     sheet.showColumns(firstCol, lastCol-firstCol);
 
   };
-  
 
-  //------------------------------------------------------------------------------------------------------------------
+
   /**
 	 * Solve CTRL+Z problems for 'add new forecast'
      * @param  {string} new forecast column index
      * @param  {string} last forecast position
      * @param  {string} user token
      * @return  {string} new Forecast Column Position after fixing CTRL problems
+ 	 * @deprecated not needed anymore
 	 */
-  //------------------------------------------------------------------------------------------------------------------
   this.preventUndoConflictForNewForecast = function (newForecastColumnPosition,lastForeCastNode, userToken, orderInTheSheet,firstForecastColumnPosition,beginForeCastNode){
 
     var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);
@@ -511,7 +510,7 @@ var ForecastUtility=new function(){
   //------------------------------------------------------------------------------------------------------------------
   // END -- function called to hide all the forecast for previus year except the last one
   //------------------------------------------------------------------------------------------------------------------
-  
+
   //------------------------------------------------------------------------------------------------------------------
   /**
 	 * function called to hide all the forecast for previus year except the last one FOR SECRETARIAT
@@ -528,9 +527,9 @@ var ForecastUtility=new function(){
       var ss = SpreadsheetApp.getActiveSpreadsheet();
       sheet = ss.getActiveSheet();
       commodityName = FirebaseConnector.getCommodityName();
-    }    
+    }
 
-    
+
 
     //datanode from firebase
     var firstOldFrcFirebasePath = 'config/previousForecast/'+ getSecretariatCountry() +'/'+commodityName+'/first';
@@ -578,8 +577,8 @@ var ForecastUtility=new function(){
       ForecastUtility.hideOldForecasts(actualForecastColumnPosition+1, lastForecastColumnPosition,0 );
     }
   };
-  
-  
+
+
   this.hideColumnForNewForecastsWithChosenCommodityName= function (firstForecastColumnPosition,lastForecastColumnPosition, actualForecastColumnPosition,sheetChosenCommodityName){
     var sheet = sheetChosenCommodityName;
 
@@ -610,7 +609,7 @@ var ForecastUtility=new function(){
 
     ForecastUtility.hideAllPreviousForecasts(userToken);
   };
-  
+
   /**
    * hide all the forecast for previus year except the last one and all unactive columns of all periods FOR SECRETARIAT
    * @param {string} userToken firebase token FOR SECRETARIAT
