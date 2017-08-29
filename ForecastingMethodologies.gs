@@ -4,12 +4,6 @@
 var ForecastingMethodologies = new( function() {
 
 	/**
-	 * path firebase where configuration is stored
-	 * @type {String}
-	 */
-	var fbPath = "config/forecastingMethodologies/";
-
-	/**
 	 * do the format operations of each element of the Forecasting Methodologies
 	 * @param  {string} val cell value
 	 * @return {string}    the value without any space
