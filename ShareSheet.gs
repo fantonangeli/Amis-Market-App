@@ -46,7 +46,7 @@ var ShareSheet=new function(){
       }
       catch(err) {
         //empty the template
-        MasterUtility.writeNoteAndDataForCountries(countryName,true)
+        MasterUtility.writeNoteAndDataForCountriesMaster(countryName,true)
 
         //FAIL operation
         Utility.toastInfo('Share Failed', 'The file could be deleted');
