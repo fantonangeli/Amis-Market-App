@@ -55,6 +55,12 @@ var Config={
 	 * @type {String}
 	 */
 	masterKeyword:"MASTER",
+  
+    /**
+	 * the keyword to recognize the master spreadsheet by the filename
+	 * @type {String}
+	 */
+	secretariatKeyword:"secretariat",
 
 	/**
 	 * the keyword to recognize the template spreadsheet by the filename
