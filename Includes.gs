@@ -29,9 +29,7 @@ FirebaseConnector.getCountryNameFromSheet = function( userToken ) {
  */
 //---------------------------------------------------------
 FirebaseConnector.getCommodityName = function() {
-	//get the google sheet
-	var ss = SpreadsheetApp.getActiveSpreadsheet();
-	var sheet = ss.getActiveSheet();
+	var sheet = SpreadSheetCache.getActiveSheet();
 
 	//it return the commodation name (eg. maize )
 	return sheet.getRange( Config.Sheet.commodityCell ).getValue().toLowerCase();
