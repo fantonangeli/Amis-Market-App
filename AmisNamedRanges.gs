@@ -10,7 +10,7 @@ AmisNamedRanges=new function() {
 	 * @return {object} an object representing the named ranges: {commodity: {type: [index]}}
 	 */
 	this.parseAllNamedRanges=function() {
-		var s=SpreadsheetApp.getActiveSpreadsheet();
+		var s=SpreadSheetCache.getActiveSpreadsheet();
 		var rs=s.getNamedRanges();
 		var retVal={}, _rangeName, _rangeNameMatch, _sheetName, _type, _index, _a1;
 
@@ -48,7 +48,7 @@ AmisNamedRanges=new function() {
 	this.getAllNamedRanges=function() {
 		var namedRanges=APPCache.get("namedRanges");
 		if (!namedRanges) {
-			namedRanges=Utility.parseAllNamedRanges();
+			namedRanges=this.parseAllNamedRanges();
 			APPCache.put("namedRanges", namedRanges);
 		}
 		return namedRanges;
