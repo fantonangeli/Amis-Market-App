@@ -127,7 +127,7 @@ Utility.parseAllNamedRanges=function() {
 		//if the index is numeric
 		if(_rangeNameMatch[4]){
 			retVal[_sheetName][_type]=(retVal[_sheetName][_type] || []);
-			retVal[_sheetName][_type].push(_a1);
+			retVal[_sheetName][_type][parseInt(_index, 10)]=_a1;
 		}
 		//the index is a key
 		else{
