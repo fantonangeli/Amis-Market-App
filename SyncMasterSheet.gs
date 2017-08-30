@@ -367,18 +367,12 @@ var SyncMasterSheet=new function(){
 	  return Utility.getGoogleSheetID();
   };
 
-  this.setLastUpdate = function(userToken){
-        var sheet = SpreadsheetApp.getActiveSheet();
+  this.setLastUpdate = function(){
+        var sheet = SpreadSheetCache.getActiveSheet();
         var date = new Date();
 
-        var commodityName = FirebaseConnector.getCommodityName();
+        var lastUpdateCell= Utility.getCommodityNamedRanges().lastUpdateCell.cell;
 
-        var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);
-        //datanode from firebase
-        var lastUpdateCellNode = 'config/lastUpdateCell/'+countryName+'/'+commodityName;
-        var lastUpdateCell= JSON.parse(FirebaseConnector.getFireBaseData(lastUpdateCellNode,userToken));
-
-        //TODO get this range from firebase
         sheet.getRange(lastUpdateCell).setValue(date);
     };
 
