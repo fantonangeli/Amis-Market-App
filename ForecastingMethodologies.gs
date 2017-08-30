@@ -46,11 +46,8 @@ var ForecastingMethodologies = new( function() {
 	 * @return {array} array of ranges, null otherwise
 	 */
 	this.getFMRanges=function() {
-       var commodityName = FirebaseConnector.getCommodityName();
-
-		var ranges=Utility.getAllNamedRanges()[commodityName].fm;
+       	var ranges=Utility.getCommodityNamedRanges().fm;
 		return ranges;
-
 	};
 
 

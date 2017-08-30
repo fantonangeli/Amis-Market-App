@@ -380,11 +380,9 @@ var ForecastUtility=new function(){
   this.showOldForecasts= function (){
     var config, firstCol, lastCol;
     var sheet = SpreadSheetCache.getActiveSheet();
-    var commodityName = FirebaseConnector.getCommodityName();
     var userToken=FirebaseConnector.getToken();
-    var firebasePath = 'config/previousForecast/'+FirebaseConnector.getCountryNameFromSheet(userToken)+'/'+commodityName;
 
-    config = JSON.parse(FirebaseConnector.getFireBaseData(firebasePath,userToken));
+    config = Utility.getCommodityNamedRanges().previousForecast;
 
     firstCol=ConvertA1.colA1ToIndex(config.first.split(":")[0],1);
     lastCol=ConvertA1.colA1ToIndex(config.last.split(":")[0],1);

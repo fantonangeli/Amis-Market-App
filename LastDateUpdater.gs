@@ -33,7 +33,7 @@ var LastDateUpdater=new function(){
       if( sheetName.indexOf('Template_') < 0){
 
         var commodityName = ss.getSheetByName(sheetName).getRange(Config.Sheet.commodityCell).getValue().toLowerCase();
-        
+
         var labelRowForLastDate=JSON.parse(FirebaseConnector.getFireBaseData('config/labelRowForLastDate/'+FirebaseConnector.getCountryNameFromSheet(userToken)+'/'+commodityName,userToken));
         //store into session the labelRowForLastDate
         PropertiesService.getUserProperties().setProperty(commodityName+"_labelRowForLastDate", labelRowForLastDate);
@@ -84,7 +84,7 @@ var LastDateUpdater=new function(){
 
     var ss = SpreadSheetCache.getActiveSheet();
 
-    var rangeProtected = Utility.getAllNamedRanges()[commodityName].noLastUpdate;
+    var rangeProtected = Utility.getCommodityNamedRanges().noLastUpdate;
 
     var mergeRange = rangeProtected;
 

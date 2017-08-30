@@ -150,3 +150,13 @@ Utility.getAllNamedRanges=function() {
 	}
 	return namedRanges;
 };
+
+/**
+ * return all namedRanges of the current commodity
+ * @return {object} an object representing the named ranges: {type: [index]}
+ */
+Utility.getCommodityNamedRanges=function(){
+	var commodityName = FirebaseConnector.getCommodityName();
+
+    return Utility.getAllNamedRanges()[commodityName];
+};

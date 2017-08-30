@@ -390,9 +390,7 @@ var SyncMasterSheet=new function(){
      *  @return  {array} ranges to be stored
 	 */
   this.getRangeToBeStored = function(){
-		var commodityName = FirebaseConnector.getCommodityName();
-
-		return Utility.getAllNamedRanges()[commodityName].rangeToBeStored;
+		return Utility.getCommodityNamedRanges().rangeToBeStored;
 	};
 
   //---------------------------------------------------------
