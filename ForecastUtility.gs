@@ -404,11 +404,9 @@ var ForecastUtility=new function(){
 
     var config, firstCol, lastCol;
     var sheet = SpreadSheetCache.getActiveSheet();
-    var commodityName = FirebaseConnector.getCommodityName();
     var userToken=FirebaseConnector.getToken();
-    var firebasePath = 'config/previousForecast/'+getSecretariatCountry() +'/'+commodityName;
 
-    config = JSON.parse(FirebaseConnector.getFireBaseData(firebasePath,userToken));
+    config = Utility.getCommodityNamedRanges().previousForecast;
 
     firstCol=ConvertA1.colA1ToIndex(config.first.split(":")[0],1);
     lastCol=ConvertA1.colA1ToIndex(config.last.split(":")[0],1);
@@ -482,27 +480,12 @@ var ForecastUtility=new function(){
   this.hideAllPreviousForecasts = function (userToken){
 
     //get the google sheet
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var ss = SpreadSheetCache.getActiveSpreadsheet();
     //TODO _ pay attention to multiple sheets
     var sheet = ss.getActiveSheet();
+    var config=Utility.getCommodityNamedRanges().previousForecast;
 
-    var commodityName = FirebaseConnector.getCommodityName();
-
-    //datanode from firebase
-    var firstOldFrcFirebasePath = 'config/previousForecast/'+FirebaseConnector.getCountryNameFromSheet(userToken)+'/'+commodityName+'/first';
-
-    //retrive the row containing 'Forecasting  Methodology'. IT MUST BE next the last forecast.
-    var firstFrc = JSON.parse(FirebaseConnector.getFireBaseData(firstOldFrcFirebasePath,userToken));
-
-    //TODO _ take from firebase
-    //datanode from firebase
-    var lastOldFrcFirebasePath = 'config/previousForecast/'+FirebaseConnector.getCountryNameFromSheet(userToken)+'/'+commodityName+'/last';
-
-    //retrive the row containing 'Forecasting  Methodology'. IT MUST BE next the last forecast.
-    var lastFrc = JSON.parse(FirebaseConnector.getFireBaseData(lastOldFrcFirebasePath,userToken));
-
-    //with charToNum(letterOfTheColumn) I get the column number
-    ForecastUtility.hideOldForecasts(sheet.getRange(firstFrc).getColumn(),sheet.getRange(lastFrc).getColumn(),1);
+    ForecastUtility.hideOldForecasts(sheet.getRange(config.first).getColumn(),sheet.getRange(config.last).getColumn(),1);
 
   };
   //------------------------------------------------------------------------------------------------------------------
@@ -516,38 +499,24 @@ var ForecastUtility=new function(){
   //------------------------------------------------------------------------------------------------------------------
   this.hideAllPreviousForecastsSecretariat = function (userToken, isNeedingCommodityName, sheetChosenCommodityName){
     var sheet;
-    var commodityName;
+    var config=Utility.getCommodityNamedRanges().previousForecast;
+
     if(isNeedingCommodityName){
       sheet = sheetChosenCommodityName;
-      commodityName = FirebaseConnector.getCommodityNameSecretariat(sheet);
     }else{
       //get the google sheet
       var ss = SpreadsheetApp.getActiveSpreadsheet();
       sheet = ss.getActiveSheet();
-      commodityName = FirebaseConnector.getCommodityName();
     }
 
 
 
-    //datanode from firebase
-    var firstOldFrcFirebasePath = 'config/previousForecast/'+ getSecretariatCountry() +'/'+commodityName+'/first';
-
-    //retrive the row containing 'Forecasting  Methodology'. IT MUST BE next the last forecast.
-    var firstFrc = JSON.parse(FirebaseConnector.getFireBaseData(firstOldFrcFirebasePath,userToken));
-
-    //TODO _ take from firebase
-    //datanode from firebase
-    var lastOldFrcFirebasePath = 'config/previousForecast/'+ getSecretariatCountry() +'/'+commodityName+'/last';
-
-    //retrive the row containing 'Forecasting  Methodology'. IT MUST BE next the last forecast.
-    var lastFrc = JSON.parse(FirebaseConnector.getFireBaseData(lastOldFrcFirebasePath,userToken));
-
     if(isNeedingCommodityName){
       //with charToNum(letterOfTheColumn) I get the column number
-      ForecastUtility.hideOldForecastsWithChosenCommodityName(sheet.getRange(firstFrc).getColumn(),sheet.getRange(lastFrc).getColumn(),1,sheet);
+      ForecastUtility.hideOldForecastsWithChosenCommodityName(sheet.getRange(config.first).getColumn(),sheet.getRange(config.last).getColumn(),1,sheet);
     }else{
       //with charToNum(letterOfTheColumn) I get the column number
-      ForecastUtility.hideOldForecasts(sheet.getRange(firstFrc).getColumn(),sheet.getRange(lastFrc).getColumn(),1);
+      ForecastUtility.hideOldForecasts(sheet.getRange(config.first).getColumn(),sheet.getRange(config.last).getColumn(),1);
     }
 
   };
