@@ -29,10 +29,14 @@ FirebaseConnector.getCountryNameFromSheet = function( userToken ) {
  */
 //---------------------------------------------------------
 FirebaseConnector.getCommodityName = function() {
-	var sheet = SpreadSheetCache.getActiveSheet();
+	if (!this.commodity) {
+		var sheet = SpreadSheetCache.getActiveSheet();
 
-	//it return the commodation name (eg. maize )
-	return sheet.getRange( Config.Sheet.commodityCell ).getValue().toLowerCase();
+		//it return the commodation name (eg. maize )
+		this.commodity=sheet.getRange( Config.Sheet.commodityCell ).getValue().toLowerCase();
+	}
+
+	return this.commodity;
 };
 
 /**
