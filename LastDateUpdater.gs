@@ -1,19 +1,5 @@
 var LastDateUpdater=new function(){
 
-  //---------------------------------------------------------
-  /**
-	 * GET RANGES TO BE PROTECED NODE
-     * @params  {string} user token
-     * @return  {string} Firebase node of Ranges to be protected
-	 */
-  //---------------------------------------------------------
-  this.getLabelRow = function(userToken){
-    var sheetId= Utility.getGoogleSheetID();
-    var dataBaseNodeToRead='config/countries/'+sheetId;
-    return 'config/labelRowForLastDate/'+JSON.parse(FirebaseConnector.getFireBaseData(dataBaseNodeToRead,userToken)).name;
-};
-
-
   /**
   * STORE INTO SESSION THE LABEL ROW FOR LAST DATE
   * @param  {string} user token
@@ -34,9 +20,9 @@ var LastDateUpdater=new function(){
 
         var commodityName = ss.getSheetByName(sheetName).getRange(Config.Sheet.commodityCell).getValue().toLowerCase();
 
-        var labelRowForLastDate=JSON.parse(FirebaseConnector.getFireBaseData('config/labelRowForLastDate/'+FirebaseConnector.getCountryNameFromSheet(userToken)+'/'+commodityName,userToken));
-        //store into session the labelRowForLastDate
-        PropertiesService.getUserProperties().setProperty(commodityName+"_labelRowForLastDate", labelRowForLastDate);
+        // var labelRowForLastDate=JSON.parse(FirebaseConnector.getFireBaseData('config/labelRowForLastDate/'+FirebaseConnector.getCountryNameFromSheet(userToken)+'/'+commodityName,userToken));
+        // //store into session the labelRowForLastDate
+        // PropertiesService.getUserProperties().setProperty(commodityName+"_labelRowForLastDate", labelRowForLastDate);
 
         // var rangeFromConfigNotParsed = FirebaseConnector.getFireBaseData('config/rangeToBeProtectedFromSettingLastDateUpdate/'+FirebaseConnector.getCountryNameFromSheet(userToken)+'/'+commodityName,FirebaseConnector.getToken());
         //
@@ -69,20 +55,16 @@ var LastDateUpdater=new function(){
   //------------------------------------------------------------------------------------------------------------------
   this.onEditSetLastUpdateDate = function (userToken,e) {
     //get the google sheet
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var ss = SpreadSheetCache.getActiveSheet();
     //TODO _ pay attention to multiple sheets
-    var sheet = ss.getActiveSheet();
 
-    var commodityName = FirebaseConnector.getCommodityName();
 
-    var lastDateUpdaterRow = JSON.parse(PropertiesService.getUserProperties().getProperty(commodityName+"_labelRowForLastDate"));
+    var lastDateUpdaterRow = parseInt(Utility.getCommodityNamedRanges().labelRowForLastDate.row.split(":")[0],10);
 
-    var sheet = SpreadsheetApp.getActiveSpreadsheet();
 
     var activeCell=e.range;
     var thisCol = e.range.getColumn();
 
-    var ss = SpreadSheetCache.getActiveSheet();
 
     var rangeProtected = Utility.getCommodityNamedRanges().noLastUpdate;
 
