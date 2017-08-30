@@ -10,7 +10,7 @@ function onOpen() {
   }
 
   //read all the named ranges and put in cache
-  Utility.getAllNamedRanges();
+  AmisNamedRanges.getAllNamedRanges();
 
   //create Amis sidebar
   //Utility.openSidebar();

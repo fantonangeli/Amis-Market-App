@@ -59,14 +59,14 @@ var LastDateUpdater=new function(){
     //TODO _ pay attention to multiple sheets
 
 
-    var lastDateUpdaterRow = parseInt(Utility.getCommodityNamedRanges().labelRowForLastDate.row.split(":")[0],10);
+    var lastDateUpdaterRow = parseInt(AmisNamedRanges.getCommodityNamedRanges().labelRowForLastDate.row.split(":")[0],10);
 
 
     var activeCell=e.range;
     var thisCol = e.range.getColumn();
 
 
-    var rangeProtected = Utility.getCommodityNamedRanges().noLastUpdate;
+    var rangeProtected = AmisNamedRanges.getCommodityNamedRanges().noLastUpdate;
 
     var mergeRange = rangeProtected;
 

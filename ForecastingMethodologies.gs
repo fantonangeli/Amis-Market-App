@@ -46,7 +46,7 @@ var ForecastingMethodologies = new( function() {
 	 * @return {array} array of ranges, null otherwise
 	 */
 	this.getFMRanges=function() {
-       	var ranges=Utility.getCommodityNamedRanges().fm;
+       	var ranges=AmisNamedRanges.getCommodityNamedRanges().fm;
 		return ranges;
 	};
 

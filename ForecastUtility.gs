@@ -382,7 +382,7 @@ var ForecastUtility=new function(){
     var sheet = SpreadSheetCache.getActiveSheet();
     var userToken=FirebaseConnector.getToken();
 
-    config = Utility.getCommodityNamedRanges().previousForecast;
+    config = AmisNamedRanges.getCommodityNamedRanges().previousForecast;
 
     firstCol=ConvertA1.colA1ToIndex(config.first.split(":")[0],1);
     lastCol=ConvertA1.colA1ToIndex(config.last.split(":")[0],1);
@@ -406,7 +406,7 @@ var ForecastUtility=new function(){
     var sheet = SpreadSheetCache.getActiveSheet();
     var userToken=FirebaseConnector.getToken();
 
-    config = Utility.getCommodityNamedRanges().previousForecast;
+    config = AmisNamedRanges.getCommodityNamedRanges().previousForecast;
 
     firstCol=ConvertA1.colA1ToIndex(config.first.split(":")[0],1);
     lastCol=ConvertA1.colA1ToIndex(config.last.split(":")[0],1);
@@ -483,7 +483,7 @@ var ForecastUtility=new function(){
     var ss = SpreadSheetCache.getActiveSpreadsheet();
     //TODO _ pay attention to multiple sheets
     var sheet = ss.getActiveSheet();
-    var config=Utility.getCommodityNamedRanges().previousForecast;
+    var config=AmisNamedRanges.getCommodityNamedRanges().previousForecast;
 
     ForecastUtility.hideOldForecasts(sheet.getRange(config.first).getColumn(),sheet.getRange(config.last).getColumn(),1);
 
@@ -499,7 +499,7 @@ var ForecastUtility=new function(){
   //------------------------------------------------------------------------------------------------------------------
   this.hideAllPreviousForecastsSecretariat = function (userToken, isNeedingCommodityName, sheetChosenCommodityName){
     var sheet;
-    var config=Utility.getCommodityNamedRanges().previousForecast;
+    var config=AmisNamedRanges.getCommodityNamedRanges().previousForecast;
 
     if(isNeedingCommodityName){
       sheet = sheetChosenCommodityName;

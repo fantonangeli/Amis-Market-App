@@ -371,7 +371,7 @@ var SyncMasterSheet=new function(){
         var sheet = SpreadSheetCache.getActiveSheet();
         var date = new Date();
 
-        var lastUpdateCell= Utility.getCommodityNamedRanges().lastUpdateCell.cell;
+        var lastUpdateCell= AmisNamedRanges.getCommodityNamedRanges().lastUpdateCell.cell;
 
         sheet.getRange(lastUpdateCell).setValue(date);
     };
@@ -384,7 +384,7 @@ var SyncMasterSheet=new function(){
      *  @return  {array} ranges to be stored
 	 */
   this.getRangeToBeStored = function(){
-		return Utility.getCommodityNamedRanges().rangeToBeStored;
+		return AmisNamedRanges.getCommodityNamedRanges().rangeToBeStored;
 	};
 
   //---------------------------------------------------------
