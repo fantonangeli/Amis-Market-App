@@ -69,14 +69,9 @@ var SyncMasterSheet=new function(){
         if (userChoise == 'yes' || userChoise == 'si') {
 
           var sheet;
-<<<<<<< HEAD
-          var rangeFromConfig
+          var rangeFromConfig;
 
 		  rangeFromConfig=this.getRangeToBeStored();
-=======
-          var rangeFromConfig;
-          
->>>>>>> remotes/origin/master
           if(!isNeedingCommodityName){
             //Get the currently active sheet
             sheet = SpreadsheetApp.getActiveSheet();
