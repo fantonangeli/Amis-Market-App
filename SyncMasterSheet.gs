@@ -15,7 +15,7 @@ var SyncMasterSheet=new function(){
 
           //hide old forecasts leaving only the last one
           ForecastUtility.hideAllPreviousForecasts(userToken);
-          
+
           //hide new frc unactive columns
           ForecastUtility.hideAllPeriodUnactiveColumns(userToken);
 
@@ -49,14 +49,14 @@ var SyncMasterSheet=new function(){
 
 
 	  }
-      
-      
+
+
       /**
 	    * Delete all data in TEMPLATE
-        * 
+        *
 	  */
       this.startFetchEmptyAllData=function(isWithWarning, isNeedingCommodityName, sheetChosenCommodityName) {
-        
+
         userToken = FirebaseConnector.getToken();
         var chosenCountry = getSecretariatCountry();
         if(isWithWarning){
@@ -64,13 +64,13 @@ var SyncMasterSheet=new function(){
         }else(
           userChoise='yes'
         )
-        
+
         // if user wants to laod data
         if (userChoise == 'yes' || userChoise == 'si') {
-          
+
           var sheet;
           var rangeFromConfig;
-          
+
 		  rangeFromConfig=this.getRangeToBeStored();
           if(!isNeedingCommodityName){
             //Get the currently active sheet
@@ -78,11 +78,11 @@ var SyncMasterSheet=new function(){
           }else{
             sheet  = sheetChosenCommodityName;
           }
-          
+
           for (var i=0; i<rangeFromConfig.length;i++){
-            
+
             var fireBaseNodeData;
-            
+
             if(!isNeedingCommodityName){
               //get Firebase node name to be fetch
               //fireBaseNodeData= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/' + SyncMasterSheet.getNodeToWriteDataSecretariat(userToken,chosenCountry) + '/' + FirebaseConnector.getCommodityName() + '/' + rangeFromConfig[i];
@@ -92,18 +92,18 @@ var SyncMasterSheet=new function(){
               // Browser.msgBox(fireBaseNodeData);
             }
             //var fireBaseValues = JSON.parse(FirebaseConnector.getFireBaseData(fireBaseNodeData,userToken));
-            
+
             //set EMPTY VALUE
             sheet.getRange(rangeFromConfig[i]).setValue('');
-          }                    
-          
+          }
+
         } else {
-          
+
           //do nothing
         }
 
       }
-      
+
       /**
 	    * Saving Sheet Data function FOR SECRETARIET
         * @param  {string} auth token
@@ -123,7 +123,7 @@ var SyncMasterSheet=new function(){
 
           //hide old forecasts leaving only the last one
           ForecastUtility.hideAllPreviousForecastsSecretariat(userToken,isNeedingCommodityName,sheetChosenCommodityName);
-          
+
           if(isNeedingCommodityName){
             //hide new frc unactive columns
             ForecastUtility.hideAllPeriodUnactiveColumnsSecretariatWithChosenCommodityName(userToken,sheetChosenCommodityName);
@@ -131,11 +131,11 @@ var SyncMasterSheet=new function(){
             //hide new frc unactive columns
             ForecastUtility.hideAllPeriodUnactiveColumnsSecretariat(userToken);
           }
-          
-          
+
+
           var sheet;
           var rangeFromConfig;
-  		  rangeFromConfig=this.getRangeToBeStored();
+  		  rangeFromConfig=SyncMasterSheet.getRangeToBeStored();
           if(!isNeedingCommodityName){
             //Get the currently active sheet
             sheet = SpreadsheetApp.getActiveSheet();
@@ -144,9 +144,9 @@ var SyncMasterSheet=new function(){
           }
 
           for (var i=0; i<rangeFromConfig.length;i++){
-            
+
             var fireBaseNodeData;
-            
+
             if(!isNeedingCommodityName){
               //get Firebase node name to be fetch
               fireBaseNodeData= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/' + SyncMasterSheet.getNodeToWriteDataSecretariat(userToken,chosenCountry) + '/' + FirebaseConnector.getCommodityName() + '/' + rangeFromConfig[i];
@@ -155,9 +155,9 @@ var SyncMasterSheet=new function(){
               fireBaseNodeData= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/' + SyncMasterSheet.getNodeToWriteDataSecretariat(userToken,chosenCountry) + '/' + FirebaseConnector.getCommodityNameSecretariat(sheetChosenCommodityName) + '/' + rangeFromConfig[i];
               // Browser.msgBox(fireBaseNodeData);
             }
-            
+
             var fireBaseValues = JSON.parse(FirebaseConnector.getFireBaseData(fireBaseNodeData,userToken));
-            
+
             //if data note IS NOT EMPTY
             if(fireBaseValues){
               //empty old values
@@ -172,7 +172,7 @@ var SyncMasterSheet=new function(){
           if(!isNeedingCommodityName){
             Utility.toastInfo('Data successfully loaded to the AMIS database', 'DATA LOADED');
           }
-          
+
 
         } else {
 
@@ -181,7 +181,7 @@ var SyncMasterSheet=new function(){
 
 
 	  }
-      
+
 
     /**
      * get single range values and prepare it to be stored in firebase
@@ -264,14 +264,14 @@ var SyncMasterSheet=new function(){
     var commodityName = FirebaseConnector.getCommodityName();
 
 
-    var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);    
+    var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);
 
     Utility.toastInfo('Data successfully saved to the AMIS database', 'DATA SAVED');
 
     //protect again the sheet
     //ProtectRanges.protectCell(userToken);
 };
-  
+
   /**
   * Saving Sheet Data function FOR SECRETARIET
   * @param  {string} auth token
@@ -282,30 +282,30 @@ var SyncMasterSheet=new function(){
     ForecastUtility.hideAllPreviousForecastsSecretariat(userToken);
     //hide new frc unactive columns
     ForecastUtility.hideAllPeriodUnactiveColumnsSecretariat(userToken);
-    
+
     //Get the currently active sheet
     var sheetValues=SpreadSheetCache.getActiveSheetValues();
-    
+
     var dataToBeStored={},currRange, saveNode,baseOfSaveNode, fmRanges;
-        
+
     var rangeFromConfig= SyncMasterSheet.getRangeToBeStored(userToken);
     fmRanges = ForecastingMethodologies.getFMRanges();
-    
+
     //loop all the ranges stored in firebase
     for (var p=0; p<rangeFromConfig.length;p++){
       currRange=rangeFromConfig[p];
       dataToBeStored[currRange]=SyncMasterSheet.getRangeValuesToBeStored(sheetValues,currRange, fmRanges);
     }
-    
+
     baseOfSaveNode= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/'+ SyncMasterSheet.getNodeToWriteDataSecretariat(userToken,chosenCountry)+ '/' + FirebaseConnector.getCommodityName();
     SyncMasterSheet.syncMasterSheet(dataToBeStored,userToken,baseOfSaveNode);
-    
+
     var commodityName = FirebaseConnector.getCommodityName();
-    
-    
-    var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);    
-    
-    Utility.toastInfo('Data successfully saved to the AMIS database', 'DATA SAVED');    
+
+
+    var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);
+
+    Utility.toastInfo('Data successfully saved to the AMIS database', 'DATA SAVED');
 };
 
   //---------------------------------------------------------
@@ -355,7 +355,7 @@ var SyncMasterSheet=new function(){
    var dataBaseNodeToRead='config/countries/'+sheetId;
    return FirebaseConnector.getFireBaseData(dataBaseNodeToRead,userToken);
   };
-  
+
   /**
 	 *  retrive from config how to name the new node (depends on the country )
      *  @param {string}  auth token
@@ -395,16 +395,16 @@ var SyncMasterSheet=new function(){
    //---------------------------------------------------------
   // END -- Retrives all the ranges to be stored
   //---------------------------------------------------------
-  
+
   //---------------------------------------------------------
-  /** 
+  /**
   * retrive all the ranges to be stored FOR SECRETARIAT
   *  @param  {string} auth token
   *  @return  {array} ranges to be stored
   */
   //---------------------------------------------------------
   this.getRangeToBeStoredSecretariat = function() {
-    
+
     return this.getRangeToBeStored();
   };
   //---------------------------------------------------------
@@ -427,4 +427,3 @@ var SyncMasterSheet=new function(){
   // END --  delete saved data
   //------------------------------------------------------------------------------------------------------------------
 };
- 
