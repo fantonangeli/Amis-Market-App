@@ -135,7 +135,7 @@ var SyncMasterSheet=new function(){
 
           var sheet;
           var rangeFromConfig;
-  		  rangeFromConfig=this.getRangeToBeStored();
+  		  rangeFromConfig=SyncMasterSheet.getRangeToBeStored();
           if(!isNeedingCommodityName){
             //Get the currently active sheet
             sheet = SpreadsheetApp.getActiveSheet();
