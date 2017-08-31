@@ -69,9 +69,14 @@ var SyncMasterSheet=new function(){
         if (userChoise == 'yes' || userChoise == 'si') {
 
           var sheet;
+<<<<<<< HEAD
           var rangeFromConfig
 
 		  rangeFromConfig=this.getRangeToBeStored();
+=======
+          var rangeFromConfig;
+          
+>>>>>>> remotes/origin/master
           if(!isNeedingCommodityName){
             //Get the currently active sheet
             sheet = SpreadsheetApp.getActiveSheet();
@@ -160,8 +165,12 @@ var SyncMasterSheet=new function(){
 
             //if data note IS NOT EMPTY
             if(fireBaseValues){
+              //empty old values
+              sheet.getRange(rangeFromConfig[i]).setValue('');
               //set value into cells
               sheet.getRange(rangeFromConfig[i]).setValues(fireBaseValues);
+            }else{
+              sheet.getRange(rangeFromConfig[i]).setValue('');
             }
           }
 

@@ -120,6 +120,7 @@
                     if(user_data.type =="secretariat"){
                        showLoading(["Please wait", "Loading configurations"]);
                        verifyToken(function(){
+                          google.script.run.LIB_FUNC( "AmisMarketApp.setSecretariatCountry", 'secretariat' );
                           //reset metadata and notes
                           google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC("AmisMarketApp.MasterUtility.writeNoteAndDataForCountries","secretariat",true);
                        });
