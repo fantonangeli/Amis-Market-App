@@ -4,22 +4,6 @@
 var ForecastingMethodologies = new( function() {
 
 	/**
-	 * path firebase where configuration is stored
-	 * @type {String}
-	 */
-	var fbPath = "config/forecastingMethodologies/";
-
-	/**
-	 * get the path firebase where configuration is stored
-	 * @return {string} the path
-	 */
-	var getFbConfigPath = function() {
-		return fbPath+FirebaseConnector.getCountryNameFromSheet();
-	};
-
-
-
-	/**
 	 * do the format operations of each element of the Forecasting Methodologies
 	 * @param  {string} val cell value
 	 * @return {string}    the value without any space
@@ -56,56 +40,14 @@ var ForecastingMethodologies = new( function() {
 			.showModalDialog( html, 'Forecasting Methodologies' );
 	};
 
-	/**
-	 * get the firebase configuration for the Forecasting Methodologies
-	 * @return {Object}         the configuration
-	 */
-	this.getConfig = function( refresh ) {
-		var data, t;
-		var fbConfig=PropertiesService.getUserProperties().getProperty("ForecastingMethodologies.config");
-		refresh=(refresh || false);
-
-		if ( ( fbConfig !== null ) && !refresh ) {
-			return JSON.parse(fbConfig);
-		}
-
-		t = FirebaseConnector.getToken();
-		if ( !t ) {
-			return null;
-		}
-		data = FirebaseConnector.getFireBaseData( getFbConfigPath(), t );
-		if ( !data ) {
-			return null;
-		}
-      //Utilities.sleep(300);
-		PropertiesService.getUserProperties().setProperty("ForecastingMethodologies.config",data);
-
-		return JSON.parse( data );
-	};
-
 
 	/**
 	 * reads the forecasting Methodology ranges from firebase
 	 * @return {array} array of ranges, null otherwise
 	 */
 	this.getFMRanges=function() {
-		var config;
-		var tokenFireBase = FirebaseConnector.getToken();
-
-		if ( !tokenFireBase ) {
-			Browser.msgBox( "You must be logged to use this functionality!" );
-			return null;
-		}
-
-       var sheet = SpreadsheetApp.getActiveSheet();
-       var commodityName = sheet.getRange(Config.Sheet.commodityCell).getValue().toLowerCase();
-
-		config=ForecastingMethodologies.getConfig();
-
-		if(!config) return null;
-
-		return config[FirebaseConnector.getCommodityName()].ranges;
-
+       	var ranges=AmisNamedRanges.getCommodityNamedRanges().fm;
+		return ranges;
 	};
 
 
@@ -114,36 +56,37 @@ var ForecastingMethodologies = new( function() {
  	 * @param  {string} range range in A1 notation
 	 * @param  {number} columnOffset   number of columns right from the range's top-left cell; negative values represent columns left from the range's top-left cell
  	 * @return {bool}       true if ok, false otherwise
+ 	 * @deprecated not needed anymore
  	 */
-	this.moveFMCols = function( range, columnOffset ) {
-
-		var movedColNum, newFmRanges = [];
-		var fmRanges = this.getFMRanges();
-		range = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( range );
-		movedColNum = range.getColumn();
-
-		if ( !fmRanges ) return;
-
-		var r;
-		for ( var i = fmRanges.length; i--; ) {
-			r = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( fmRanges[ i ] );
-
-			if ( r.getColumn() >= movedColNum ) {
-				r = r.offset( 0, columnOffset );
-			}
-
-			newFmRanges.unshift( r.getA1Notation() );
-		}
-
-		FirebaseConnector.writeOnFirebase(
-			newFmRanges,
-			getFbConfigPath()+'/'+FirebaseConnector.getCommodityName()+'/ranges',
-			FirebaseConnector.getToken()
-		);
-
-		//reload the new configuration
-		this.getConfig(true);
-	};
+	// this.moveFMCols = function( range, columnOffset ) {
+	//
+	// 	var movedColNum, newFmRanges = [];
+	// 	var fmRanges = this.getFMRanges();
+	// 	range = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( range );
+	// 	movedColNum = range.getColumn();
+	//
+	// 	if ( !fmRanges ) return;
+	//
+	// 	var r;
+	// 	for ( var i = fmRanges.length; i--; ) {
+	// 		r = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( fmRanges[ i ] );
+	//
+	// 		if ( r.getColumn() >= movedColNum ) {
+	// 			r = r.offset( 0, columnOffset );
+	// 		}
+	//
+	// 		newFmRanges.unshift( r.getA1Notation() );
+	// 	}
+	//
+	// 	FirebaseConnector.writeOnFirebase(
+	// 		newFmRanges,
+	// 		getFbConfigPath()+'/'+FirebaseConnector.getCommodityName()+'/ranges',
+	// 		FirebaseConnector.getToken()
+	// 	);
+	//
+	// 	//reload the new configuration
+	// 	this.getConfig(true);
+	// };
 
 	/**
 	 * function to attach on the onEdit event

@@ -43,7 +43,7 @@ Utility.isMaster = function() {
  * check if the current spreadsheet is Master
  * @return {bool} true if master, false otherwise
  */
-Utility.isSecretariat = function() {  
+Utility.isSecretariat = function() {
 	return SpreadsheetApp.getActiveSpreadsheet().getName().indexOf( Config.secretariatKeyword ) > -1;
 };
 
@@ -81,11 +81,11 @@ Utility.toggleTemplates=function(show){
 
 /**
  * unhide all column
- * @param  
- * @return  
+ * @param
+ * @return
  */
-Utility.unhudeAllColumns = function(sheet) { 
-  var range = sheet.getRange(1, 1, sheet.getLastRow(), sheet.getLastColumn());  
+Utility.unhudeAllColumns = function(sheet) {
+  var range = sheet.getRange(1, 1, sheet.getLastRow(), sheet.getLastColumn());
   sheet.unhideColumn(range);
 };
 

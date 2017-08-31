@@ -22,7 +22,6 @@ var SyncMasterSheet=new function(){
           //Get the currently active sheet
           var sheet = SpreadsheetApp.getActiveSheet();
 
-          //var rangeFromConfig=JSON.parse(FirebaseConnector.getFireBaseData(SyncMasterSheet.getRangeToBeStoredNode(userToken),userToken));
 
           var rangeFromConfig= SyncMasterSheet.getRangeToBeStored(userToken);
 
@@ -72,13 +71,12 @@ var SyncMasterSheet=new function(){
           var sheet;
           var rangeFromConfig;
           
+		  rangeFromConfig=this.getRangeToBeStored();
           if(!isNeedingCommodityName){
             //Get the currently active sheet
             sheet = SpreadsheetApp.getActiveSheet();
-            rangeFromConfig=JSON.parse(FirebaseConnector.getFireBaseData(SyncMasterSheet.getRangeToBeStoredNode(userToken),userToken));
           }else{
             sheet  = sheetChosenCommodityName;
-            rangeFromConfig=JSON.parse(FirebaseConnector.getFireBaseData(SyncMasterSheet.getRangeToBeStoredNodeSecretariat(userToken,sheetChosenCommodityName),userToken));                     
           }
           
           for (var i=0; i<rangeFromConfig.length;i++){
@@ -136,15 +134,13 @@ var SyncMasterSheet=new function(){
           
           
           var sheet;
-          var rangeFromConfig
+          var rangeFromConfig;
+  		  rangeFromConfig=this.getRangeToBeStored();
           if(!isNeedingCommodityName){
             //Get the currently active sheet
             sheet = SpreadsheetApp.getActiveSheet();
-            rangeFromConfig=JSON.parse(FirebaseConnector.getFireBaseData(SyncMasterSheet.getRangeToBeStoredNode(userToken),userToken));
           }else{
             sheet  = sheetChosenCommodityName;
-            rangeFromConfig=JSON.parse(FirebaseConnector.getFireBaseData(SyncMasterSheet.getRangeToBeStoredNodeSecretariat(userToken,sheetChosenCommodityName),userToken));         
-            
           }
 
           for (var i=0; i<rangeFromConfig.length;i++){
@@ -251,10 +247,9 @@ var SyncMasterSheet=new function(){
     //Get the currently active sheet
     var sheetValues=SpreadSheetCache.getActiveSheetValues();
 
-    var dataToBeStored={},currRange, saveNode,baseOfSaveNode, fmRanges;
+    var dataToBeStored={},currRange,baseOfSaveNode, fmRanges;
 
-    saveNode=SyncMasterSheet.getRangeToBeStoredNode(userToken);
-    var rangeFromConfig= SyncMasterSheet.getRangeToBeStored(userToken);
+    var rangeFromConfig= SyncMasterSheet.getRangeToBeStored();
     fmRanges = ForecastingMethodologies.getFMRanges();
 
     //loop all the ranges stored in firebase
@@ -376,85 +371,28 @@ var SyncMasterSheet=new function(){
 	  return Utility.getGoogleSheetID();
   };
 
-  this.setLastUpdate = function(userToken){
-        var sheet = SpreadsheetApp.getActiveSheet();
+  this.setLastUpdate = function(){
+        var sheet = SpreadSheetCache.getActiveSheet();
         var date = new Date();
 
-        var commodityName = FirebaseConnector.getCommodityName();
+        var lastUpdateCell= AmisNamedRanges.getCommodityNamedRanges().lastUpdateCell.cell;
 
-        var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);
-        //datanode from firebase
-        var lastUpdateCellNode = 'config/lastUpdateCell/'+countryName+'/'+commodityName;
-        var lastUpdateCell= JSON.parse(FirebaseConnector.getFireBaseData(lastUpdateCellNode,userToken));
-
-        //TODO get this range from firebase
         sheet.getRange(lastUpdateCell).setValue(date);
     };
 
-  this.getRangeToBeStoredNode = function(userToken){
-        var sheet = SpreadsheetApp.getActiveSheet();
-        var commodityName = FirebaseConnector.getCommodityName();
-
-        var sheetId= this.getSheetId();
-        var dataBaseNodeToRead='config/countries/'+sheetId;
-        return 'config/rangeToBeStored/'+JSON.parse(FirebaseConnector.getFireBaseData(dataBaseNodeToRead,userToken)).name+'/'+commodityName;
-    };
-
- this.getRangeToBeStoredNodeSecretariat = function(userToken,sheet){        
-        var commodityName = FirebaseConnector.getCommodityNameSecretariat(sheet);
-   
-        return 'config/rangeToBeStored/'+ getSecretariatCountry() +'/'+commodityName;
-    };    
 
 
-
-  //---------------------------------------------------------
-  //---------------------------------------------------------
-  // END -- functions that retrives values
-  //---------------------------------------------------------
-  //---------------------------------------------------------
-
-
-   //---------------------------------------------------------
    /**
 	 * retrive all the ranges to be stored
      *  @param  {string} auth token
      *  @return  {array} ranges to be stored
 	 */
-   //---------------------------------------------------------
-  this.getRangeToBeStoredOLD = function(userToken) {
-
-    var rangeFromConfig=JSON.parse(FirebaseConnector.getFireBaseData(SyncMasterSheet.getRangeToBeStoredNode(userToken),userToken));
-
-    //get for frc 16-17
-    var rangeFromConfigFrc16_17 =JSON.parse(FirebaseConnector.getFireBaseData('config/rangeToBeStored16-17/argentina',userToken));
-
-    //get for frc 17-18
-    var rangeFromConfigFrc17_18 =JSON.parse(FirebaseConnector.getFireBaseData('config/rangeToBeStored17-18/argentina',userToken));
-
-    //set the final ranges
-    return rangeFromConfig.concat(rangeFromConfigFrc16_17.concat(rangeFromConfigFrc17_18));
+  this.getRangeToBeStored = function(){
+		return AmisNamedRanges.getCommodityNamedRanges().rangeToBeStored;
 };
-  //---------------------------------------------------------
-  //---------------------------------------------------------
-  // END -- Retrives all the ranges to be stored
-  //---------------------------------------------------------
 
   //---------------------------------------------------------
-   /**
-	 * retrive all the ranges to be stored
-     *  @param  {string} auth token
-     *  @return  {array} ranges to be stored
-	 */
    //---------------------------------------------------------
-  this.getRangeToBeStored = function(userToken) {
-
-    var rangeFromConfig=JSON.parse(FirebaseConnector.getFireBaseData(SyncMasterSheet.getRangeToBeStoredNode(userToken),userToken));
-
-    return rangeFromConfig;
-};
-  //---------------------------------------------------------
-  //---------------------------------------------------------
   // END -- Retrives all the ranges to be stored
   //---------------------------------------------------------
   
@@ -465,11 +403,9 @@ var SyncMasterSheet=new function(){
   *  @return  {array} ranges to be stored
   */
   //---------------------------------------------------------
-  this.getRangeToBeStoredSecretariat = function(userToken) {
+  this.getRangeToBeStoredSecretariat = function() {
     
-    var rangeFromConfig=JSON.parse(FirebaseConnector.getFireBaseData(SyncMasterSheet.getRangeToBeStoredNode(userToken),userToken));
-    
-    return rangeFromConfig;
+    return this.getRangeToBeStored();
   };
   //---------------------------------------------------------
   //---------------------------------------------------------

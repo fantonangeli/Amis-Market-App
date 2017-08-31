@@ -7,6 +7,7 @@
 FirebaseConnector = new AmisLib.FirebaseConnector( Config.dbName );
 ConvertA1 = new AmisLib.ConvertA1Class();
 SpreadSheetCache = new AmisLib.SpreadSheetCache();
+APPCache=new AmisLib.APPCache(Config.cacheExpirationInSeconds);
 
 
 /**
@@ -28,12 +29,14 @@ FirebaseConnector.getCountryNameFromSheet = function( userToken ) {
  */
 //---------------------------------------------------------
 FirebaseConnector.getCommodityName = function() {
-	//get the google sheet
-	var ss = SpreadsheetApp.getActiveSpreadsheet();
-	var sheet = ss.getActiveSheet();
+	if (!this.commodity) {
+		var sheet = SpreadSheetCache.getActiveSheet();
 
-	//it return the commodation name (eg. maize )
-	return sheet.getRange( Config.Sheet.commodityCell ).getValue().toLowerCase();
+		//it return the commodation name (eg. maize )
+		this.commodity=sheet.getRange( Config.Sheet.commodityCell ).getValue().toLowerCase();
+	}
+
+	return this.commodity;
 };
 
 /**
