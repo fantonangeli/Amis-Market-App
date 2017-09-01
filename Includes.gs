@@ -49,3 +49,20 @@ FirebaseConnector.getCommodityNameSecretariat = function(sheet) {
 //Browser.msgBox(sheet.getRange( Config.Sheet.commodityCell ).getValue().toLowerCase());
 	return sheet.getRange( Config.Sheet.commodityCell ).getValue().toLowerCase();
 };
+
+/**
+ * callback called if firebase error catched
+ */
+ FirebaseConnector.errorCallback=function(responseCode, error) {
+ 	openSidebar();
+ 	throw new Error("Errore "+responseCode+": "+error);
+ };
+
+ FirebaseConnector._getFireBaseData=FirebaseConnector.getFireBaseData;
+
+ /**
+  * override of getFireBaseData to manage errors
+  */
+ FirebaseConnector.getFireBaseData=function(node, userToken){
+ 	return FirebaseConnector._getFireBaseData(node, userToken, this.errorCallback);
+};

@@ -48,12 +48,12 @@
          //this protect the sheet and avoid script error
          google.script.run.withSuccessHandler(hideLoadingDiv).LIB_FUNC( "AmisMarketApp.protectSheet");
        };
-       
+
        /**
         * callback WITH AUTOMATIC LOAD DATA FOR COUNTRY (secretariat)
         */
-       hideLoadingSecretariatWithAutoLoadData = function() {       
-        var chosenCountry = $( "#countryName option:selected" ).val();          
+       hideLoadingSecretariatWithAutoLoadData = function() {
+        var chosenCountry = $( "#countryName option:selected" ).val();
         //this protect the sheet and avoid script error
         //google.script.run.withSuccessHandler(hideLoadingDiv).LIB_FUNC( "AmisMarketApp.SyncMasterSheet.startFetchSecretariet", false);
        };
@@ -115,7 +115,7 @@
                  userToken=data;
 
                  if ( user_data.type!="admin" ) {
-                    
+
                     //if user is 'secretariat' user
                     if(user_data.type =="secretariat"){
                        showLoading(["Please wait", "Loading configurations"]);
@@ -192,10 +192,17 @@
            firebase.auth().signOut()
        }
 
+      /**
+       * sets a wrong token (development use)
+       */
+      function wrongToken(){
+          google.script.run.withSuccessHandler(hideLoading).LIB_FUNC( "AmisMarketApp.FirebaseConnector.setToken", 123 );
+      }
 
 
 
-       $( document ).ready( function() {              
+
+       $( document ).ready( function() {
            var unsubOnAuthStateChanged=firebase.auth().onAuthStateChanged(function(user) {
              console.log('UNSUBONAUTHSTATECHANGED');
              window.user=user;
@@ -212,7 +219,7 @@
            <? if (secretariatMode) { ?>
            //binding SAVE function with AMIS MARKET API
            $( "#buttonSave" ).bind( "click", function() {
-           var chosenCountry = $( "#countryName option:selected" ).val();                      
+           var chosenCountry = $( "#countryName option:selected" ).val();
            showLoading(["Saving data", "Sending data to the database", "Synchronizing the sheet"]);
                verifyToken(function(){
                    google.script.run.withSuccessHandler(hideLoading).LIB_FUNC( "AmisMarketApp.SyncMasterSheet.startSyncSecretariet", userToken,chosenCountry );
@@ -235,40 +242,40 @@
            <? } ?>
 
            $( "#addFrc16" ).bind( "click", function() {
-           
+
                showLoading(["Loading sheet's data","Creating the new forecast", "Saving the data", "Sending data to the database"]);
-               
+
                <? if (secretariatMode) { ?>
-                 var chosenCountry = $( "#countryName option:selected" ).val();               
+                 var chosenCountry = $( "#countryName option:selected" ).val();
                  verifyToken(function(){
                      google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast16_17_Secretariet", userToken, chosenCountry);
                  });
-               
+
                <? }else { ?>
                   verifyToken(function(){
                      google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast16_17", userToken);
                  });
                <? }?>
-               
+
                //disable the button himself
                $( "#addFrc16" ).prop( "disabled", true );
            } );
            $( "#addFrc17" ).bind( "click", function() {
-           
-               showLoading(["Loading sheet's data","Creating the new forecast", "Saving the data", "Sending data to the database"]);               
-               
+
+               showLoading(["Loading sheet's data","Creating the new forecast", "Saving the data", "Sending data to the database"]);
+
                <? if (secretariatMode) { ?>
-                 var chosenCountry = $( "#countryName option:selected" ).val();               
+                 var chosenCountry = $( "#countryName option:selected" ).val();
                  verifyToken(function(){
                      google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast17_18_Secretariet", userToken, chosenCountry);
                  });
-               
+
                <? }else { ?>
                   verifyToken(function(){
                      google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast17_18", userToken);
                  });
                <? }?>
-               
+
                //disable the button himself
                $( "#addFrc17" ).prop( "disabled", true );
            } );
@@ -276,16 +283,16 @@
            $("#buttonFetch").bind( "click", function() {
                showLoading(["Loading data from the database", "Synchronizing the sheet"]);
                <? if (secretariatMode) { ?>
-                     var chosenCountry = $( "#countryName option:selected" ).val();  
+                     var chosenCountry = $( "#countryName option:selected" ).val();
                      verifyToken(function(){
                        google.script.run.withSuccessHandler(hideLoading).LIB_FUNC( "AmisMarketApp.SyncMasterSheet.startFetchSecretariet", true, false, '');
-                    });               
+                    });
                <? }else { ?>
                     verifyToken(function(){
                        google.script.run.withSuccessHandler(hideLoading).LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",userToken);
                     });
                <? } ?>
-               
+
            });
            //bind create google sheet function
            $( "#createSheetButton" ).bind( "click", function() {
@@ -327,13 +334,13 @@
                verifyToken(function(){
                     console.info( valueSelected);
                     if(valueSelected != '') {
-                       
+
                        //secretariat
                        <? if (secretariatMode) { ?>
                             google.script.run.LIB_FUNC( "AmisMarketApp.setSecretariatCountry", valueSelected );
-                            
+
                             showLoading(["Updating Master","Loading Data"]);
-                            //if secretariat changing withSuccessHandler function: system will automatic load data for chosen country 
+                            //if secretariat changing withSuccessHandler function: system will automatic load data for chosen country
                             google.script.run.withSuccessHandler(hideLoading).LIB_FUNC("AmisMarketApp.MasterUtility.writeNoteAndDataForCountries",valueSelected,false);
                        <? } else{?>
                             showLoading(["Updating Master","Updating Master"]);
