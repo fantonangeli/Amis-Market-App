@@ -55,14 +55,22 @@ FirebaseConnector.getCommodityNameSecretariat = function(sheet) {
  */
  FirebaseConnector.errorCallback=function(responseCode, error) {
  	openSidebar();
- 	throw new Error("Errore "+responseCode+": "+error);
+ 	throw new Error("Firebase error "+responseCode+": "+error);
  };
 
- FirebaseConnector._getFireBaseData=FirebaseConnector.getFireBaseData;
+FirebaseConnector._getFireBaseData=FirebaseConnector.getFireBaseData;
+FirebaseConnector._writeOnFirebase=FirebaseConnector.writeOnFirebase;
 
  /**
   * override of getFireBaseData to manage errors
   */
  FirebaseConnector.getFireBaseData=function(node, userToken){
  	return FirebaseConnector._getFireBaseData(node, userToken, this.errorCallback);
+};
+
+/**
+ * override of writeOnFirebase to manage errors
+ */
+FirebaseConnector.writeOnFirebase=function(data,saveNode,userToken){
+   return FirebaseConnector._writeOnFirebase(data,saveNode,userToken, this.errorCallback);
 };
