@@ -61,13 +61,11 @@ var ShareSheet=new function(){
   //---------------------------------------------------------
 
 
-  //---------------------------------------------------------
   /**
 	 * CLONE THE MASTER TEMPLATE
-	 * @param  {string} google account of the country (email address)
+	 * @param  {string} countryName google account of the country (email address)
 	 * @return  {file} the new sheet
 	 */
-  //---------------------------------------------------------
   this.cloneSheet = function(countryName){
 	  //get current folder id
 	  var ss = SpreadsheetApp.getActive(); //current spreadsheet
@@ -75,11 +73,12 @@ var ShareSheet=new function(){
 	  //get current file master file to be cloned
 	  var file = DriveApp.getFileById(ss.getId());
 
-	  return file.makeCopy(countryName+ ' National');
-  }
-  //---------------------------------------------------------
-  // END -- CLONE THE MASTER TEMPLATE
-  //---------------------------------------------------------
+      var filename=Utility.interpolate(Config.nationalSheetFilename, {
+          country:Utility.ucfirst(countryName)
+      });
+
+	  return file.makeCopy(filename);
+  };
 
 
   //---------------------------------------------------------
@@ -94,8 +93,10 @@ var ShareSheet=new function(){
 	  //share the new country sheet
 	  newfile.addEditor(countryAccount);
 
-	  DriveApp.getFileById(Config.amisMarketAppId).addViewer(countryAccount);
-	  DriveApp.getFileById(Config.amisLibId).addViewer(countryAccount);
+      if (!Config.devMode) {
+    	  DriveApp.getFileById(Config.amisMarketAppId).addViewer(countryAccount);
+    	  DriveApp.getFileById(Config.amisLibId).addViewer(countryAccount);
+      }
 
 	  //my version of AMIS MARKET APP API
       //DriveApp.getFileById('1hxYNjnVdM7hSmjvaJeoiRV6EQuZki-7c1mHkOQ-USat5uUwOL3uc26EI').addViewer(countryAccount);

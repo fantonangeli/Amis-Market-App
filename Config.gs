@@ -72,6 +72,12 @@ var Config={
 	 * Cache expiration in seconds. The minimum is 1 second and the maximum is 21600 seconds (6 hours).
 	 * @type {number}
 	 */
-	cacheExpirationInSeconds:600
+	cacheExpirationInSeconds:600,
+
+	/**
+	 * template string to generate the filename of national shared sheets
+	 * @type {String}
+	 */
+	nationalSheetFilename:"AMIS {{country}} National"
 
 };
