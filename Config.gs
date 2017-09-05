@@ -7,25 +7,25 @@ var Config={
 	 * dbName on firebase
 	 * @type {String}
 	 */
-	dbName:"amis-9189b",
+	dbName:"",
 
 	/**
 	 * apiKey on firebase
 	 * @type {String}
 	 */
-	apiKey: "AIzaSyA3aklD6VK81sc6ui_vjf1IceAi_Zgtjqo",
+	apiKey: "",
 
 	/**
 	 *  id of AmisMarketApp
 	 * @type {String}
 	 */
-	amisMarketAppId:"1OJQBydtovPhuO5-PwYdmzIe6977jVqcRuk3d3ZfvHCNWWWaLjpB8kLeg",
+	amisMarketAppId:"",
 
 	/**
 	 * AmisLib id
 	 * @type {String}
 	 */
-	amisLibId:"1Tk72CLnrvAoLNSh1he9BBTjDpxsSjFeOTk9PPIsnAGTPhWlwG1xOyAv3",
+	amisLibId:"",
 
 
 	/**
