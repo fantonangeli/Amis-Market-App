@@ -341,8 +341,13 @@ var SyncMasterSheet=new function(){
      *  @return {string} the correct node where save datas
 	 */
   this.getAbsoluteDataSheetPath = function(userToken){
-   var dataBaseNodeToRead='config/absoluteDataSheetPath';
-   return FirebaseConnector.getFireBaseData(dataBaseNodeToRead,userToken);
+	  var dataBaseNodeToRead='config/absoluteDataSheetPath';
+	  var node=APPCache.get("absoluteDataSheetPath");
+	  if (!node) {
+		  node=FirebaseConnector.getFireBaseData(dataBaseNodeToRead,userToken);
+		  APPCache.put("absoluteDataSheetPath", node);
+	  }
+	  return node;
   };
 
   /**
