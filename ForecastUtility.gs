@@ -411,7 +411,7 @@ var ForecastUtility=new function(){
     firstCol=ConvertA1.colA1ToIndex(config.first.split(":")[0],1);
     lastCol=ConvertA1.colA1ToIndex(config.last.split(":")[0],1);
 
-    ForecastUtility.hideAllPeriodUnactiveColumns(userToken);
+    ForecastUtility.hideAllPeriodUnactiveColumnsSecretariat(userToken);
 
     sheet.showColumns(firstCol, lastCol-firstCol);
 

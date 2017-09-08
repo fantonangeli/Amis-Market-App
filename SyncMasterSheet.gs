@@ -161,7 +161,7 @@ var SyncMasterSheet=new function(){
             //if data note IS NOT EMPTY
             if(fireBaseValues){
               //empty old values
-              sheet.getRange(rangeFromConfig[i]).setValue('');
+              //sheet.getRange(rangeFromConfig[i]).setValue('');
               //set value into cells
               sheet.getRange(rangeFromConfig[i]).setValues(fireBaseValues);
             }else{
