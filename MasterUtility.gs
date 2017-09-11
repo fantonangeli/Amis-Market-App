@@ -8,14 +8,7 @@ var MasterUtility=new function(){
   */
   //------------------------------------------------------------------------------------------------------------------
   this.writeNoteAndDataForCountries= function(countrySelected,isReset,isMaster){    
-    //var userChoise= 'yes';
-    //if(isReset){
-     userChoise= Browser.msgBox('Empty Data', 'Do you to start with a blank spreadsheet or continue with your work?', Browser.Buttons.YES_NO);
-    //}
-    // if user wants to laod data
-    if (userChoise == 'yes' || userChoise == 'si') {
-     
-    
+
     //read config from firebase
     var templateCompilerNode = 'config/templateCompiler/'+countrySelected;    
     var templateCompiler = JSON.parse(FirebaseConnector.getFireBaseData(templateCompilerNode,FirebaseConnector.getToken()));
@@ -60,9 +53,7 @@ var MasterUtility=new function(){
         
       }
       
-    }
-   }
-    
+    }    
    
   }
   //------------------------------------------------------------------------------------------------------------------
