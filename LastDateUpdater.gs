@@ -90,7 +90,7 @@ var LastDateUpdater=new function(){
             ForecastUtility.updateDataOfEndOfPeriod(activeCell, lastDateUpdaterRow);
       } else {
           //update the cell putting last date editing
-          cell.setValue(new Date());
+          cell.setValue(moment.utc().format(Config.lastUpdatedDateDBFormat));
       }
 
       cell.setFontWeight("bold");
@@ -100,5 +100,16 @@ var LastDateUpdater=new function(){
   //------------------------------------------------------------------------------------------------------------------
   // END -- CALLED ON EDIT This set the last date for column when you edit the sheet
   //------------------------------------------------------------------------------------------------------------------
+
+  /**
+   * reads the lastDateUpdaterRow from the named ranges
+   * @return {number} the row number
+   */
+  this.getLURow=function(){
+      var labelRowForLastDateA1;
+
+      labelRowForLastDateA1=AmisNamedRanges.getCommodityNamedRanges().labelRowForLastDate.row;
+      return parseInt(labelRowForLastDateA1.split(":")[0], 10);
+  };
 
 }

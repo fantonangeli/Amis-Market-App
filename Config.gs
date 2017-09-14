@@ -78,6 +78,18 @@ var Config={
 	 * template string to generate the filename of national shared sheets
 	 * @type {String}
 	 */
-	nationalSheetFilename:"AMIS {{country}} National"
+	nationalSheetFilename:"AMIS {{country}} National",
+
+	/**
+	 * date format for the "Last Updated row" to store in the database
+	 * @type {String}
+	 */
+	lastUpdatedDateDBFormat:"YYYY-MM-DD",
+
+	/**
+	 * date format for the "Last Updated row" to store in the sheet (the format is written according to GAS API)
+	 * @type {String}
+	 */
+	lastUpdatedDateSheetFormat:"dd-mmm-yyyy"
 
 };

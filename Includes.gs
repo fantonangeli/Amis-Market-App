@@ -8,6 +8,7 @@ FirebaseConnector = new AmisLib.FirebaseConnector( Config.dbName );
 ConvertA1 = new AmisLib.ConvertA1Class();
 SpreadSheetCache = new AmisLib.SpreadSheetCache();
 APPCache=new AmisLib.APPCache(Config.cacheExpirationInSeconds);
+moment=AmisLib.moment;
 
 
 /**
@@ -59,6 +60,7 @@ FirebaseConnector.getCommodityNameSecretariat = function(sheet) {
  };
 
 FirebaseConnector._getFireBaseData=FirebaseConnector.getFireBaseData;
+FirebaseConnector._getFireBaseDataParsed=FirebaseConnector.getFireBaseDataParsed;
 FirebaseConnector._writeOnFirebase=FirebaseConnector.writeOnFirebase;
 
  /**
@@ -66,6 +68,13 @@ FirebaseConnector._writeOnFirebase=FirebaseConnector.writeOnFirebase;
   */
  FirebaseConnector.getFireBaseData=function(node, userToken){
  	return FirebaseConnector._getFireBaseData(node, userToken, this.errorCallback);
+};
+
+ /**
+  * override of getFireBaseDataParsed to manage errors
+  */
+ FirebaseConnector.getFireBaseDataParsed=function(node, userToken){
+ 	return FirebaseConnector._getFireBaseDataParsed(node, userToken, this.errorCallback);
 };
 
 /**

@@ -1,12 +1,45 @@
 var SyncMasterSheet=new function(){
 
+	/**
+	 * update all the lastUpdate cells from firebase
+	 * @param  {array} fbData      firebase data of the sheet
+	 * @param  {array} sheetValues sheet's data
+	 */
+	 this.lastDatefetcher=function(fbData, sheetValues){
+ 		var labelRowForLastDateIndex,fbDataLURow,cell, sheetDate,range;
+
+ 		labelRowForLastDateIndex=(LastDateUpdater.getLURow()-1);
+
+ 		fbDataLURow=fbData[labelRowForLastDateIndex];
+
+ 		for (var _i = 0, sheetValuesLURow_length=fbDataLURow.length; _i<sheetValuesLURow_length; _i++) {
+ 			cell=fbDataLURow[_i];
+
+ 			if(cell===sheetValues[labelRowForLastDateIndex][_i]){
+ 				continue;
+ 			}
+
+ 			sheetDate=moment(sheetValues[labelRowForLastDateIndex][_i]).format(Config.lastUpdatedDateDBFormat);
+
+
+ 			//if fb cell different to sheetcell
+ 			if(cell!==sheetDate){
+ 				range=SpreadSheetCache
+ 					.getActiveSheet()
+ 					.getRange(labelRowForLastDateIndex+1, _i+1)
+                 range.setValue(cell);
+ 				range.setNumberFormat(Config.lastUpdatedDateSheetFormat);
+ 			}
+
+ 		}
+ 	};
+
 	  /**
-	    * Saving Sheet Data function
-        * @param  {string} auth token
+	    * Get the data from firebase
+        * @param  {string} userToken auth token
 	  */
 	  this.startFetch=function(userToken) {
-
-        var userChoise = Browser.msgBox('LOAD DATA', 'Load the latest data from the AMIS database overwriting the data in the sheet?', Browser.Buttons.YES_NO);
+		var userChoise = Browser.msgBox('LOAD DATA', 'Load the latest data from the AMIS database overwriting the data in the sheet?', Browser.Buttons.YES_NO);
 
 
         // if user wants to laod data
@@ -22,31 +55,36 @@ var SyncMasterSheet=new function(){
           //Get the currently active sheet
           var sheet = SpreadsheetApp.getActiveSheet();
 
+		  //Get the currently active sheet
+		  var sheetValues=SpreadSheetCache.getActiveSheetValues();
 
           var rangeFromConfig= SyncMasterSheet.getRangeToBeStored(userToken);
 
+		  var fbData, fireBaseValues, baseOfSaveNode= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/'+ JSON.parse(SyncMasterSheet.getNodeToWriteData(userToken)).dataSheetNode+ '/' + FirebaseConnector.getCommodityName();
 
-          for (var i=0; i<rangeFromConfig.length;i++){
+		  fbData=FirebaseConnector.getFireBaseDataParsed(baseOfSaveNode, userToken);
 
-        	  //get Firebase node name to be fetch
-              var fireBaseNodeData= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/' + JSON.parse(SyncMasterSheet.getNodeToWriteData(userToken)).dataSheetNode + '/' + FirebaseConnector.getCommodityName() + '/' + rangeFromConfig[i];
+		  //get lastDateUpdaterRow
+		  SyncMasterSheet.lastDatefetcher(fbData, sheetValues);
 
-              var fireBaseValues = JSON.parse(FirebaseConnector.getFireBaseData(fireBaseNodeData,userToken));
+		  //get all range to be stored
+		  if (fbData) {
+			  for (var i=0; i<rangeFromConfig.length;i++){
 
-              //if data note IS NOT EMPTY
-              if(fireBaseValues){
-                //set value into cells
-                sheet.getRange(rangeFromConfig[i]).setValues(fireBaseValues);
-              }
-          }
+				  //get Firebase node name to be fetch
+				  fireBaseValues=Utility.getRangeValuesFromArray(fbData, rangeFromConfig[i]);
+
+				  //if data note IS NOT EMPTY
+				  if(fireBaseValues){
+					  //set value into cells
+					  sheet.getRange(rangeFromConfig[i]).setValues(fireBaseValues);
+				  }
+			  }
+		  }
 
           Utility.toastInfo('Data successfully loaded to the AMIS database', 'DATA LOADED');
 
-        } else {
-
-          //do nothing
         }
-
 
 	  }
 
@@ -107,6 +145,7 @@ var SyncMasterSheet=new function(){
       /**
 	    * Saving Sheet Data function FOR SECRETARIET
         * @param  {string} auth token
+	    * @deprecated not used. Reason: chenged implementation for secretariat to access directly to sheets
 	  */
 	  this.startFetchSecretariet=function(isWithWarning, isNeedingCommodityName, sheetChosenCommodityName) {
         userToken = FirebaseConnector.getToken();
@@ -191,7 +230,7 @@ var SyncMasterSheet=new function(){
      * @return {array}             a two-dimensional array of values,  indexed by row, then by column
      */
     this.getRangeValuesToBeStored=function(sheetValues, range, fmRanges) {
-        var currA1, rangeIndexes, hasDates=false, sheetDataJson,dataToBeStored;
+        var currA1, rangeIndexes, sheetDataJson,dataToBeStored;
 
         dataToBeStored = Utility.getRangeValuesFromArray(sheetValues, range);
         rangeIndexes=ConvertA1.rangeA1ToIndex(range);
@@ -200,42 +239,48 @@ var SyncMasterSheet=new function(){
 
         for (var i = 0, len = dataToBeStored.length; i < len; i++) {
             for (var j = 0, len2 = dataToBeStored[i].length; j < len2; j++){
-              //Logger.log(dataToBeStored[i][j]);
-              if(Object.prototype.toString.call(dataToBeStored[i][j]) === '[object Date]'){
-                    var monthNames = [
-                      "January", "February", "March",
-                      "April", "May", "June", "July",
-                      "August", "September", "October",
-                      "November", "December"
-                    ];
-
-                    var day = dataToBeStored[i][j].getDate();
-                    var monthIndex = dataToBeStored[i][j].getMonth();
-                    var year = dataToBeStored[i][j].getFullYear();
-                    dataToBeStored[i][j]=day + ' ' + monthNames[monthIndex] + ' ' + year;
-                    hasDates=true;
-                }else{
-                    //clean invalid ForecastingMethodology values
-                    currA1=Utility.numToChar(j+1+rangeIndexes.left)+(i+1+rangeIndexes.top);
-                    dataToBeStored[i][j]=ForecastingMethodologies.onEditCell(currA1,fmRanges,dataToBeStored[i][j],true);
-                }
-
+				currA1=Utility.numToChar(j+1+rangeIndexes.left)+(i+1+rangeIndexes.top);
+				dataToBeStored[i][j]=ForecastingMethodologies.onEditCell(currA1,fmRanges,dataToBeStored[i][j],true);
+				sheetValues[i+1+rangeIndexes.top][j+1+rangeIndexes.left]=dataToBeStored[i][j];
             }
         }
 
         //if the range doesn't contains date but has changed
-        if (!hasDates && (JSON.stringify(dataToBeStored)!==sheetDataJson)) {
+        if (JSON.stringify(dataToBeStored)!==sheetDataJson) {
             SpreadSheetCache.getActiveSheet().getRange(range).setValues(dataToBeStored);
         }
 
-        return dataToBeStored;
+        return sheetValues;
     };
+
+	/**
+	 * get the sheetValues array and format all the last date dates
+     * @param  {array} sheetValues all the data in the sheet. from first column to the last
+	 * @return {array}             the sheetValues with the dates formatted
+	 */
+	this.formatAllLastDate=function(sheetValues){
+		var labelRowForLastDateIndex, sheetValuesLURow,cell;
+
+		labelRowForLastDateIndex=(LastDateUpdater.getLURow()-1);
+
+		sheetValuesLURow=sheetValues[labelRowForLastDateIndex];
+
+		for (var _i = 0, sheetValuesLURow_length=sheetValuesLURow.length; _i<sheetValuesLURow_length; _i++) {
+			cell=sheetValuesLURow[_i];
+			if(moment.isDate(cell)){
+				sheetValues[labelRowForLastDateIndex][_i]=moment(cell).format(Config.lastUpdatedDateDBFormat);
+			}
+		}
+
+		return sheetValues;
+	};
 
   /**
 	* Saving Sheet Data function
     * @param  {string} auth token
   */
   this.startSync=function(userToken) {
+	var sheetValues,fmRanges,currRange;
     //SyncMasterSheet.deleteSavedData();
     //SyncMasterSheet.moveRangesCols('AC:AC',1);
 
@@ -244,27 +289,29 @@ var SyncMasterSheet=new function(){
     //hide new frc unactive columns
     ForecastUtility.hideAllPeriodUnactiveColumns(userToken);
 
-    //Get the currently active sheet
-    var sheetValues=SpreadSheetCache.getActiveSheetValues();
-
-    var dataToBeStored={},currRange,baseOfSaveNode, fmRanges;
+    var baseOfSaveNode;
 
     var rangeFromConfig= SyncMasterSheet.getRangeToBeStored();
     fmRanges = ForecastingMethodologies.getFMRanges();
 
-    //loop all the ranges stored in firebase
-    for (var p=0; p<rangeFromConfig.length;p++){
-        currRange=rangeFromConfig[p];
-        dataToBeStored[currRange]=SyncMasterSheet.getRangeValuesToBeStored(sheetValues,currRange, fmRanges);
-    }
+	//Get the currently active sheet
+	sheetValues=SpreadSheetCache.getActiveSheetValues();
+
+	sheetValues=SyncMasterSheet.formatAllLastDate(sheetValues);
+
+	for (var p=0; p<rangeFromConfig.length;p++){
+		currRange=rangeFromConfig[p];
+		sheetValues=SyncMasterSheet.getRangeValuesToBeStored(sheetValues,currRange, fmRanges);
+	}
+
 
     baseOfSaveNode= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/'+ JSON.parse(SyncMasterSheet.getNodeToWriteData(userToken)).dataSheetNode+ '/' + FirebaseConnector.getCommodityName();
-    SyncMasterSheet.syncMasterSheet(dataToBeStored,userToken,baseOfSaveNode);
+    SyncMasterSheet.syncMasterSheet(sheetValues,userToken,baseOfSaveNode);
 
-    var commodityName = FirebaseConnector.getCommodityName();
+    // var commodityName = FirebaseConnector.getCommodityName();
 
 
-    var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);
+    // var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);
 
     Utility.toastInfo('Data successfully saved to the AMIS database', 'DATA SAVED');
 
@@ -275,6 +322,7 @@ var SyncMasterSheet=new function(){
   /**
   * Saving Sheet Data function FOR SECRETARIET
   * @param  {string} auth token
+  * @deprecated not used. Reason: chenged implementation for secretariat to access directly to sheets
   */
   this.startSyncSecretariet=function(userToken,chosenCountry) {
     chosenCountry = getSecretariatCountry();
