@@ -126,10 +126,10 @@
                        });
                     }else{
                       //automatic fetch for operative users
-                      showLoading(["Logging in", "Loading user data"]);
-                      verifyToken(function(){
-                         google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",data);
-                      });
+                      //showLoading(["Logging in", "Loading user data"]);
+                      //verifyToken(function(){
+                        // google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",data);
+                      //});
                     }
                  }
                  console.log( 'gettoken', data );
