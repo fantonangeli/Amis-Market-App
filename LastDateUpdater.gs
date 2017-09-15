@@ -54,62 +54,56 @@ var LastDateUpdater=new function(){
 	 */
   //------------------------------------------------------------------------------------------------------------------
   this.onEditSetLastUpdateDate = function (userToken,e) {
-    //get the google sheet
-    var ss = SpreadSheetCache.getActiveSheet();
-    //TODO _ pay attention to multiple sheets
+  	//get the google sheet
+  	var ss = SpreadSheetCache.getActiveSheet();
 
 
-    var lastDateUpdaterRow = parseInt(AmisNamedRanges.getCommodityNamedRanges().labelRowForLastDate.row.split(":")[0],10);
+  	var lastDateUpdaterRow = parseInt(AmisNamedRanges.getCommodityNamedRanges().labelRowForLastDate.row.split(":")[0],10);
 
 
-    var activeCell=e.range;
-    var thisCol = e.range.getColumn();
+  	var activeCell=e.range;
+  	var thisCol = e.range.getColumn();
 
 
-    var rangeProtected = AmisNamedRanges.getCommodityNamedRanges().noLastUpdate;
+  	var rangeToBeStored = SyncMasterSheet.getRangeToBeStored();
 
-    var mergeRange = rangeProtected;
+  	//used after to determinate if set the last date or not
+  	var canWrite = Utility.isInAnyRange(rangeToBeStored, activeCell);
 
-    //used after to determinate if set the last date or not
-    var canWrite = true;
 
-    //loop all the ranges stored in firebase
-    for (var i=0; i<mergeRange.length;i++){
-      //if a protected cell is update
-      if(Utility.isInRange(mergeRange[i], activeCell)){
-        //if the cell updated is in a protected range I CANT WRITE
-        canWrite = false;
-      }
+  	if(canWrite){
+  	  var cell = ss.getRange(lastDateUpdaterRow, thisCol);
 
-    }
+  	  if (ForecastUtility.isEndOfPeriod(activeCell)) {
+  			ForecastUtility.updateDataOfEndOfPeriod(activeCell, lastDateUpdaterRow);
+  	  } else {
+  		  //update the cell putting last date editing
+  		  cell.setValue(moment.utc().format(Config.lastUpdatedDateDBFormat));
+            cell.setNumberFormat(Config.lastUpdatedDateSheetFormat);
+  	  }
 
-    if(canWrite){
-      var cell = ss.getRange(lastDateUpdaterRow, thisCol);
+  	  cell.setFontWeight("bold");
+  	}
 
-      if (ForecastUtility.isEndOfPeriod(activeCell)) {
-            ForecastUtility.updateDataOfEndOfPeriod(activeCell, lastDateUpdaterRow);
-      } else {
-          //update the cell putting last date editing
-          cell.setValue(moment.utc().format(Config.lastUpdatedDateDBFormat));
-      }
-
-      cell.setFontWeight("bold");
-    }
-
-  }
+  };
   //------------------------------------------------------------------------------------------------------------------
   // END -- CALLED ON EDIT This set the last date for column when you edit the sheet
   //------------------------------------------------------------------------------------------------------------------
 
-  /**
-   * reads the lastDateUpdaterRow from the named ranges
-   * @return {number} the row number
-   */
-  this.getLURow=function(){
-      var labelRowForLastDateA1;
+    /**
+     * reads the lastDateUpdaterRow from the named ranges
+     * @return {string} the range in A1 format
+     */
+    this.getLURowA1 = function() {
+    	return AmisNamedRanges.getCommodityNamedRanges().labelRowForLastDate.row;
+    };
 
-      labelRowForLastDateA1=AmisNamedRanges.getCommodityNamedRanges().labelRowForLastDate.row;
-      return parseInt(labelRowForLastDateA1.split(":")[0], 10);
-  };
+    /**
+     * reads the lastDateUpdaterRow from the named ranges
+     * @return {number} the row number
+     */
+    this.getLURow = function() {
+    	return parseInt( this.getLURowA1().split( ":" )[ 0 ], 10 );
+    };
 
 }
