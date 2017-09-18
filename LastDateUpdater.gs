@@ -54,6 +54,7 @@ var LastDateUpdater=new function(){
 	 */
   //------------------------------------------------------------------------------------------------------------------
   this.onEditSetLastUpdateDate = function (userToken,e) {
+    var rangesToCheck=[],rangeToBeStored, lastDateRanges;
   	//get the google sheet
   	var ss = SpreadSheetCache.getActiveSheet();
 
@@ -65,10 +66,12 @@ var LastDateUpdater=new function(){
   	var thisCol = e.range.getColumn();
 
 
-  	var rangeToBeStored = SyncMasterSheet.getRangeToBeStored();
+  	rangeToBeStored = SyncMasterSheet.getRangeToBeStored();
+    lastDateRanges = LastDateUpdater.getLastDateRanges();
+    rangesToCheck=rangesToCheck.concat(rangeToBeStored, lastDateRanges);
 
   	//used after to determinate if set the last date or not
-  	var canWrite = Utility.isInAnyRange(rangeToBeStored, activeCell);
+  	var canWrite = Utility.isInAnyRange(rangesToCheck, activeCell);
 
 
   	if(canWrite){
@@ -104,6 +107,14 @@ var LastDateUpdater=new function(){
      */
     this.getLURow = function() {
     	return parseInt( this.getLURowA1().split( ":" )[ 0 ], 10 );
+    };
+
+    /**
+     * reads the lastDateRanges from the named ranges
+     * @return {[string]} array of the ranges in A1 format
+     */
+    this.getLastDateRanges=function(){
+        return AmisNamedRanges.getCommodityNamedRanges().lastDateRanges;
     };
 
 }
