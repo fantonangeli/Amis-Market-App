@@ -8,7 +8,7 @@ var MasterUtility=new function(){
   */
   //------------------------------------------------------------------------------------------------------------------
   this.writeNoteAndDataForCountries= function(countrySelected,isReset,isMaster){    
-    
+
     //read config from firebase
     var templateCompilerNode = 'config/templateCompiler/'+countrySelected;    
     var templateCompiler = JSON.parse(FirebaseConnector.getFireBaseData(templateCompilerNode,FirebaseConnector.getToken()));
@@ -53,8 +53,7 @@ var MasterUtility=new function(){
         
       }
       
-    }
-    
+    }    
    
   }
   //------------------------------------------------------------------------------------------------------------------
