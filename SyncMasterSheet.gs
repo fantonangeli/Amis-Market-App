@@ -299,10 +299,10 @@ var SyncMasterSheet=new function(){
 
 	sheetValues=SyncMasterSheet.formatAllLastDate(sheetValues);
 
-	for (var p=0; p<rangeFromConfig.length;p++){
-		currRange=rangeFromConfig[p];
-		sheetValues=SyncMasterSheet.getRangeValuesToBeStored(sheetValues,currRange, fmRanges);
-	}
+	// for (var p=0; p<rangeFromConfig.length;p++){
+	// 	currRange=rangeFromConfig[p];
+	// 	sheetValues=SyncMasterSheet.getRangeValuesToBeStored(sheetValues,currRange, fmRanges);
+	// }
 
 
     baseOfSaveNode= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/'+ JSON.parse(SyncMasterSheet.getNodeToWriteData(userToken)).dataSheetNode+ '/' + FirebaseConnector.getCommodityName();
