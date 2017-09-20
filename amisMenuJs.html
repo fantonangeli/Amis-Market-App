@@ -114,24 +114,6 @@
              user.getToken().then( function( data ) {
                  userToken=data;
 
-                 if ( user_data.type!="admin" ) {
-
-                    //if user is 'secretariat' user
-                    if(user_data.type =="secretariat"){
-                       showLoading(["Please wait", "Loading configurations"]);
-                       verifyToken(function(){
-                          google.script.run.LIB_FUNC( "AmisMarketApp.setSecretariatCountry", 'secretariat' );
-                          //reset metadata and notes
-                          google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC("AmisMarketApp.MasterUtility.writeNoteAndDataForCountries","secretariat",true);
-                       });
-                    }else{
-                      //automatic fetch for operative users
-                      //showLoading(["Logging in", "Loading user data"]);
-                      //verifyToken(function(){
-                        // google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",data);
-                      //});
-                    }
-                 }
                  console.log( 'gettoken', data );
                  google.script.run.LIB_FUNC( "AmisMarketApp.FirebaseConnector.setToken", data );
                  // Store in session the token

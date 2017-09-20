@@ -85,20 +85,21 @@
     </select>
     <br/>
     <? } ?>
-
-        <div class="row">
-            <div class="col-xs-12 text-left">
-                Load data from the AMIS database:
+        <? if (secretariatMode) { ?>
+            <div class="row">
+                <div class="col-xs-12 text-left">
+                    Discard changes and load data from the AMIS database:
+                </div>
             </div>
-        </div>
-        <br>
-        <div class="row">
-        	<div class="col-xs-12 text-right">
-                <button id="buttonFetch" class="btn btn-primary btn-lg">Load <i class="mdi mdi-cloud-download"></i></button>
-        	</div>
-        </div>
-        <br>
-        <br>
+            <br>
+            <div class="row">
+            	<div class="col-xs-12 text-right">
+                    <button id="buttonFetch" class="btn btn-primary btn-lg">Discard <i class="mdi mdi-undo-variant"></i></button>
+            	</div>
+            </div>
+            <br>
+            <br>
+        <? } ?>
 
         <div class="row">
             <div class="col-xs-12 text-left">
