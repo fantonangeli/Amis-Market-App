@@ -85,7 +85,23 @@
     </select>
     <br/>
     <? } ?>
-        <? if (secretariatMode) { ?>
+        <div class="">
+            <div class="row">
+                <div class="col-xs-12 text-left">
+                    Verify the data of the current Sheet:
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-xs-12 text-right">
+                    <button id="buttonVerify" class="btn btn-primary btn-lg">Verify <i class="mdi mdi-verified"></i></button>
+                </div>
+            </div>
+            <br>
+            <br>
+        </div>
+
+        <div class="isSecretariat" style="display:none">
             <div class="row">
                 <div class="col-xs-12 text-left">
                     Discard changes and load data from the AMIS database:
@@ -99,7 +115,7 @@
             </div>
             <br>
             <br>
-        <? } ?>
+        </div>
 
         <div class="row">
             <div class="col-xs-12 text-left">

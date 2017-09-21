@@ -93,7 +93,7 @@ var ForecastingMethodologies = new( function() {
 	 * @param  {Object} e
 	 */
 	 this.onEdit = function(e) {
-	   var cell, cellValue, fmRanges, multiple, rangeValues, _i, _len, dataValidations=[],row;
+	   var cell, cellValue, fmRanges, multiple, rangeValues, _i, _len,row;
 	   rangeValues = void 0;
 
 	   if (Utility.isMaster()) {
@@ -115,13 +115,12 @@ var ForecastingMethodologies = new( function() {
 		   for (var _j = 0, row_length=row.length; _j<row_length; _j++) {
 			   	cellValue=row[_j];
 				cell = e.range.getCell(_i + 1, _j+1);
-				dataValidations.push([null]);
 				rangeValues[_i][_j]=this.onEditCell(cell, fmRanges, cellValue, multiple);
 		   }
 	   }
 
 	   e.range.setValues(rangeValues);
-	   e.range.setDataValidations(dataValidations);
+	   e.range.setDataValidation(null);
 
 	   return rangeValues;
 	 };

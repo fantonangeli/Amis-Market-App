@@ -10,7 +10,30 @@ var ProtectionMaker=new function(){
     return 'config/rangeToBeProtected/'+JSON.parse(FirebaseConnector.getFireBaseData(dataBaseNodeToRead,userToken)).name;
   }
 
-  this.checkIfValueIsNotProtected = function (e) {
+  /**
+   * validate the current sheet, restore styles and formulas
+   * @return {void}
+   */
+  this.validateSheet=function(){
+      //IF user is NOT editing a Template Sheet. Do normal logic.
+      if( !Utility.isTemplate() && !Utility.isMaster() ) {
+    
+        ProtectionMaker.checkIfValueIsNotProtected(e);
+
+        //forecast methodologies on edit
+        ForecastingMethodologies.onEdit(e);
+
+        //set the last date on edit event
+        LastDateUpdater.onEditSetLastUpdateDate(FirebaseConnector.getToken(),e);
+      }
+  };
+
+
+  /**
+   * restore the styles, formulas, values and the formatting from the template
+   * @return {void}
+   */
+  this.checkIfValueIsNotProtected = function () {
     var interestedRange = JSON.parse(PropertiesService.getUserProperties().getProperty("sheetProtectionRanges"));
 
     var sheet = SpreadsheetApp.getActiveSpreadsheet();
@@ -21,7 +44,7 @@ var ProtectionMaker=new function(){
     ss.getRange(rangeToBeRestored).setDataValidation(null);
 
     //destroy eventually CONDITIONS FORMATTING COPIED AND PASTED
-    e.range.clearFormat();
+    //e.range.clearFormat(); //commented because now with the validate button there isn't the event var
 
     var sheetName = ss.getName();
 
@@ -59,7 +82,7 @@ var ProtectionMaker=new function(){
     //restore data validations
     ss.getRange(rangeToBeRestored).setDataValidations(tmpDataValidation);
 
-    
+
 };
 
   this.checkIfValueIsNotProtected_ = function (e) {

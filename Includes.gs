@@ -55,7 +55,7 @@ FirebaseConnector.getCommodityNameSecretariat = function(sheet) {
  * callback called if firebase error catched
  */
  FirebaseConnector.errorCallback=function(responseCode, error) {
- 	openSidebar();
+ 	//openSidebar();
  	throw new Error("Firebase error "+responseCode+": "+error);
  };
 

@@ -41,19 +41,14 @@ var LastDateUpdater=new function(){
     }
 
 
-  }
-  //------------------------------------------------------------------------------------------------------------------
-  //END -- STORE INTO SESSION THE LABEL ROW FOR LAST DATE
-  //------------------------------------------------------------------------------------------------------------------
+};
 
-
-  //------------------------------------------------------------------------------------------------------------------
   /**
-  * CALLED ON EDIT --- This set the last date for column when you edit the sheet
-     * @params  {eventObj} event ON edit object
-	 */
-  //------------------------------------------------------------------------------------------------------------------
-  this.onEditSetLastUpdateDate = function (userToken,e) {
+   * set the last date for column when you edit the sheet
+   * @param  {object} e the event
+   * @return {void}
+   */
+  this.onEditSetLastUpdateDate = function (e) {
     var rangesToCheck=[],rangeToBeStored, lastDateRanges;
   	//get the google sheet
   	var ss = SpreadSheetCache.getActiveSheet();
