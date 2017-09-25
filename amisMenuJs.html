@@ -208,10 +208,11 @@
        * verify the data on the sheet
        */
       function verifySheet() {
+          showLoading(["Verifying the sheet", "Doing a style check", "Rastoring the formulas", "Checking the values"]);
+
           google.script.run
             .withSuccessHandler(hideLoading)
-            .withFailureHandler(function(){loginWithGoogle(verifySheet);})
-            .LIB_FUNC( "AmisMarketApp.SyncMasterSheet.startSync", userToken );
+            .LIB_FUNC( "AmisMarketApp.ProtectionMaker.validateSheet" );
       }
 
 

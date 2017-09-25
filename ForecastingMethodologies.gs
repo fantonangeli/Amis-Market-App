@@ -93,37 +93,125 @@ var ForecastingMethodologies = new( function() {
 	 * @param  {Object} e
 	 */
 	 this.onEdit = function(e) {
-	   var cell, cellValue, fmRanges, multiple, rangeValues, _i, _len,row;
+	   var fmRanges, multiple, rangeValues, oldValues;
 	   rangeValues = void 0;
 
 	   if (Utility.isMaster()) {
-	     return;
+		 return;
 	   }
 
 	   fmRanges = this.getFMRanges();
 
 	   if (!fmRanges) {
-	     return;
+		 return;
 	   }
 
 	   rangeValues = e.range.getValues();
+	   oldValues=JSON.parse(JSON.stringify(rangeValues));
 
 	   multiple = rangeValues.length > 1;
 
-	   for (_i = 0, _len = rangeValues.length; _i < _len; _i++) {
-		   row=rangeValues[_i];
-		   for (var _j = 0, row_length=row.length; _j<row_length; _j++) {
-			   	cellValue=row[_j];
-				cell = e.range.getCell(_i + 1, _j+1);
-				rangeValues[_i][_j]=this.onEditCell(cell, fmRanges, cellValue, multiple);
-		   }
+	   if(multiple){
+		 return rangeValues;
 	   }
 
-	   e.range.setValues(rangeValues);
-	   e.range.setDataValidation(null);
+	//    for (_i = 0, _len = rangeValues.length; _i < _len; _i++) {
+	// 	   row=rangeValues[_i];
+	// 	   for (var _j = 0, row_length=row.length; _j<row_length; _j++) {
+	// 		   	cellValue=row[_j];
+	// 			cell = e.range.getCell(_i + 1, _j+1);
+	// 			rangeValues[_i][_j]=this.onEditCell(cell, fmRanges, cellValue, multiple);
+	// 	   }
+	//    }
+
+	   rangeValues[0][0]=this.onEditCell(e.range, fmRanges, rangeValues[0][0], multiple);
+
+	   if(rangeValues[0][0]!==oldValues[0][0]){
+		 e.range.setValues(rangeValues);
+	   }
+	   //e.range.setDataValidation(null);
 
 	   return rangeValues;
 	 };
+
+	 /**
+	  * check all the FM ranges and fix their value (if not valid)
+	  * @param  {array} sheetValues sheet's data
+	  * @return {void}
+	  */
+	 this.fixAllFMRanges=function(sheetValues){
+		var fmRanges;
+
+	 	fmRanges = this.getFMRanges();
+
+		for (var i = 0, fmRanges_length=fmRanges.length, range; i<fmRanges_length; i++) {
+			range=fmRanges[i];
+			sheetValues=this.fixSingleFRanges(sheetValues, range);
+		}
+
+		return sheetValues;
+	 };
+
+	 /**
+	  * check a single FM range and fix its value (if not valid) and write it to the sheet
+	  * @param  {array} sheetValues sheet's data
+	  * @param  {string} fmRange the FM range to check in A1Notation
+	  * @return {array} sheet's data
+	  */
+	  this.fixSingleFRanges=function(sheetValues, fmRange){
+	  		var fmRangeIx, cellValue, cellA1, c, fixedCellValue, changed=false, newFMvalues, bottom;
+
+	  		fmRangeIx=ConvertA1.rangeA1ToIndex(fmRange);
+
+	  		c=fmRangeIx.left;
+
+	        bottom=fmRangeIx.bottom;
+
+	  		//check all cell in current fmRange
+	  		for (var r = fmRangeIx.top; r<bottom ; r++) {
+	  			cellValue=sheetValues[r][c];
+	  			cellA1=ConvertA1.indexToColA1(c+1)+r;
+	  			fixedCellValue=this.fixFMValue(cellA1, cellValue, true);
+	  			sheetValues[r][c]=fixedCellValue;
+
+	  			if(cellValue!==fixedCellValue){
+	  				changed=true;
+	  			}
+	  		}
+
+	  		//if the values changed write it to the sheet
+	  		if(changed){
+	  			newFMvalues=Utility.getRangeValuesFromArray(sheetValues, fmRange);
+	  			SpreadSheetCache.getActiveSheet().getRange(fmRange).setValues(newFMvalues);
+	  		}
+
+	  		return sheetValues;
+	  	 };
+
+
+	 /**
+	  * fix a value of a cell: if not valid show the dialog or empty the value, if valid format it
+	  * @param  {[type]} cellA1    cell in A1Notation
+ 	  * @param  {string} cellValue value of the cell
+ 	  * @param  {bool} multiple set to true if the user edited a range
+	  * @return {string}           the value fixed
+	  */
+	 this.fixFMValue=function(cellA1, cellValue, multiple){
+		 //check if cell is not valid and is to open the dialog
+		 if ( !ForecastingMethodologies.isValid( cellValue ) ) {
+			 //if !multiple && !valid show a dialog
+			 if(!multiple) {
+				 ForecastingMethodologies.showMethodsDialog( cellA1, cellValue );
+			 }
+			 //if multiple && !valid empty value
+			 return "";
+		 } else {
+			 //if !multiple && valid -> format
+			 //if multiple && valid -> format
+			 return ForecastingMethodologies.formatValue( cellValue );
+		 }
+	 };
+
 
 	/**
 	 * events called by this.onEdit on the single cell
@@ -148,14 +236,7 @@ var ForecastingMethodologies = new( function() {
     			//cell.setDataValidation( null );
 
     			//check if cell is not valid and is to open the dialog
-    			if ( !ForecastingMethodologies.isValid( cellValue ) ) {
-    				if(!multiple) {
-						ForecastingMethodologies.showMethodsDialog( cellA1, cellValue );
-					}
-    				return "";
-    			} else {
-    				return ForecastingMethodologies.formatValue( cellValue );
-    			}
+    			return this.fixFMValue(cellA1, cellValue, multiple);
     		}
     	}
 

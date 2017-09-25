@@ -41,52 +41,56 @@ var SyncMasterSheet=new function(){
 	  this.startFetch=function(userToken) {
 		var userChoise = Browser.msgBox('LOAD DATA', 'Load the latest data from the AMIS database overwriting the data in the sheet?', Browser.Buttons.YES_NO);
 
+		try {
+			// if user wants to laod data
+			if (userChoise === 'yes' || userChoise === 'si') {
 
-        // if user wants to laod data
-        if (userChoise == 'yes' || userChoise == 'si') {
+
+				//hide old forecasts leaving only the last one
+				ForecastUtility.hideAllPreviousForecasts(userToken);
+
+				//hide new frc unactive columns
+				ForecastUtility.hideAllPeriodUnactiveColumns(userToken);
+
+				//Get the currently active sheet
+				var sheet = SpreadsheetApp.getActiveSheet();
+
+				//Get the currently active sheet
+				var sheetValues=SpreadSheetCache.getActiveSheetValues();
+
+				var rangeFromConfig= SyncMasterSheet.getRangeToBeStored(userToken);
+
+				var fbData, fireBaseValues, baseOfSaveNode= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/'+ JSON.parse(SyncMasterSheet.getNodeToWriteData(userToken)).dataSheetNode+ '/' + FirebaseConnector.getCommodityName();
+
+				fbData=FirebaseConnector.getFireBaseDataParsed(baseOfSaveNode, userToken);
+
+				//get lastDateUpdaterRow
+				SyncMasterSheet.lastDatefetcher(fbData, sheetValues);
+
+				//get all range to be stored
+				if (fbData) {
+					for (var i=0; i<rangeFromConfig.length;i++){
+
+						//get Firebase node name to be fetch
+						fireBaseValues=Utility.getRangeValuesFromArray(fbData, rangeFromConfig[i]);
+
+						//if data note IS NOT EMPTY
+						if(fireBaseValues){
+							//set value into cells
+							sheet.getRange(rangeFromConfig[i]).setValues(fireBaseValues);
+						}
+					}
+				}
+
+				Utility.toastInfo('Data successfully loaded to the AMIS database', 'DATA LOADED');
+
+			}
+		} catch (e) {
+			Browser.msgBox("There is a problem with the data. Please contact the administrator.");
+		}
+	}
 
 
-          //hide old forecasts leaving only the last one
-          ForecastUtility.hideAllPreviousForecasts(userToken);
-
-          //hide new frc unactive columns
-          ForecastUtility.hideAllPeriodUnactiveColumns(userToken);
-
-          //Get the currently active sheet
-          var sheet = SpreadsheetApp.getActiveSheet();
-
-		  //Get the currently active sheet
-		  var sheetValues=SpreadSheetCache.getActiveSheetValues();
-
-          var rangeFromConfig= SyncMasterSheet.getRangeToBeStored(userToken);
-
-		  var fbData, fireBaseValues, baseOfSaveNode= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/'+ JSON.parse(SyncMasterSheet.getNodeToWriteData(userToken)).dataSheetNode+ '/' + FirebaseConnector.getCommodityName();
-
-		  fbData=FirebaseConnector.getFireBaseDataParsed(baseOfSaveNode, userToken);
-
-		  //get lastDateUpdaterRow
-		  SyncMasterSheet.lastDatefetcher(fbData, sheetValues);
-
-		  //get all range to be stored
-		  if (fbData) {
-			  for (var i=0; i<rangeFromConfig.length;i++){
-
-				  //get Firebase node name to be fetch
-				  fireBaseValues=Utility.getRangeValuesFromArray(fbData, rangeFromConfig[i]);
-
-				  //if data note IS NOT EMPTY
-				  if(fireBaseValues){
-					  //set value into cells
-					  sheet.getRange(rangeFromConfig[i]).setValues(fireBaseValues);
-				  }
-			  }
-		  }
-
-          Utility.toastInfo('Data successfully loaded to the AMIS database', 'DATA LOADED');
-
-        }
-
-	  }
 
 
       /**
@@ -288,6 +292,8 @@ var SyncMasterSheet=new function(){
     ForecastUtility.hideAllPreviousForecasts(userToken);
     //hide new frc unactive columns
     ForecastUtility.hideAllPeriodUnactiveColumns(userToken);
+
+	ProtectionMaker.validateSheet();
 
     var baseOfSaveNode;
 
