@@ -21,7 +21,8 @@
        	databaseURL: "https://<?= dbName ?>.firebaseio.com",
        	projectId: "<?= dbName ?>",
        	storageBucket: "<?= dbName ?>.appspot.com",
-       	messagingSenderId: "924659512730"
+       	messagingSenderId: "924659512730",
+        sidebarNetworkErrorMsg:"There is a problem with the network, please try again later."
        };
        firebase.initializeApp( config );
        //-----------------------------------------------------------------
@@ -154,7 +155,7 @@
            	var provider = new firebase.auth.GoogleAuthProvider();
 
            	firebase.auth().signInWithPopup( provider ).then( function( result ) {
-                onLoggedState(result.user, onSuccess());
+                onLoggedState(result.user, onSuccess);
            	} ).catch( function( error ) {
                 console.log('ERROR', error);
            		//alert("User "+error.email+" is not authorized!");
@@ -183,6 +184,7 @@
        * sets a wrong token (development use)
        */
       function wrongToken(){
+          google.script.run.LIB_FUNC( "AmisMarketApp.FirebaseConnector.setToken", 123 );
           userToken=123;
           console.log("Set a wrong token");
       }
@@ -192,12 +194,10 @@
        */
       function saveSheet() {
           showLoading(["Saving data", "Sending data to the database", "Synchronizing the sheet"]);
-          verifyToken(function(){
-              google.script.run
-                .withSuccessHandler(hideLoading)
-                .withFailureHandler(function(){loginWithGoogle(saveSheet);})
-                .LIB_FUNC( "AmisMarketApp.SyncMasterSheet.startSync", userToken );
-          });
+          google.script.run
+            .withSuccessHandler(hideLoading)
+            .withFailureHandler( googleScriptRunFailureHandler(saveSheet) )
+            .LIB_FUNC( "AmisMarketApp.SyncMasterSheet.startSync", userToken );
           //disable the button himself
           $( "#addFrc16" ).prop( "disabled", false );
           $( "#addFrc17" ).prop( "disabled", false );
@@ -214,6 +214,95 @@
             .withSuccessHandler(hideLoading)
             .LIB_FUNC( "AmisMarketApp.ProtectionMaker.validateSheet" );
       }
+
+      /**
+       * overwrite sheet's data with firebase data
+       * @param {object} event jQuery event
+       * @param  {bool} forceload (default false) if true doesn't ask the user for loading data
+       * @return {void}
+       */
+      function fetchData(event,forceload) {
+		  forceload=(forceload || false);
+
+          showLoading(["Loading data from the database", "Synchronizing the sheet"]);
+          google.script.run
+          	.withSuccessHandler( hideLoading )
+            .withFailureHandler( googleScriptRunFailureHandler(function(){
+                fetchData(null, true);
+            }))
+          	.LIB_FUNC( "AmisMarketApp.SyncMasterSheet.startFetch", userToken, forceload );
+      }
+
+      /**
+      * show old forecast
+      * @return {void}
+      */
+      function showHistoricalSeries() {
+          showLoading(["Showing historical series"]);
+          google.script.run.withSuccessHandler( hideLoading ).LIB_FUNC( "AmisMarketApp.ForecastUtility.showOldForecasts" );
+      }
+      /**
+      * hoide old forecast
+      * @return {void}
+      */
+      function hideHistoricalSeries() {
+          showLoading(["Hiding historical series","Hiding forecasts"]);
+          google.script.run.withSuccessHandler( hideLoading ).LIB_FUNC( "AmisMarketApp.ForecastUtility.hideOldAndUnactiveForecast", userToken );
+      }
+
+      /**
+       * closure failure handler to manage network Errors
+       * @param  {function} retryCalback callback to execute after successfully refreshed the token
+       * @return {function}              the failure callback
+       */
+      function googleScriptRunFailureHandler( retryCalback ) {
+          return function(error){
+              //token expired
+              if ( error.hasOwnProperty( "message" ) && ( error.message === "Network401Error" ) ) {
+                  loginWithGoogle(retryCalback);
+              } else {
+                  alert( config.sidebarNetworkErrorMsg );
+                  hideLoading();
+              }
+          };
+      }
+
+      /**
+       * create google sheet function
+       * @return {void}
+       */
+      function createSheet() {
+         var countryName = $( "#countryName" ).val();
+         var account = $( "#account" ).val();
+         //prevent redirect actions
+         showLoading(["Creating the sheet", "Sharing the sheet with the user", "Sending the email to the user"]);
+         google.script.run
+         .withSuccessHandler( hideLoading )
+         .withFailureHandler( googleScriptRunFailureHandler(createSheet) )
+         .LIB_FUNC( "AmisMarketApp.ShareSheet.createSheet", countryName, account, userToken );
+         return false;
+      }
+
+
+      /**
+       * change event on COUNTRY SELECTED
+       * @param {object} event the event
+       * @return {void}
+       */
+      function countryChange(event) {
+          //selected value
+          var valueSelected = event.target.value;
+          if(valueSelected != '') {
+              showLoading(["Updating Master","Updating Master"]);
+              google.script.run
+              .withSuccessHandler(hideLoading)
+              .withFailureHandler( googleScriptRunFailureHandler(function(){
+                  countryChange(event);
+              }))
+              .LIB_FUNC("AmisMarketApp.MasterUtility.writeNoteAndDataForCountriesMaster",valueSelected,false);
+          }
+      }
+
 
 
 
@@ -257,50 +346,18 @@
                $( "#addFrc17" ).prop( "disabled", true );
            } );
            //binding FETCH function with AMIS MARKET API
-           $("#buttonFetch").bind( "click", function() {
-               showLoading(["Loading data from the database", "Synchronizing the sheet"]);
-               verifyToken(function(){
-                  google.script.run.withSuccessHandler(hideLoading).LIB_FUNC("AmisMarketApp.SyncMasterSheet.startFetch",userToken);
-               });
+           $("#buttonFetch").click(fetchData);
 
-           });
            //bind create google sheet function
-           $( "#createSheetButton" ).bind( "click", function() {
-              var countryName = $( "#countryName" ).val();
-              var account = $( "#account" ).val();
-              //prevent redirect actions
-              showLoading(["Creating the sheet", "Sharing the sheet with the user", "Sending the email to the user"]);
-              verifyToken(function(){
-                  google.script.run.withSuccessHandler( hideLoading ).LIB_FUNC( "AmisMarketApp.ShareSheet.createSheet", countryName, account, userToken );
-              });
-              return false;
-           } );
+           $( "#createSheetButton" ).click( createSheet);
+
 
            //bind Show/hide historical series
-           $("#showHistoricalSeries").click(function(event) {
-               showLoading(["Showing historical series"]);
-               verifyToken(function(){
-                   google.script.run.withSuccessHandler( hideLoading ).LIB_FUNC( "AmisMarketApp.ForecastUtility.showOldForecasts", userToken );
-               });
-           });
-           $("#hideHistoricalSeries").click(function(event) {
-               showLoading(["Hiding historical series","Hiding forecasts"]);
-               verifyToken(function(){
-                    google.script.run.withSuccessHandler( hideLoading ).LIB_FUNC( "AmisMarketApp.ForecastUtility.hideOldAndUnactiveForecast", userToken );
-               });
-           });
+           $("#showHistoricalSeries").click(showHistoricalSeries);
+           $("#hideHistoricalSeries").click(hideHistoricalSeries);
+
            //on change event on COUNTRY SELECTED
-           $("#countryName").on('change', function() {
-               //selected value
-               var valueSelected = this.value;
-               verifyToken(function(){
-                    console.info( valueSelected);
-                    if(valueSelected != '') {
-                         showLoading(["Updating Master","Updating Master"]);
-                         google.script.run.withSuccessHandler(hideLoading).LIB_FUNC("AmisMarketApp.MasterUtility.writeNoteAndDataForCountriesMaster",valueSelected,false);
-                   }
-               });
-           });
+           $("#countryName").change(countryChange);
 
 
        } )

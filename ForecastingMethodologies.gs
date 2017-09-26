@@ -168,7 +168,7 @@ var ForecastingMethodologies = new( function() {
 	        bottom=fmRangeIx.bottom;
 
 	  		//check all cell in current fmRange
-	  		for (var r = fmRangeIx.top; r<bottom ; r++) {
+	  		for (var r = fmRangeIx.top; r<=bottom ; r++) {
 	  			cellValue=sheetValues[r][c];
 	  			cellA1=ConvertA1.indexToColA1(c+1)+r;
 	  			fixedCellValue=this.fixFMValue(cellA1, cellValue, true);
@@ -187,6 +187,7 @@ var ForecastingMethodologies = new( function() {
 
 	  		return sheetValues;
 	  	 };
+
 
 
 	 /**

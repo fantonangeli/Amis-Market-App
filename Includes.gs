@@ -53,10 +53,23 @@ FirebaseConnector.getCommodityNameSecretariat = function(sheet) {
 
 /**
  * callback called if firebase error catched
+ * @param  {number} responseCode http response code
+ * @param  {string} error        error message
+ * @throws {Network401Error} for expired token
+ * @throws {Network400Error} network error
+ * @throws {Error} generic error
  */
  FirebaseConnector.errorCallback=function(responseCode, error) {
  	//openSidebar();
- 	throw new Error("Firebase error "+responseCode+": "+error);
+ 	    //NOTE: google.script.run.withFailureHandler() doesn't accept object as exception
+		if ( responseCode === 401 ) {
+			throw "Network401Error";
+		}
+		if ( responseCode === 400 ) {
+			throw "Network400Error";
+		} else {
+			throw new Error( "Firebase error " + responseCode + ": " + error );
+		}
  };
 
 FirebaseConnector._getFireBaseData=FirebaseConnector.getFireBaseData;

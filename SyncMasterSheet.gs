@@ -37,9 +37,15 @@ var SyncMasterSheet=new function(){
 	  /**
 	    * Get the data from firebase
         * @param  {string} userToken auth token
+        * @param  {bool} forceload (default false) if true doesn't ask the user for loading data
 	  */
-	  this.startFetch=function(userToken) {
-		var userChoise = Browser.msgBox('LOAD DATA', 'Load the latest data from the AMIS database overwriting the data in the sheet?', Browser.Buttons.YES_NO);
+	  this.startFetch=function(userToken, forceload) {
+		  forceload=(forceload || false);
+		var userChoise="yes";
+
+		if (!forceload) {
+			userChoise = Browser.msgBox('DISCARD CHANGES', 'Discard your edits and overwrite the sheet with the data from the AMIS database?', Browser.Buttons.YES_NO);
+		}
 
 		try {
 			// if user wants to laod data
@@ -86,7 +92,12 @@ var SyncMasterSheet=new function(){
 
 			}
 		} catch (e) {
-			Browser.msgBox("There is a problem with the data. Please contact the administrator.");
+			if(e!=="Network401Error"){
+				Browser.msgBox("There is a problem with the data. Please contact the administrator.");
+			}else{
+				//pass the error to the sidebar
+				throw e;
+			}
 		}
 	}
 
