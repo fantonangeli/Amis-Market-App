@@ -380,21 +380,18 @@ var ForecastUtility=new function(){
   this.showOldForecasts= function (){
     var config, firstCol, lastCol;
     var sheet = SpreadSheetCache.getActiveSheet();
-    var userToken=FirebaseConnector.getToken();
+    //var userToken=FirebaseConnector.getToken();
 
     config = AmisNamedRanges.getCommodityNamedRanges().previousForecast;
 
     firstCol=ConvertA1.colA1ToIndex(config.first.split(":")[0],1);
     lastCol=ConvertA1.colA1ToIndex(config.last.split(":")[0],1);
 
-    ForecastUtility.hideAllPeriodUnactiveColumns(userToken);
+    //ForecastUtility.hideAllPeriodUnactiveColumns(userToken);
 
     sheet.showColumns(firstCol, lastCol-firstCol);
 
   };
-  //------------------------------------------------------------------------------------------------------------------
-  // END hide old forecast except the last 2
-  //------------------------------------------------------------------------------------------------------------------
 
 
    /**
@@ -477,7 +474,7 @@ var ForecastUtility=new function(){
 	 * function called to hide all the forecast for previus year except the last one
 	 */
   //------------------------------------------------------------------------------------------------------------------
-  this.hideAllPreviousForecasts = function (userToken){
+  this.hideAllPreviousForecasts = function (){
 
     //get the google sheet
     var ss = SpreadSheetCache.getActiveSpreadsheet();
@@ -569,12 +566,11 @@ var ForecastUtility=new function(){
 
   /**
    * hide all the forecast for previus year except the last one and all unactive columns of all periods
-   * @param {string} userToken firebase token
    */
-  this.hideOldAndUnactiveForecast = function(userToken) {
-    ForecastUtility.hideAllPeriodUnactiveColumns(userToken)
+  this.hideOldAndUnactiveForecast = function() {
+    //ForecastUtility.hideAllPeriodUnactiveColumns(userToken)
 
-    ForecastUtility.hideAllPreviousForecasts(userToken);
+    ForecastUtility.hideAllPreviousForecasts();
   };
 
   /**
