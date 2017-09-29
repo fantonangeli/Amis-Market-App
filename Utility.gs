@@ -80,11 +80,21 @@ Utility.toggleTemplates=function(show){
 
 
 /**
- * unhide all column
+ * get Template sheet by commodities
+ * @param {string} name of commodity (eg. 'maize')
+ * @return {SHEET} template sheet
+ */
+Utility.getTemplateByCommodity = function(commodity) {
+  return SpreadsheetApp.getActiveSpreadsheet().getSheetByName(Config.templatePrefix+commodity);
+};
+
+
+/**
+ * get Template sheet by commodities
  * @param
  * @return
  */
-Utility.unhudeAllColumns = function(sheet) {
+Utility.unhideAllColumns = function(sheet) {
   var range = sheet.getRange(1, 1, sheet.getLastRow(), sheet.getLastColumn());
   sheet.unhideColumn(range);
 };
