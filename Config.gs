@@ -7,13 +7,13 @@ var Config={
 	 * dbName on firebase
 	 * @type {String}
 	 */
-	dbName:"amis-9189b",
+	dbName:"",
 
 	/**
 	 * apiKey on firebase
 	 * @type {String}
 	 */
-	apiKey: "AIzaSyA3aklD6VK81sc6ui_vjf1IceAi_Zgtjqo",
+	apiKey: "",
 
 	/**
 	 * spreadsheet config
@@ -34,6 +34,6 @@ var Config={
 	 * email address for errors informations
 	 * @type {String}
 	 */
-	errorEmail:"amis.outlook.fao@gmail.com"
+	errorEmail:""
 
 };
