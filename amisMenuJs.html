@@ -196,7 +196,13 @@
           showLoading(["Saving data", "Sending data to the database", "Synchronizing the sheet"]);
           google.script.run
             .withSuccessHandler(hideLoading)
-            .withFailureHandler( googleScriptRunFailureHandler(saveSheet) )
+            .withFailureHandler( function(error){
+                if (error.message==="InvalidSheetData") {
+                    hideLoading();
+                } else {
+                    googleScriptRunFailureHandler(saveSheet)();
+                }
+            } )
             .LIB_FUNC( "AmisMarketApp.SyncMasterSheet.startSync", userToken );
           //disable the button himself
           $( "#addFrc16" ).prop( "disabled", false );
@@ -212,6 +218,7 @@
 
           google.script.run
             .withSuccessHandler(hideLoading)
+            .withFailureHandler(hideLoading)
             .LIB_FUNC( "AmisMarketApp.ProtectionMaker.validateSheet" );
       }
 
