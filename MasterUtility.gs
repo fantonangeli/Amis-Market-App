@@ -23,7 +23,7 @@ var MasterUtility=new function(){
       //Browser.msgBox(valuesNode);
       //for sheet
       var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(values);
-      Utility.unhudeAllColumns(sheet);
+      Utility.unhideAllColumns(sheet);
       if(!isReset){
         SyncMasterSheet.startFetchSecretariet(false, true, sheet);
       }else{
@@ -32,7 +32,7 @@ var MasterUtility=new function(){
       }
       //for TEMPLATE sheet
       var templateSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Template_'+values);
-      Utility.unhudeAllColumns(templateSheet);
+      Utility.unhideAllColumns(templateSheet);
       
       for (var subNode in valuesToBeWritten) {
         //contain the range
@@ -82,6 +82,8 @@ var MasterUtility=new function(){
       valuesToBeWritten = JSON.parse(FirebaseConnector.getFireBaseData(valuesNode,FirebaseConnector.getToken()));      
       
       var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(values);
+      //get TEMPLATE sheet
+      var templateSheet = Utility.getTemplateByCommodity(values);
       
       for (var subNode in valuesToBeWritten) {
         //contain the range
@@ -92,10 +94,12 @@ var MasterUtility=new function(){
         
         if(isReset){
           //delete all the data/notes. The master will be restored
-          sheet.getRange(valuesToBeWritten[subNode][0]).setValue('')
+          sheet.getRange(valuesToBeWritten[subNode][0]).setValue('');
+          templateSheet.getRange(valuesToBeWritten[subNode][0]).setValue('');
         }else{
           //set the values from Firebase
           sheet.getRange(valuesToBeWritten[subNode][0]).setValue(valuesToBeWritten[subNode][1])
+          templateSheet.getRange(valuesToBeWritten[subNode][0]).setValue(valuesToBeWritten[subNode][1]);
         }
         
         
