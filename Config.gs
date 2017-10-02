@@ -90,6 +90,18 @@ var Config={
 	 * date format for the "Last Updated row" to store in the sheet (the format is written according to GAS API)
 	 * @type {String}
 	 */
-	lastUpdatedDateSheetFormat:"dd-mmm-yyyy"
+	lastUpdatedDateSheetFormat:"dd-mmm-yyyy",
+  
+    /**
+	 * Named range for 'add new forecast'
+	 * @type {array} 
+	 */
+	addNewForecastNamedRange:[ ['addFrcA1','addFrcA2'],['addFrcB1','addFrcB2'] ],
+  
+     /**
+	 * range of restoring stylesheet
+	 * @type {string} 
+	 */
+	rangeOfRestoreSheetStyle: 'C:AE'
 
 };
