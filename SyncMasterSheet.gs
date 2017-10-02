@@ -293,6 +293,7 @@ var SyncMasterSheet=new function(){
   /**
 	* Saving Sheet Data function
     * @param  {string} auth token
+    * @throws {InvalidSheetData} in case of non valid data in the sheet
   */
   this.startSync=function(userToken) {
 	var sheetValues,fmRanges,currRange;
@@ -304,7 +305,11 @@ var SyncMasterSheet=new function(){
     //hide new frc unactive columns
     //ForecastUtility.hideAllPeriodUnactiveColumns(userToken);
 
-	ProtectionMaker.validateSheet();
+	try {
+		ProtectionMaker.validateSheet();
+	} catch (e) {
+		throw "InvalidSheetData"
+	}
 
     var baseOfSaveNode;
 

@@ -158,6 +158,13 @@
                 onLoggedState(result.user, onSuccess);
            	} ).catch( function( error ) {
                 console.log('ERROR', error);
+
+                if (error.hasOwnProperty("code") && error.code==="auth/operation-not-supported-in-this-environment") {
+                    google.script.run.LIB_FUNC("AmisMarketApp.Utility.popUpAlert", "Your browser is not supported. Please use Chrome or Firefox.");
+                    google.script.host.close();
+                    return;
+                }
+
            		//alert("User "+error.email+" is not authorized!");
                 google.script.run.LIB_FUNC( "AmisMarketApp.Utility.popUpAlert",'Please ensure that popup lock is DISABLED. Then try again.');
            		// Handle Errors here.
@@ -196,7 +203,13 @@
           showLoading(["Saving data", "Sending data to the database", "Synchronizing the sheet"]);
           google.script.run
             .withSuccessHandler(hideLoading)
-            .withFailureHandler( googleScriptRunFailureHandler(saveSheet) )
+            .withFailureHandler( function(error){
+                if (error.message==="InvalidSheetData") {
+                    hideLoading();
+                } else {
+                    googleScriptRunFailureHandler(saveSheet)();
+                }
+            } )
             .LIB_FUNC( "AmisMarketApp.SyncMasterSheet.startSync", userToken );
           //disable the button himself
           $( "#addFrcA" ).prop( "disabled", false );
@@ -212,6 +225,7 @@
 
           google.script.run
             .withSuccessHandler(hideLoading)
+            .withFailureHandler(hideLoading)
             .LIB_FUNC( "AmisMarketApp.ProtectionMaker.validateSheet" );
       }
 
