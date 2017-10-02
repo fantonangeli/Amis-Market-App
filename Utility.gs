@@ -9,7 +9,8 @@ Utility.openSidebar = function() {
 	countryCell = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( Config.Sheet.countryCell ).getValue();
 	datasourceCell = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( Config.Sheet.datasourceCell ).getValue();
 	devMode = Config.devMode;
-    secretariatMode = Utility.isSecretariat();
+    secretariatMode = Utility.isSecretariat();    
+    spreadSheetId =  Utility.getGoogleSheetID();
 	var html = HtmlService.createTemplateFromFile( 'amisMenu' )
 		.evaluate()
 		.setTitle( 'Amis' )

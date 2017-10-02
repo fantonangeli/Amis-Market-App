@@ -199,8 +199,8 @@
             .withFailureHandler( googleScriptRunFailureHandler(saveSheet) )
             .LIB_FUNC( "AmisMarketApp.SyncMasterSheet.startSync", userToken );
           //disable the button himself
-          $( "#addFrc16" ).prop( "disabled", false );
-          $( "#addFrc17" ).prop( "disabled", false );
+          $( "#addFrcA" ).prop( "disabled", false );
+          $( "#addFrcB" ).prop( "disabled", false );
       }
 
 
@@ -325,25 +325,27 @@
 
            $("#buttonVerify").click(verifySheet);
 
-           $( "#addFrc16" ).bind( "click", function() {
+           $( "#addFrcA" ).bind( "click", function() {
 
                showLoading(["Loading sheet's data","Creating the new forecast", "Saving the data", "Sending data to the database"]);
                verifyToken(function(){
-                  google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast16_17", userToken);
+                  //google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast16_17", userToken);
+                  google.script.run.withSuccessHandler(hideLoading).LIB_FUNC( "AmisMarketApp.ForecastUtility.addNewForecast", 0);
               });
 
                //disable the button himself
-               $( "#addFrc16" ).prop( "disabled", true );
+               $( "#addFrcA" ).prop( "disabled", true );
            } );
-           $( "#addFrc17" ).bind( "click", function() {
+           $( "#addFrcB" ).bind( "click", function() {
 
                showLoading(["Loading sheet's data","Creating the new forecast", "Saving the data", "Sending data to the database"]);
                verifyToken(function(){
-                  google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast17_18", userToken);
+                  //google.script.run.withSuccessHandler(hideLoadingWithProtection).LIB_FUNC( "AmisMarketApp.ForecastUtility.addForecast17_18", userToken);
+                  google.script.run.withSuccessHandler(hideLoading).LIB_FUNC( "AmisMarketApp.ForecastUtility.addNewForecast", 1);
                 });
 
                //disable the button himself
-               $( "#addFrc17" ).prop( "disabled", true );
+               $( "#addFrcB" ).prop( "disabled", true );
            } );
            //binding FETCH function with AMIS MARKET API
            $("#buttonFetch").click(fetchData);

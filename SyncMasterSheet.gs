@@ -56,7 +56,7 @@ var SyncMasterSheet=new function(){
 				ForecastUtility.hideAllPreviousForecasts(userToken);
 
 				//hide new frc unactive columns
-				ForecastUtility.hideAllPeriodUnactiveColumns(userToken);
+				//ForecastUtility.hideAllPeriodUnactiveColumns(userToken);
 
 				//Get the currently active sheet
 				var sheet = SpreadsheetApp.getActiveSheet();
@@ -302,7 +302,7 @@ var SyncMasterSheet=new function(){
     //hide old forecasts leaving only the last one
     ForecastUtility.hideAllPreviousForecasts(userToken);
     //hide new frc unactive columns
-    ForecastUtility.hideAllPeriodUnactiveColumns(userToken);
+    //ForecastUtility.hideAllPeriodUnactiveColumns(userToken);
 
 	ProtectionMaker.validateSheet();
 

@@ -1,5 +1,56 @@
 var ForecastUtility=new function(){
 
+  //------------------------------------------------------------------------------------------------------------------
+  /**
+  * ADD A NEW FORECAST on the google sheet
+  * @param  {int} the period you want (EG.  0 for periodA , 1 periodB ) 
+  */
+  //------------------------------------------------------------------------------------------------------------------
+  this.addNewForecast= function(zeroOrOne){
+      
+    //get from config the named ranges
+    var addNewForecastNamedRanges= Config.addNewForecastNamedRange[zeroOrOne];    
+    //range 'where to copy'
+    var rangesTo =AmisNamedRanges.getCommodityNamedRanges()[addNewForecastNamedRanges[0]];
+    //range that contains values to be copied
+    var rangesFrom =AmisNamedRanges.getCommodityNamedRanges()[addNewForecastNamedRanges[1]];
+    
+    ForecastUtility.copyValuesBetweenForecasts(rangesFrom,rangesTo);
+    ForecastUtility.blankForecast(rangesFrom);
+    
+  };
+  
+   //------------------------------------------------------------------------------------------------------------------
+  /**
+  * copy values of the last forecast
+  * @param  {Range} 
+  */
+  //------------------------------------------------------------------------------------------------------------------
+  this.copyValuesBetweenForecasts= function(rangesFrom,rangesTo){
+    
+    var length = rangesTo.length;
+    for (var i=0; i<length; i++){      
+      SpreadSheetCache.getActiveSheet().getRange(rangesTo[i]).setValues(
+        SpreadSheetCache.getActiveSheet().getRange(rangesFrom[i]).getValues()  
+      );  
+    }
+  };
+  
+   //------------------------------------------------------------------------------------------------------------------
+  /**
+  * blank a forecast
+  * @param  {Range} 
+  */
+  //------------------------------------------------------------------------------------------------------------------
+  this.blankForecast= function(rangesToBeBlanked){
+    
+    var length = rangesToBeBlanked.length;
+    for (var i=0; i<length; i++){      
+      SpreadSheetCache.getActiveSheet().getRange(rangesToBeBlanked[i]).setValue('');  
+    }
+  };
+  
+  
 
     /**
      * gets the periods data from firebase
@@ -81,9 +132,24 @@ var ForecastUtility=new function(){
       }
     };
 
+  
   //------------------------------------------------------------------------------------------------------------------
   /**
   * ADD A NEW FORECAST on the google sheet
+  * @param  {string} the period you want
+  */
+  //------------------------------------------------------------------------------------------------------------------
+  this.addForecastByPeriod= function(period){    
+    SpreadSheetCache.getActiveSheet().getRange('V10:V31').copyTo( SpreadSheetCache.getActiveSheet().getRange('U10:U31'), {contentsOnly:true});
+    
+  };
+  //------------------------------------------------------------------------------------------------------------------
+  // END --   ADD A NEW FORECAST on the google sheet
+  //------------------------------------------------------------------------------------------------------------------
+  
+  //------------------------------------------------------------------------------------------------------------------
+  /**
+  * TODO_ delete... DEPRECATED! ADD A NEW FORECAST on the google sheet
   * @param  {string} auth token
   */
   //------------------------------------------------------------------------------------------------------------------
@@ -97,7 +163,7 @@ var ForecastUtility=new function(){
 
   //------------------------------------------------------------------------------------------------------------------
   /**
-  * ADD A NEW FORECAST 17-18
+  * TODO_ delete... DEPRECATED! ADD A NEW FORECAST 17-18
   * @param  {string} auth token
   */
   //------------------------------------------------------------------------------------------------------------------
