@@ -41,9 +41,9 @@ var ProtectionMaker = new function() {
 
 		var sheet = SpreadsheetApp.getActiveSpreadsheet();
 		var ss = sheet.getActiveSheet();
-    var rangeToBeRestored = Config.rangeOfRestoreSheetStyle;
-
-		var rangeToBeRestored = 'C:AO';
+        var rangeToBeRestored = Config.rangeOfRestoreSheetStyle;
+      
+      
 
 		ss.getRange( rangeToBeRestored ).setDataValidation( null );
 
