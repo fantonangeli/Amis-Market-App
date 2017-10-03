@@ -93,7 +93,14 @@ var SyncMasterSheet=new function(){
 			}
 		} catch (e) {
 			if(e!=="Network401Error"){
-				Browser.msgBox("There is a problem with the data. Please contact the administrator.");
+				Utility.sendErrorEmails(
+					"Firebase data wrong",
+					Config.errorEmail
+				);
+				Browser.msgBox(
+					"Internal error reading the data from the AMIS database.\\n"+
+					"The AMIS administrator has been notified.\\n"+
+					"You can contact them directly on amis-outlook@gmail.com");
 			}else{
 				//pass the error to the sidebar
 				throw e;

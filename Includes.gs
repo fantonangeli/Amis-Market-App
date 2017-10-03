@@ -4,7 +4,7 @@
 
 
 
-FirebaseConnector = new AmisLib.FirebaseConnector( Config.dbName );
+FirebaseConnector = new AmisLib.FirebaseConnector( Config.dbName, (Config.devMode)?null:Config.errorEmail );
 ConvertA1 = new AmisLib.ConvertA1Class();
 SpreadSheetCache = new AmisLib.SpreadSheetCache();
 APPCache=new AmisLib.APPCache(Config.cacheExpirationInSeconds);
