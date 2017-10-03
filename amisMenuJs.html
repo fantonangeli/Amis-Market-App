@@ -207,7 +207,7 @@
                 if (error.message==="InvalidSheetData") {
                     hideLoading();
                 } else {
-                    googleScriptRunFailureHandler(saveSheet)();
+                    googleScriptRunFailureHandler(saveSheet)(error);
                 }
             } )
             .LIB_FUNC( "AmisMarketApp.SyncMasterSheet.startSync", userToken );
@@ -271,6 +271,7 @@
        */
       function googleScriptRunFailureHandler( retryCalback ) {
           return function(error){
+              error=(error || "");
               //token expired
               if ( error.hasOwnProperty( "message" ) && ( error.message === "Network401Error" ) ) {
                   loginWithGoogle(retryCalback);
@@ -316,8 +317,6 @@
               .LIB_FUNC("AmisMarketApp.MasterUtility.writeNoteAndDataForCountriesMaster",valueSelected,false);
           }
       }
-
-
 
 
 
