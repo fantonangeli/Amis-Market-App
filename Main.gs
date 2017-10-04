@@ -54,6 +54,7 @@ function onLogin(){
 
 /**
  * protect sheet event
+ * @deprecated not used
  */
 function protectSheet(userToken){
   userToken = userToken ? userToken : FirebaseConnector.getToken();

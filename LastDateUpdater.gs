@@ -3,6 +3,7 @@ var LastDateUpdater=new function(){
   /**
   * STORE INTO SESSION THE LABEL ROW FOR LAST DATE
   * @param  {string} user token
+  * @deprecated not used
   */
   this.protectCell = function(userToken){
 
@@ -72,13 +73,17 @@ var LastDateUpdater=new function(){
   	if(canWrite){
   	  var cell = ss.getRange(lastDateUpdaterRow, thisCol);
 
-  	  if (ForecastUtility.isEndOfPeriod(activeCell)) {
-  			ForecastUtility.updateDataOfEndOfPeriod(activeCell, lastDateUpdaterRow);
-  	  } else {
-  		  //update the cell putting last date editing
-  		  cell.setValue(moment.utc().format(Config.lastUpdatedDateDBFormat));
-            cell.setNumberFormat(Config.lastUpdatedDateSheetFormat);
-  	  }
+      //TODO restore this code according to the new AddForecast behavior
+ //  	  if (ForecastUtility.isEndOfPeriod(activeCell)) {
+ //  			ForecastUtility.updateDataOfEndOfPeriod(activeCell, lastDateUpdaterRow);
+ //  	  } else {
+ //  		  //update the cell putting last date editing
+ //  		  cell.setValue(moment.utc().format(Config.lastUpdatedDateDBFormat));
+    //         cell.setNumberFormat(Config.lastUpdatedDateSheetFormat);
+ //  	  }
+
+      cell.setValue(moment.utc().format(Config.lastUpdatedDateDBFormat));
+      cell.setNumberFormat(Config.lastUpdatedDateSheetFormat);
 
   	  cell.setFontWeight("bold");
   	}
@@ -112,4 +117,4 @@ var LastDateUpdater=new function(){
         return AmisNamedRanges.getCommodityNamedRanges().lastDateRanges;
     };
 
-}
+};
