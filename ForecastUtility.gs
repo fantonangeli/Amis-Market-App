@@ -3,150 +3,104 @@ var ForecastUtility=new function(){
   //------------------------------------------------------------------------------------------------------------------
   /**
   * ADD A NEW FORECAST on the google sheet
-  * @param  {int} the period you want (EG.  0 for periodA , 1 periodB ) 
+  * @param  {int} the period you want (EG.  0 for periodA , 1 periodB )
   */
   //------------------------------------------------------------------------------------------------------------------
   this.addNewForecast= function(zeroOrOne){
-      
+
     //get from config the named ranges
-    var addNewForecastNamedRanges= Config.addNewForecastNamedRange[zeroOrOne];    
+    var addNewForecastNamedRanges= Config.addNewForecastNamedRange[zeroOrOne];
     //range 'where to copy'
     var rangesTo =AmisNamedRanges.getCommodityNamedRanges()[addNewForecastNamedRanges[0]];
     //range that contains values to be copied
     var rangesFrom =AmisNamedRanges.getCommodityNamedRanges()[addNewForecastNamedRanges[1]];
-    
+
     ForecastUtility.copyValuesBetweenForecasts(rangesFrom,rangesTo);
     ForecastUtility.blankForecast(rangesFrom);
-    
+
   };
-  
+
    //------------------------------------------------------------------------------------------------------------------
   /**
   * copy values of the last forecast
-  * @param  {Range} 
+  * @param  {Range}
   */
   //------------------------------------------------------------------------------------------------------------------
   this.copyValuesBetweenForecasts= function(rangesFrom,rangesTo){
-    
+
     var length = rangesTo.length;
-    for (var i=0; i<length; i++){      
+    for (var i=0; i<length; i++){
       SpreadSheetCache.getActiveSheet().getRange(rangesTo[i]).setValues(
-        SpreadSheetCache.getActiveSheet().getRange(rangesFrom[i]).getValues()  
-      );  
+        SpreadSheetCache.getActiveSheet().getRange(rangesFrom[i]).getValues()
+      );
     }
   };
-  
+
    //------------------------------------------------------------------------------------------------------------------
   /**
   * blank a forecast
-  * @param  {Range} 
+  * @param  {Range}
   */
   //------------------------------------------------------------------------------------------------------------------
   this.blankForecast= function(rangesToBeBlanked){
-    
+
     var length = rangesToBeBlanked.length;
-    for (var i=0; i<length; i++){      
-      SpreadSheetCache.getActiveSheet().getRange(rangesToBeBlanked[i]).setValue('');  
+    for (var i=0; i<length; i++){
+      SpreadSheetCache.getActiveSheet().getRange(rangesToBeBlanked[i]).setValue('');
     }
   };
-  
-  
 
-    /**
-     * gets the periods data from firebase
-     * @return {object} the data
-     */
-    this.getPeriodsData = function() {
-        //   var countryName, periodsNode, userToken;
-        //   userToken = FirebaseConnector.getToken();
-        //   countryName = FirebaseConnector.getCountryNameFromSheet(userToken);
-        //   periodsNode = 'config/addForecast/' + countryName;
-        //   return JSON.parse(FirebaseConnector.getFireBaseData(periodsNode, userToken));
-      //get the google sheet
-      var commodityName = FirebaseConnector.getCommodityName();
-      return JSON.parse(PropertiesService.getUserProperties().getProperty(commodityName+"_addForecastConfig"));
-    };
+  /**
+   * get all the namedRanges for the Forecasting notes
+   * @return {[string]} array of ranges in A1Notation
+   */
+  this.getForecastingNotesRanges = function() {
+  	var ranges = [],
+  		cnr;
+  	cnr = AmisNamedRanges.getCommodityNamedRanges();
+  	ranges = [].concat(
+  		cnr[ Config.notesNamedRanges[ 0 ] ],
+  		cnr[ Config.notesNamedRanges[ 1 ] ]
+  	);
+  	return ranges;
+  };
 
+  /**
+   * check if a cell is in a ForecastMetodology of ForecastingNote range
+   * @param  {string} cell  the cell to check in A1Notation for better performance
+   * @return {bool}       true if the cell is in a ForecastMetodology of ForecastingNote range, false otherwise
+   * @throws {InvalidArgument}
+   */
+  this.isFMorFN=function(cell){
+      var ranges=[];
 
-    /**
-     * check if the cell is the lastForecast, the forecastMetodology or the notes of any period
-     * @param  {object} cell the cell to check
-     * @return {bool}      true if one of that colums, false otherwise
-     */
-    this.isEndOfPeriod = function(cell) {
-      var cellPos, currLastForecastPos, period, periodsData;
-      periodsData=this.getPeriodsData();
-      cellPos = cell.getColumn();
-      for (period in periodsData) {
-          if(periodsData.hasOwnProperty(period)){
-                currLastForecastPos = Utility.letterToColumn(periodsData[period].lastForecast);
-                if (currLastForecastPos <= cellPos && cellPos <= (currLastForecastPos + 2)) {
-                  return true;
-              }
-          }
+      if(!cell){
+          throw "InvalidArgument";
       }
-      return false;
-    };
+
+      ranges=ranges.concat(
+          this.getForecastingNotesRanges(),
+          ForecastingMethodologies.getFMRanges()
+      );
+
+      return Utility.isInAnyRange(ranges, cell);
+  };
 
 
-    /**
-     * udate date of the last 3 date columns of the period of the current cell
-     * @param  {object} cell               the cell
-     * @param  {number} lastDateUpdaterRow row number of the date row
-     */
-    this.updateDataOfEndOfPeriod = function(cell,lastDateUpdaterRow) {
-      var cellPos, actualPosition, lastForecastPosition, period, periodsData, dataCells, sheet,notesPosition, rangeCells, rowValues=[];
-      sheet=SpreadSheetCache.getActiveSheet();
-      periodsData=this.getPeriodsData();
-      cellPos = cell.getColumn();
-
-
-      for (period in periodsData) {
-        if(periodsData[period])  {
-            actualPosition = ConvertA1.colA1ToIndex(periodsData[period].actualPosition, 1);
-            lastForecastPosition = ConvertA1.colA1ToIndex(periodsData[period].lastForecast, 1);
-
-            //cell is the actualPosition or ForecastingMethodologies or Notes
-            if (
-                (cellPos===actualPosition) || //cell is the actualPosition
-                (cellPos===lastForecastPosition+1) || //cell is ForecastingMethodologies
-                (cellPos===lastForecastPosition+2) //cell is Notes
-            ) {
-                notesPosition=(lastForecastPosition+2);
-                rangeCells=notesPosition-actualPosition+1;
-                dataCells=sheet.getRange(lastDateUpdaterRow, actualPosition, 1, rangeCells);
-
-                //Initialize the array of values
-                for (var i = rangeCells; i--;) {
-                    rowValues.push(null);
-                }
-
-                //set the new date in the array
-                rowValues[rangeCells-1]=rowValues[rangeCells-2]=rowValues[0]=new Date();
-
-                dataCells.setValues([rowValues]);
-
-                return;
-            }
-        }
-      }
-    };
-
-  
   //------------------------------------------------------------------------------------------------------------------
   /**
   * ADD A NEW FORECAST on the google sheet
   * @param  {string} the period you want
   */
   //------------------------------------------------------------------------------------------------------------------
-  this.addForecastByPeriod= function(period){    
+  this.addForecastByPeriod= function(period){
     SpreadSheetCache.getActiveSheet().getRange('V10:V31').copyTo( SpreadSheetCache.getActiveSheet().getRange('U10:U31'), {contentsOnly:true});
-    
+
   };
   //------------------------------------------------------------------------------------------------------------------
   // END --   ADD A NEW FORECAST on the google sheet
   //------------------------------------------------------------------------------------------------------------------
-  
+
   //------------------------------------------------------------------------------------------------------------------
   /**
   * TODO_ delete... DEPRECATED! ADD A NEW FORECAST on the google sheet

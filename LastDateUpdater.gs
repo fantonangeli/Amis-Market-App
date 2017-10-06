@@ -47,51 +47,47 @@ var LastDateUpdater=new function(){
   /**
    * set the last date for column when you edit the sheet
    * @param  {object} e the event
+   * @param  {string} activeRangeA1 active range in A1Notation
    * @return {void}
    */
-  this.onEditSetLastUpdateDate = function (e) {
-    var rangesToCheck=[],rangeToBeStored, lastDateRanges;
-  	//get the google sheet
-  	var ss = SpreadSheetCache.getActiveSheet();
+  this.onEditSetLastUpdateDate = function( e, activeRangeA1 ) {
+  		var rangesToCheck = [],
+  			rangeToBeStored, cell_isFMorFN, thisCol, lastDateRanges;
+  		//get the google sheet
+  		var ss = SpreadSheetCache.getActiveSheet();
 
 
-  	var lastDateUpdaterRow = parseInt(AmisNamedRanges.getCommodityNamedRanges().labelRowForLastDate.row.split(":")[0],10);
+  		var lastDateUpdaterRow = parseInt( AmisNamedRanges.getCommodityNamedRanges().labelRowForLastDate.row.split( ":" )[ 0 ], 10 );
 
 
-  	var activeCell=e.range;
-  	var thisCol = e.range.getColumn();
+  		//var thisCol = e.range.getColumn();
+  		if ( ~activeRangeA1.indexOf( ":" ) ) {
+  			thisCol = ConvertA1.rangeA1ToIndex( activeRangeA1, 1 ).left;
+  		} else {
+  			thisCol = ConvertA1.cellA1ToIndex( activeRangeA1, 1 ).col;
+  		}
 
 
-  	rangeToBeStored = SyncMasterSheet.getRangeToBeStored();
-    lastDateRanges = LastDateUpdater.getLastDateRanges();
-    rangesToCheck=rangesToCheck.concat(rangeToBeStored, lastDateRanges);
+  		rangeToBeStored = SyncMasterSheet.getRangeToBeStored();
+  		lastDateRanges = LastDateUpdater.getLastDateRanges();
+  		rangesToCheck = [].concat(rangeToBeStored, lastDateRanges);
 
-  	//used after to determinate if set the last date or not
-  	var canWrite = Utility.isInAnyRange(rangesToCheck, activeCell);
+  		//used after to determinate if set the last date or not
+  		var canWrite = Utility.isInAnyRange( rangesToCheck, activeRangeA1 );
+
+  		cell_isFMorFN = ForecastUtility.isFMorFN( activeRangeA1 );
 
 
-  	if(canWrite){
-  	  var cell = ss.getRange(lastDateUpdaterRow, thisCol);
+  		if ( canWrite && !cell_isFMorFN ) {
+  			var cell = ss.getRange( lastDateUpdaterRow, thisCol );
 
-      //TODO restore this code according to the new AddForecast behavior
- //  	  if (ForecastUtility.isEndOfPeriod(activeCell)) {
- //  			ForecastUtility.updateDataOfEndOfPeriod(activeCell, lastDateUpdaterRow);
- //  	  } else {
- //  		  //update the cell putting last date editing
- //  		  cell.setValue(moment.utc().format(Config.lastUpdatedDateDBFormat));
-    //         cell.setNumberFormat(Config.lastUpdatedDateSheetFormat);
- //  	  }
+  			cell.setValue( moment.utc().format( Config.lastUpdatedDateDBFormat ) );
+  			cell.setNumberFormat( Config.lastUpdatedDateSheetFormat );
 
-      cell.setValue(moment.utc().format(Config.lastUpdatedDateDBFormat));
-      cell.setNumberFormat(Config.lastUpdatedDateSheetFormat);
-
-  	  cell.setFontWeight("bold");
-  	}
+  			cell.setFontWeight( "bold" );
+  		}
 
   };
-  //------------------------------------------------------------------------------------------------------------------
-  // END -- CALLED ON EDIT This set the last date for column when you edit the sheet
-  //------------------------------------------------------------------------------------------------------------------
 
     /**
      * reads the lastDateUpdaterRow from the named ranges

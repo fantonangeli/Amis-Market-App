@@ -91,17 +91,23 @@ var Config={
 	 * @type {String}
 	 */
 	lastUpdatedDateSheetFormat:"dd-mmm-yyyy",
-  
+
     /**
 	 * Named range for 'add new forecast'
-	 * @type {array} 
+	 * @type {array}
 	 */
 	addNewForecastNamedRange:[ ['addFrcA1','addFrcA2'],['addFrcB1','addFrcB2'] ],
-  
+
      /**
 	 * range of restoring stylesheet
-	 * @type {string} 
+	 * @type {string}
 	 */
-	rangeOfRestoreSheetStyle: 'C:AE'
+	rangeOfRestoreSheetStyle: 'C:AE',
+
+    /**
+	 * Named ranges for forecast's notes
+	 * @type {[string]}
+	 */
+	notesNamedRanges:[ 'notesA','notesB']
 
 };
