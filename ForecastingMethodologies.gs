@@ -42,7 +42,7 @@ var ForecastingMethodologies = new( function() {
 
 
 	/**
-	 * reads the forecasting Methodology ranges from firebase
+	 * reads the forecasting Methodology ranges from namedRanges
 	 * @return {array} array of ranges, null otherwise
 	 */
 	this.getFMRanges=function() {
