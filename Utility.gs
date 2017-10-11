@@ -9,7 +9,7 @@ Utility.openSidebar = function() {
 	countryCell = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( Config.Sheet.countryCell ).getValue();
 	datasourceCell = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( Config.Sheet.datasourceCell ).getValue();
 	devMode = Config.devMode;
-    secretariatMode = Utility.isSecretariat();    
+    secretariatMode = Utility.isSecretariat();
     spreadSheetId =  Utility.getGoogleSheetID();
 	var html = HtmlService.createTemplateFromFile( 'amisMenu' )
 		.evaluate()
@@ -69,7 +69,7 @@ Utility.toggleTemplates=function(show){
 
 	for (var _i = 0, sheets_length=sheets.length; _i<sheets_length; _i++) {
 		s=sheets[_i];
-		if(this.isTemplate(s)){
+		if(Utility.isTemplate(s)){
 			if (show) {
 				s.showSheet();
 			} else {
