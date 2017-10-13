@@ -34,11 +34,13 @@ Utility.createAmisMenu = function() {
 
 /**
  * check if the current spreadsheet is Master
+ * @param {object} spreadsheet [optional] the spreadsheet
  * @return {bool} true if master, false otherwise
  */
-Utility.isMaster = function() {
-	return SpreadsheetApp.getActiveSpreadsheet().getName().indexOf( Config.masterKeyword ) > -1;
-};
+ Utility.isMaster = function( spreadsheet ) {
+ 	spreadsheet = spreadsheet || SpreadSheetCache.getActiveSpreadsheet();
+ 	return spreadsheet.getName().indexOf( Config.masterKeyword ) > -1;
+ };
 
 /**
  * check if the current spreadsheet is Master
@@ -55,10 +57,10 @@ Utility.isSecretariat = function() {
  * @param {object} sheet [optional] the sheet
  * @return {bool} true if template, false otherwise
  */
-Utility.isTemplate = function(sheet) {
-	sheet=sheet||SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-	return sheet.getName().indexOf( Config.templatePrefix ) === 0;
-};
+ Utility.isTemplate = function(sheet) {
+ 	sheet=sheet||SpreadSheetCache.getActiveSpreadsheet().getActiveSheet();
+ 	return sheet.getName().indexOf( Config.templatePrefix ) === 0;
+ };
 
 /**
  * show/hide all templates in the spreadsheet
