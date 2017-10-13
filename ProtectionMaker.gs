@@ -32,18 +32,23 @@ var ProtectionMaker = new function() {
 
 	/**
 	 * restore the styles, formulas, values and the formatting from the template
+	 * @param {object} spreadsheet [optional] the spreadsheet
+	 * @param {object} sheet [optional] the sheet
 	 * @return {void}
 	 * @throws {RowsOrColChanged} if sheet's rows and columns doesn't match with template
 	 * @throws {JavaException} in case of non valid data in the sheet
+	 * @throws {InvalidArgument}
 	 */
-	this.checkIfValueIsNotProtected = function() {
-		//var interestedRange = JSON.parse(PropertiesService.getUserProperties().getProperty("sheetProtectionRanges"));
+	this.checkIfValueIsNotProtected = function(spreadsheet, sheet) {
 
-		var sheet = SpreadsheetApp.getActiveSpreadsheet();
-		var ss = sheet.getActiveSheet();
+
+  	 	if ( !sheet || !spreadsheet ) {
+  	 		throw "InvalidArgument";
+  	 	}
+
+		var ss = sheet;
         var rangeToBeRestored = Config.rangeOfRestoreSheetStyle;
-      
-      
+
 
 		ss.getRange( rangeToBeRestored ).setDataValidation( null );
 
@@ -52,7 +57,7 @@ var ProtectionMaker = new function() {
 
 		var sheetName = ss.getName();
 
-		var templateSheet = sheet.getSheetByName( "Template_" + sheetName );
+		var templateSheet = spreadsheet.getSheetByName( "Template_" + sheetName );
 
 		var sheetValues = ss.getRange( rangeToBeRestored ).getValues();
 		//var sheetFormulas = ss.getRange(rangeToBeRestored).getFormulas();
