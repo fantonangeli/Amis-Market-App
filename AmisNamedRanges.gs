@@ -56,13 +56,23 @@ AmisNamedRanges=new function() {
 
 	/**
 	 * return all namedRanges of the current commodity
+	 * @param {object} sheet [optional] the sheet
 	 * @return {object} an object representing the named ranges: {type: [index]}
+	 * @throws {InvalidArgument}
 	 */
-	this.getCommodityNamedRanges=function(){
-		var commodityName = FirebaseConnector.getCommodityName();
+	 this.getCommodityNamedRanges = function( sheet ) {
+	 	if ( sheet === null ) {
+	 		throw "InvalidArgument";
+	 	}
 
-	    return this.getAllNamedRanges()[commodityName];
-	};
+	 	sheet = ( sheet || SpreadSheetCache.getActiveSheet() );
+
+	 	var commodityName = FirebaseConnector.getCommodityName( sheet );
+
+	 	var namedRanges = this.getAllNamedRanges()[ commodityName ];
+
+	 	return namedRanges;
+	 };
 
 
 };

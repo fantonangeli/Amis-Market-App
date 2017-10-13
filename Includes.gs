@@ -28,7 +28,7 @@ FirebaseConnector.getCountryNameFromSheet = function( userToken ) {
  * find the commodity name
  * @param {object} sheet [optional] the sheet
  * @return {string}  it return the commodation name (eg. maize )
- * @throws {"InvalidArgument"}
+ * @throws {InvalidArgument}
  */
 FirebaseConnector.getCommodityName = function( sheet ) {
 	if ( sheet === null ) {
