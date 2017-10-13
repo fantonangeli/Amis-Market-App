@@ -56,6 +56,18 @@
          //this protect the sheet and avoid script error
          google.script.run.withSuccessHandler(hideLoadingDiv).LIB_FUNC( "AmisMarketApp.protectSheet");
        };
+       
+       hideLoadingWithLoadData = function() {
+         //this protect the sheet and avoid script error
+         google.script.run.withSuccessHandler(hideLoading).LIB_FUNC( "AmisMarketApp.SyncMasterSheet.startFetchMaster",'',true, $( "#countryName" ).val(),false);
+       };
+       
+         hideLoadingWithDeleteData = function() {
+         //this protect the sheet and avoid script error
+         google.script.run.withSuccessHandler(hideLoading).LIB_FUNC( "AmisMarketApp.SyncMasterSheet.startFetchMaster",'',true, $( "#countryName" ).val(),true);
+       };
+       
+       
 
        /**
         * hide the loading spinner
@@ -293,7 +305,7 @@
          //prevent redirect actions
          showLoading(["Creating the sheet", "Sharing the sheet with the user", "Sending the email to the user"]);
          google.script.run
-         .withSuccessHandler( hideLoading )
+         .withSuccessHandler( hideLoadingWithDeleteData )
          .withFailureHandler( googleScriptRunFailureHandler(createSheet) )
          .LIB_FUNC( "AmisMarketApp.ShareSheet.createSheet", countryName, account, userToken );
          return false;
@@ -311,7 +323,7 @@
           if(valueSelected != '') {
               showLoading(["Updating Master","Updating Master"]);
               google.script.run
-              .withSuccessHandler(hideLoading)
+              .withSuccessHandler(hideLoadingWithLoadData)
               .withFailureHandler( googleScriptRunFailureHandler(function(){
                   countryChange(event);
               }))

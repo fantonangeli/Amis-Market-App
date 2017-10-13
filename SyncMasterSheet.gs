@@ -4,11 +4,15 @@ var SyncMasterSheet=new function(){
 	 * update all the lastUpdate cells from firebase
 	 * @param  {array} fbData      firebase data of the sheet
 	 * @param  {array} sheetValues sheet's data
+     * @param  {Sheet} the chosen sheet
+     * @param  {bool}  true= clear data, false= set data
 	 */
-	 this.lastDatefetcher=function(fbData, sheetValues){
+	 this.lastDatefetcher=function(fbData, sheetValues, chosenSheet, isReset){
  		var labelRowForLastDateIndex,fbDataLURow,cell, sheetDate,range;
-
- 		labelRowForLastDateIndex=(LastDateUpdater.getLURow()-1);
+       
+        labelRowForLastDateIndex=(LastDateUpdater.getLURow(chosenSheet.getName().toLowerCase())-1); 
+       
+ 		chosenSheet = chosenSheet || SpreadSheetCache.getActiveSheet();
 
  		fbDataLURow=fbData[labelRowForLastDateIndex];
 
@@ -22,14 +26,19 @@ var SyncMasterSheet=new function(){
  			sheetDate=moment(sheetValues[labelRowForLastDateIndex][_i]).format(Config.lastUpdatedDateDBFormat);
 
 
+          
+          
  			//if fb cell different to sheetcell
  			if(cell!==sheetDate){
- 				range=SpreadSheetCache
- 					.getActiveSheet()
- 					.getRange(labelRowForLastDateIndex+1, _i+1)
-                 range.setValue(cell);
- 				range.setNumberFormat(Config.lastUpdatedDateSheetFormat);
- 			}
+                            
+                range=chosenSheet.getRange(labelRowForLastDateIndex+1, _i+1);
+                range.setValue(cell);
+                range.setNumberFormat(Config.lastUpdatedDateSheetFormat);              
+ 				
+            }else if(isReset){
+               range=chosenSheet.getRange(labelRowForLastDateIndex+1, _i+1);
+               range.setValue('');
+            }
 
  		}
  	};
@@ -108,8 +117,103 @@ var SyncMasterSheet=new function(){
 		}
 	}
 
+        /**
+	    * Fetch or delete all data for the master template, for a chosen country (loop all the sheet of a spreadsheet)
+        * @param  {string} userToken auth token
+        * @param  {bool} forceload (default false) if true doesn't ask the user for loading data
+        * @param  {string} the country selected
+        * @param  {bool} true=clear data , false = set data
+	  */
+      this.startFetchMaster=function(userToken, forceload,countrySelected, isReset) {
+        Utility.forEachSheet(null, /^[A-Za-z]+$/, function(sheet, sheetName){
+            //in the call back we load data for all the commodities
+            SyncMasterSheet.startFetchLoadAllData(userToken, forceload, sheet, isReset, countrySelected);
+        });
+      }
+      
+      
+      /**
+	    * Get the ALL data from firebase for each commodities by country
+        * @param  {string} userToken auth token
+        * @param  {bool} forceload (default false) if true doesn't ask the user for loading data
+        * @param  {string} the country selected
+        * @param  {bool} true=clear data , false = set data
+	  */
+	  this.startFetchLoadAllData=function(userToken, forceload,sheet, isReset, countrySelected) {
+        userToken= userToken || FirebaseConnector.getToken();
+	    forceload=(forceload || false);
+		var userChoise="yes";
+        var sheetName= sheet.getName().toLowerCase();
 
+		if (!forceload) {
+			userChoise = Browser.msgBox('DISCARD CHANGES', 'Discard your edits and overwrite the sheet with the data from the AMIS database?', Browser.Buttons.YES_NO);
+		}
 
+		try {
+			// if user wants to laod data
+			if (userChoise === 'yes' || userChoise === 'si') {
+              
+                //we take only NOT TEMPLATE_ sheets
+                if(sheet.getSheetName().indexOf(Config.templatePrefix)){                                    
+                  
+                  //Get the currently active sheet
+                  var sheetValues=sheet.getSheetValues(1, 1, sheet.getLastRow(),sheet.getLastColumn());
+                  
+                  var rangeFromConfig= SyncMasterSheet.getRangeToBeStored(sheetName);
+                  
+                  var fbData, fireBaseValues, baseOfSaveNode= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/'+ countrySelected+'Data'+ '/' + sheet.getSheetName().toLowerCase();
+                  
+                  fbData=FirebaseConnector.getFireBaseDataParsed(baseOfSaveNode, userToken);
+                  
+                  //get lastDateUpdaterRow
+                  SyncMasterSheet.lastDatefetcher(fbData, sheetValues, sheet, isReset);
+                  
+                  //get all range to be stored
+                  if (fbData) {
+                    for (var i=0; i<rangeFromConfig.length;i++){
+                      
+                      //get Firebase node name to be fetch
+                      fireBaseValues=Utility.getRangeValuesFromArray(fbData, rangeFromConfig[i]);
+                      
+                      //if data note IS NOT EMPTY
+                      if(fireBaseValues){
+                        //if isreset...empty all data
+                        if(isReset){
+                          sheet.getRange(rangeFromConfig[i]).setValue('');
+                        }
+                        else{  
+                          //set value into cells
+                          sheet.getRange(rangeFromConfig[i]).setValues(fireBaseValues);
+                        }
+                      }
+                    }
+                  }
+                  
+                  Utility.toastInfo('Data successfully loaded to the AMIS database', 'DATA LOADED');
+                  
+                }
+                  
+                
+          
+              
+
+			}
+		} catch (e) {
+			if(e!=="Network401Error"){
+				Utility.sendErrorEmails(
+					"Firebase data wrong",
+					Config.errorEmail
+				);
+				Browser.msgBox(
+					"Internal error reading the data from the AMIS database.\\n"+
+					"The AMIS administrator has been notified.\\n"+
+					"You can contact them directly on amis-outlook@gmail.com");
+			}else{
+				//pass the error to the sidebar
+				throw e;
+			}
+		}
+	}
 
       /**
 	    * Delete all data in TEMPLATE
@@ -469,10 +573,9 @@ var SyncMasterSheet=new function(){
      *  @param  {string} auth token
      *  @return  {array} ranges to be stored
 	 */
-  this.getRangeToBeStored = function(){
-		return AmisNamedRanges.getCommodityNamedRanges().rangeToBeStored;
+  this.getRangeToBeStored = function(commodityName){
+		return AmisNamedRanges.getCommodityNamedRanges(commodityName).rangeToBeStored;
 };
-
   //---------------------------------------------------------
    //---------------------------------------------------------
   // END -- Retrives all the ranges to be stored

@@ -42,7 +42,7 @@ var ForecastingMethodologies = new( function() {
 
 
 	/**
-	 * reads the forecasting Methodology ranges from firebase
+	 * reads the forecasting Methodology ranges from namedRanges
 	 * @return {array} array of ranges, null otherwise
 	 */
 	this.getFMRanges=function() {
@@ -124,6 +124,7 @@ var ForecastingMethodologies = new( function() {
 	// 	   }
 	//    }
 
+	   //TODO pass range in A1 to onEditCell
 	   rangeValues[0][0]=this.onEditCell(e.range, fmRanges, rangeValues[0][0], multiple);
 
 	   if(rangeValues[0][0]!==oldValues[0][0]){

@@ -31,13 +31,17 @@ function openSidebar(){
  * @param  {object} e the event
  */
 function onEdit(e){
+    var activeRangeA1;
+
     //IF user is NOT editing a Template Sheet. Do normal logic.
     if( !Utility.isTemplate() && !Utility.isMaster() ) {
+      activeRangeA1=e.range.getA1Notation();
+
       //forecast methodologies on edit
       ForecastingMethodologies.onEdit(e);
 
       //set the last date on edit event
-      LastDateUpdater.onEditSetLastUpdateDate(e);
+      LastDateUpdater.onEditSetLastUpdateDate(e, activeRangeA1);
     }
 }
 

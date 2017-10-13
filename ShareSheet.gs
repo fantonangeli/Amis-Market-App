@@ -39,10 +39,10 @@ var ShareSheet=new function(){
         ShareSheet.shareSheet(existingFileToBeShared,countryAccount);
 
         //empty the template
-        MasterUtility.writeNoteAndDataForCountries(countryName,true)
+        MasterUtility.writeNoteAndDataForCountriesMaster(countryName,true)
 
         //finish operation
-        Utility.toastInfo('Sheet created', 'Sheet created and shared');
+        Utility.toastInfo('Sheet shared', 'Sheet shared');
       }
       catch(err) {
         //empty the template
