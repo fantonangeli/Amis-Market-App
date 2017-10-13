@@ -43,12 +43,21 @@ var ForecastingMethodologies = new( function() {
 
 	/**
 	 * reads the forecasting Methodology ranges from namedRanges
+	 * @param {object} sheet [optional] the sheet
 	 * @return {array} array of ranges, null otherwise
+	 * @throws {InvalidArgument}
 	 */
-	this.getFMRanges=function() {
-       	var ranges=AmisNamedRanges.getCommodityNamedRanges().fm;
-		return ranges;
-	};
+	 this.getFMRanges = function( sheet ) {
+	 	if ( sheet === null ) {
+	 		throw "InvalidArgument";
+	 	}
+
+	 	sheet = ( sheet || SpreadSheetCache.getActiveSheet() );
+
+	 	var ranges = AmisNamedRanges.getCommodityNamedRanges( sheet ).fm;
+
+	 	return ranges;
+	 };
 
 
 	 /**
