@@ -59,44 +59,6 @@ var ForecastingMethodologies = new( function() {
 	 	return ranges;
 	 };
 
-
-	 /**
- 	 * move FM column in Firebase
- 	 * @param  {string} range range in A1 notation
-	 * @param  {number} columnOffset   number of columns right from the range's top-left cell; negative values represent columns left from the range's top-left cell
- 	 * @return {bool}       true if ok, false otherwise
- 	 * @deprecated not needed anymore
- 	 */
-	// this.moveFMCols = function( range, columnOffset ) {
-	//
-	// 	var movedColNum, newFmRanges = [];
-	// 	var fmRanges = this.getFMRanges();
-	// 	range = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( range );
-	// 	movedColNum = range.getColumn();
-	//
-	// 	if ( !fmRanges ) return;
-	//
-	// 	var r;
-	// 	for ( var i = fmRanges.length; i--; ) {
-	// 		r = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( fmRanges[ i ] );
-	//
-	// 		if ( r.getColumn() >= movedColNum ) {
-	// 			r = r.offset( 0, columnOffset );
-	// 		}
-	//
-	// 		newFmRanges.unshift( r.getA1Notation() );
-	// 	}
-	//
-	// 	FirebaseConnector.writeOnFirebase(
-	// 		newFmRanges,
-	// 		getFbConfigPath()+'/'+FirebaseConnector.getCommodityName()+'/ranges',
-	// 		FirebaseConnector.getToken()
-	// 	);
-	//
-	// 	//reload the new configuration
-	// 	this.getConfig(true);
-	// };
-
 	/**
 	 * function to attach on the onEdit event
 	 * @param  {Object} e
@@ -147,56 +109,72 @@ var ForecastingMethodologies = new( function() {
 	 /**
 	  * check all the FM ranges and fix their value (if not valid)
 	  * @param  {array} sheetValues sheet's data
+	  * @param {object} sheet [optional] the sheet
 	  * @return {void}
+	  * @throws {InvalidArgument}
 	  */
-	 this.fixAllFMRanges=function(sheetValues){
-		var fmRanges;
+	 this.fixAllFMRanges = function( sheetValues, sheet ) {
+	 	if ( sheet === null ) {
+	 		throw "InvalidArgument";
+	 	}
+
+	 	sheet = ( sheet || SpreadSheetCache.getActiveSheet() );
+	 	var fmRanges;
 
 	 	fmRanges = this.getFMRanges();
 
-		for (var i = 0, fmRanges_length=fmRanges.length, range; i<fmRanges_length; i++) {
-			range=fmRanges[i];
-			sheetValues=this.fixSingleFRanges(sheetValues, range);
-		}
+	 	for ( var i = 0, fmRanges_length = fmRanges.length, range; i < fmRanges_length; i++ ) {
+	 		range = fmRanges[ i ];
+	 		sheetValues = this.fixSingleFMRanges( sheetValues, range, sheet );
+	 	}
 
-		return sheetValues;
+	 	return sheetValues;
 	 };
 
 	 /**
 	  * check a single FM range and fix its value (if not valid) and write it to the sheet
 	  * @param  {array} sheetValues sheet's data
 	  * @param  {string} fmRange the FM range to check in A1Notation
+	  * @param  {object} sheet [optional] the sheet
 	  * @return {array} sheet's data
+	  * @throws {InvalidArgument}
 	  */
-	  this.fixSingleFRanges=function(sheetValues, fmRange){
-	  		var fmRangeIx, cellValue, cellA1, c, fixedCellValue, changed=false, newFMvalues, bottom;
+	 this.fixSingleFMRanges = function( sheetValues, fmRange, sheet ) {
+	 	if ( sheet === null ) {
+	 		throw "InvalidArgument";
+	 	}
 
-	  		fmRangeIx=ConvertA1.rangeA1ToIndex(fmRange);
+	 	sheet = ( sheet || SpreadSheetCache.getActiveSheet() );
 
-	  		c=fmRangeIx.left;
+	 	var fmRangeIx, cellValue, cellA1, c, fixedCellValue, changed = false,
+	 		newFMvalues, bottom;
 
-	        bottom=fmRangeIx.bottom;
+	 	fmRangeIx = ConvertA1.rangeA1ToIndex( fmRange );
 
-	  		//check all cell in current fmRange
-	  		for (var r = fmRangeIx.top; r<=bottom ; r++) {
-	  			cellValue=sheetValues[r][c];
-	  			cellA1=ConvertA1.indexToColA1(c+1)+r;
-	  			fixedCellValue=this.fixFMValue(cellA1, cellValue, true);
-	  			sheetValues[r][c]=fixedCellValue;
+	 	c = fmRangeIx.left;
 
-	  			if(cellValue!==fixedCellValue){
-	  				changed=true;
-	  			}
-	  		}
+	 	bottom = fmRangeIx.bottom;
 
-	  		//if the values changed write it to the sheet
-	  		if(changed){
-	  			newFMvalues=Utility.getRangeValuesFromArray(sheetValues, fmRange);
-	  			SpreadSheetCache.getActiveSheet().getRange(fmRange).setValues(newFMvalues);
-	  		}
+	 	//check all cell in current fmRange
+	 	for ( var r = fmRangeIx.top; r <= bottom; r++ ) {
+	 		cellValue = sheetValues[ r ][ c ];
+	 		cellA1 = ConvertA1.indexToColA1( c + 1 ) + r;
+	 		fixedCellValue = this.fixFMValue( cellA1, cellValue, true );
+	 		sheetValues[ r ][ c ] = fixedCellValue;
 
-	  		return sheetValues;
-	  	 };
+	 		if ( cellValue !== fixedCellValue ) {
+	 			changed = true;
+	 		}
+	 	}
+
+	 	//if the values changed write it to the sheet
+	 	if ( changed ) {
+	 		newFMvalues = Utility.getRangeValuesFromArray( sheetValues, fmRange );
+	 		sheet.getRange( fmRange ).setValues( newFMvalues );
+	 	}
+
+	 	return sheetValues;
+	 };
 
 
 
