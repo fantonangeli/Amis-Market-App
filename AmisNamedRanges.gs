@@ -58,8 +58,8 @@ AmisNamedRanges=new function() {
 	 * return all namedRanges of the current commodity
 	 * @return {object} an object representing the named ranges: {type: [index]}
 	 */
-	this.getCommodityNamedRanges=function(){
-		var commodityName = FirebaseConnector.getCommodityName();
+	this.getCommodityNamedRanges=function(commodityName){
+		commodityName = commodityName || FirebaseConnector.getCommodityName();
 
 	    return this.getAllNamedRanges()[commodityName];
 	};
