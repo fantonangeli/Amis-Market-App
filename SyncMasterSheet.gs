@@ -142,6 +142,7 @@ var SyncMasterSheet=new function(){
 	  this.startFetchLoadAllData=function(userToken, forceload,sheet, isReset, countrySelected) {
         userToken= userToken || FirebaseConnector.getToken();
 	    forceload=(forceload || false);
+        countrySelected = countrySelected || FirebaseConnector.getCountryNameFromSheet(userToken);
 		var userChoise="yes";
         var sheetName= sheet.getName().toLowerCase();
 
