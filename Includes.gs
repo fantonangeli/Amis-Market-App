@@ -26,18 +26,19 @@ FirebaseConnector.getCountryNameFromSheet = function( userToken ) {
 
 /**
  * find the commodity name
+ * @param {object} sheet [optional] the sheet
  * @return {string}  it return the commodation name (eg. maize )
+ * @throws {"InvalidArgument"}
  */
-//---------------------------------------------------------
-FirebaseConnector.getCommodityName = function() {
-	if (!this.commodity) {
-		var sheet = SpreadSheetCache.getActiveSheet();
-
-		//it return the commodation name (eg. maize )
-		this.commodity=sheet.getRange( Config.Sheet.commodityCell ).getValue().toLowerCase();
+FirebaseConnector.getCommodityName = function( sheet ) {
+	if ( sheet === null ) {
+		throw "InvalidArgument";
 	}
 
-	return this.commodity;
+	sheet = ( sheet || SpreadSheetCache.getActiveSheet() );
+
+	//it return the commodation name (eg. maize )
+	return sheet.getRange( Config.Sheet.commodityCell ).getValue().toLowerCase();
 };
 
 /**
