@@ -358,25 +358,25 @@ var ForecastUtility=new function(){
     ForecastUtility.hideColumnForNewForecasts(firstForecastColumnPosition,lastForecastColumnPosition, actualForecastColumnPosition);
 
   };
-  //------------------------------------------------------------------------------------------------------------------
-  // END --   ADD A NEW FORECAST on the google sheet FOR SECRETARIET
-  //------------------------------------------------------------------------------------------------------------------
 
   /**
 	 * hide old forecast except the last 2
      * @param  {number} beginingPosition forecast position
      * @param  {number} lastPosition forecast position
      * @param  {number} numberOfColumnVisibleInTheRange of column you want to be shown
+     * @param {object} sheet [optional] the sheet
   */
-  this.hideOldForecasts= function (beginingPosition, lastPosition, numberOfColumnVisibleInTheRange){
+  this.hideOldForecasts = function( beginingPosition, lastPosition, numberOfColumnVisibleInTheRange, sheet ) {
 
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  	sheet = sheet || SpreadSheetCache.getActiveSheet();
 
-    var columnToBeHidden = lastPosition - beginingPosition - numberOfColumnVisibleInTheRange;
+  	var columnToBeHidden = lastPosition - beginingPosition - numberOfColumnVisibleInTheRange;
 
-    if(columnToBeHidden >-1)
-      sheet.hideColumns(beginingPosition, columnToBeHidden+1);
+  	if ( columnToBeHidden > -1 ) {
+  		sheet.hideColumns( beginingPosition, columnToBeHidden + 1 );
+  	}
   };
+
 
   /**
 	 * hide old forecast except the last 2 FOR SECRETARIAT WithChosenCommodityName
@@ -485,31 +485,22 @@ var ForecastUtility=new function(){
 
     }
   };
-  //------------------------------------------------------------------------------------------------------------------
-  // END -- Solve CTRL+Z problems for 'add new forecast'
-  //------------------------------------------------------------------------------------------------------------------
 
-  //------------------------------------------------------------------------------------------------------------------
-  /**
-	 * function called to hide all the forecast for previus year except the last one
-	 */
-  //------------------------------------------------------------------------------------------------------------------
-  this.hideAllPreviousForecasts = function (){
+/**
+ * function called to hide all the forecast for previus year except the last one
+ * @param {object} sheet [optional] the sheet
+ * @return {void}
+ */
+ this.hideAllPreviousForecasts = function( sheet ) {
+ 	sheet = sheet || SpreadSheetCache.getActiveSheet();
+ 	var config = AmisNamedRanges.getCommodityNamedRanges().previousForecast;
 
-    //get the google sheet
-    var ss = SpreadSheetCache.getActiveSpreadsheet();
-    //TODO _ pay attention to multiple sheets
-    var sheet = ss.getActiveSheet();
-    var config=AmisNamedRanges.getCommodityNamedRanges().previousForecast;
+ 	ForecastUtility.hideOldForecasts( sheet.getRange( config.first ).getColumn(), sheet.getRange( config.last ).getColumn(), 1, sheet );
 
-    ForecastUtility.hideOldForecasts(sheet.getRange(config.first).getColumn(),sheet.getRange(config.last).getColumn(),1);
+ };
 
-  };
-  //------------------------------------------------------------------------------------------------------------------
-  // END -- function called to hide all the forecast for previus year except the last one
-  //------------------------------------------------------------------------------------------------------------------
 
-  //------------------------------------------------------------------------------------------------------------------
+
   /**
 	 * function called to hide all the forecast for previus year except the last one FOR SECRETARIAT
 	 */
