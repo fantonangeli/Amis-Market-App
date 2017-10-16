@@ -91,19 +91,23 @@ var LastDateUpdater=new function(){
 
     /**
      * reads the lastDateUpdaterRow from the named ranges
+     * @param {object} sheet [optional] the sheet
      * @return {string} the range in A1 format
      */
-    this.getLURowA1 = function() {
-    	return AmisNamedRanges.getCommodityNamedRanges().labelRowForLastDate.row;
-    };
+     this.getLURowA1 = function( sheet ) {
+     	sheet = ( sheet || SpreadSheetCache.getActiveSheet() );
+     	return AmisNamedRanges.getCommodityNamedRanges( sheet ).labelRowForLastDate.row;
+     };
 
-    /**
-     * reads the lastDateUpdaterRow from the named ranges
-     * @return {number} the row number
-     */
-    this.getLURow = function() {
-    	return parseInt( this.getLURowA1().split( ":" )[ 0 ], 10 );
-    };
+     /**
+      * reads the lastDateUpdaterRow from the named ranges
+      * @param {object} sheet [optional] the sheet
+      * @return {number} the row number
+      */
+     this.getLURow = function( sheet ) {
+     	sheet = ( sheet || SpreadSheetCache.getActiveSheet() );
+     	return parseInt( this.getLURowA1( sheet ).split( ":" )[ 0 ], 10 );
+     };
 
     /**
      * reads the lastDateRanges from the named ranges
