@@ -2,32 +2,38 @@ var ProtectionMaker = new function() {
 
 	/**
 	 * validate the current sheet, restore styles and formulas
+	 * @param  {array} sheetValues [optional] sheet's data
+	 * @param {object} spreadsheet [optional] the spreadsheet
+	 * @param {object} sheet [optional] the sheet
 	 * @return {void}
+	 * @throws {InvalidArgument}
 	 * @throws {JavaException} in case of non valid data in the sheet
 	 */
-	this.validateSheet = function() {
-		//Get the currently active sheet
-		var sheetValues = SpreadSheetCache.getActiveSheetValues();
+	 this.validateSheet = function( sheetValues, spreadsheet, sheet ) {
+	 	spreadsheet = ( spreadsheet || SpreadSheetCache.getActiveSpreadsheet() );
+	 	sheet = ( sheet || SpreadSheetCache.getActiveSheet() );
+	 	sheetValues = ( sheetValues || SpreadSheetCache.getActiveSheetValues() );
 
-		try {
-			if ( !Utility.isTemplate() && !Utility.isMaster() ) {
+	 	try {
+	 		if ( !Utility.isTemplate() && !Utility.isMaster() ) {
 
-				ProtectionMaker.checkIfValueIsNotProtected();
+	 			ProtectionMaker.checkIfValueIsNotProtected(spreadsheet, sheet);
 
-				//forecast methodologies on edit
-				ForecastingMethodologies.fixAllFMRanges( sheetValues );
-			}
-		} catch ( e ) {
-			var ex = e;
-			if ( ex instanceof JavaException ) {
-				Browser.msgBox( "Sheet error: " + ex.message );
-			} else {
-				Browser.msgBox( "There is a problem with the sheet. Please contact the administrator." );
-			}
+	 			//forecast methodologies on edit
+	 			ForecastingMethodologies.fixAllFMRanges( sheetValues );
+	 		}
+	 	} catch ( e ) {
+	 		var ex = e;
+	 		if ( ex instanceof JavaException ) {
+	 			Browser.msgBox( "Error in " + sheet.getName() + " sheet: " + ex.message );
+	 		} else {
+	 			Browser.msgBox( "There is a problem with the sheet. Please contact the administrator." );
+	 		}
 
-			throw e;
-		}
-	};
+	 		throw e;
+	 	}
+	 };
+
 
 
 	/**
@@ -39,66 +45,66 @@ var ProtectionMaker = new function() {
 	 * @throws {JavaException} in case of non valid data in the sheet
 	 * @throws {InvalidArgument}
 	 */
-	this.checkIfValueIsNotProtected = function(spreadsheet, sheet) {
+	 this.checkIfValueIsNotProtected = function(spreadsheet, sheet) {
 
 
-  	 	if ( !sheet || !spreadsheet ) {
-  	 		throw "InvalidArgument";
-  	 	}
+   	 	if ( !sheet || !spreadsheet ) {
+   	 		throw "InvalidArgument";
+   	 	}
 
-		var ss = sheet;
-        var rangeToBeRestored = Config.rangeOfRestoreSheetStyle;
+ 		var ss = sheet;
+         var rangeToBeRestored = Config.rangeOfRestoreSheetStyle;
 
 
-		ss.getRange( rangeToBeRestored ).setDataValidation( null );
+ 		ss.getRange( rangeToBeRestored ).setDataValidation( null );
 
-		//destroy eventually CONDITIONS FORMATTING COPIED AND PASTED
-		//e.range.clearFormat(); //commented because now with the validate button there isn't the event var
+ 		//destroy eventually CONDITIONS FORMATTING COPIED AND PASTED
+ 		//e.range.clearFormat(); //commented because now with the validate button there isn't the event var
 
-		var sheetName = ss.getName();
+ 		var sheetName = ss.getName();
 
-		var templateSheet = spreadsheet.getSheetByName( "Template_" + sheetName );
+ 		var templateSheet = spreadsheet.getSheetByName( "Template_" + sheetName );
 
-		var sheetValues = ss.getRange( rangeToBeRestored ).getValues();
-		//var sheetFormulas = ss.getRange(rangeToBeRestored).getFormulas();
+ 		var sheetValues = ss.getRange( rangeToBeRestored ).getValues();
+ 		//var sheetFormulas = ss.getRange(rangeToBeRestored).getFormulas();
 
-		var tmpDataValidation = templateSheet.getRange( rangeToBeRestored ).getDataValidations();
+ 		var tmpDataValidation = templateSheet.getRange( rangeToBeRestored ).getDataValidations();
 
-		var tmpFormulas = templateSheet.getRange( rangeToBeRestored ).getFormulas();
+ 		var tmpFormulas = templateSheet.getRange( rangeToBeRestored ).getFormulas();
 
-		var tmpValues = templateSheet.getRange( rangeToBeRestored ).getValues();
-		//var lenght=  tmpValues.length
-		var row;
+ 		var tmpValues = templateSheet.getRange( rangeToBeRestored ).getValues();
+ 		//var lenght=  tmpValues.length
+ 		var row;
 
-		//If user removes a column/row show a dialog with a message
-		if ( ( sheetValues.length !== tmpValues.length ) || ( sheetValues[ 0 ].length !== tmpValues[ 0 ].length ) ) {
-			throw "RowsOrColChanged";
-		}
+ 		//If user removes a column/row show a dialog with a message
+ 		if ( ( sheetValues.length !== tmpValues.length ) || ( sheetValues[ 0 ].length !== tmpValues[ 0 ].length ) ) {
+ 			throw "RowsOrColChanged";
+ 		}
 
-		for ( var r = tmpValues.length; r--; ) {
-			row = tmpValues[ r ];
-			for ( var c = row.length; c--; ) {
-				if ( row[ c ] != '' ) {
-					sheetValues[ r ][ c ] = row[ c ];
-				}
-				if ( tmpFormulas[ r ][ c ] != '' ) {
-					sheetValues[ r ][ c ] = tmpFormulas[ r ][ c ];
-				}
-			}
-		}
+ 		for ( var r = tmpValues.length; r--; ) {
+ 			row = tmpValues[ r ];
+ 			for ( var c = row.length; c--; ) {
+ 				if ( row[ c ] != '' ) {
+ 					sheetValues[ r ][ c ] = row[ c ];
+ 				}
+ 				if ( tmpFormulas[ r ][ c ] != '' ) {
+ 					sheetValues[ r ][ c ] = tmpFormulas[ r ][ c ];
+ 				}
+ 			}
+ 		}
 
-		//restore the style from hidden template
-		templateSheet.getRange( rangeToBeRestored ).copyTo( ss.getRange( rangeToBeRestored ), {
-			formatOnly: true
-		} );
+ 		//restore the style from hidden template
+ 		templateSheet.getRange( rangeToBeRestored ).copyTo( ss.getRange( rangeToBeRestored ), {
+ 			formatOnly: true
+ 		} );
 
-		//restore data validations
-		ss.getRange( rangeToBeRestored ).setDataValidations( tmpDataValidation );
+ 		//restore data validations
+ 		ss.getRange( rangeToBeRestored ).setDataValidations( tmpDataValidation );
 
-		//restore FORMULAS and VALUES not EDITABLE. Getvalues is needed to throw exception in case of non valid data in the sheet
-		ss.getRange( rangeToBeRestored ).setValues( sheetValues ).getValues();
+ 		//restore FORMULAS and VALUES not EDITABLE. Getvalues is needed to throw exception in case of non valid data in the sheet
+ 		ss.getRange( rangeToBeRestored ).setValues( sheetValues ).getValues();
 
-	};
+ 	};
 
 
 
