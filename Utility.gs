@@ -1,4 +1,4 @@
-Utility=new AmisLib.UtilityClass();
+Utility=new AmisLib.UtilityClass(Config.devMode);
 
 /**
  * open amis Sidebar

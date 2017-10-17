@@ -51,15 +51,15 @@ var SyncMasterSheet=new function(){
 			// if user wants to laod data
 			if (userChoise === 'yes' || userChoise === 'si') {
 
+				//Get the currently active sheet
+				var sheet = SpreadsheetApp.getActiveSheet();
 
 				//hide old forecasts leaving only the last one
-				ForecastUtility.hideAllPreviousForecasts(userToken);
+				ForecastUtility.hideAllPreviousForecasts(sheet);
 
 				//hide new frc unactive columns
 				//ForecastUtility.hideAllPeriodUnactiveColumns(userToken);
 
-				//Get the currently active sheet
-				var sheet = SpreadsheetApp.getActiveSheet();
 
 				//Get the currently active sheet
 				var sheetValues=SpreadSheetCache.getActiveSheetValues();
@@ -92,6 +92,7 @@ var SyncMasterSheet=new function(){
 
 			}
 		} catch (e) {
+			var ex=e;
 			if(e!=="Network401Error"){
 				Utility.sendErrorEmails(
 					"Firebase data wrong",
@@ -278,75 +279,89 @@ var SyncMasterSheet=new function(){
 	/**
 	 * get the sheetValues array and format all the last date dates
      * @param  {array} sheetValues all the data in the sheet. from first column to the last
+	 * @param {object} sheet [optional] the sheet
 	 * @return {array}             the sheetValues with the dates formatted
+	 * @throws {InvalidArgument}
 	 */
-	this.formatAllLastDate=function(sheetValues){
-		var labelRowForLastDateIndex, sheetValuesLURow,cell;
+	 this.formatAllLastDate = function( sheetValues, sheet ) {
+	 	if ( sheet === null ) {
+	 		throw "InvalidArgument";
+	 	}
 
-		labelRowForLastDateIndex=(LastDateUpdater.getLURow()-1);
+	 	sheet = ( sheet || SpreadSheetCache.getActiveSheet() );
+	 	var labelRowForLastDateIndex, sheetValuesLURow, cell;
 
-		sheetValuesLURow=sheetValues[labelRowForLastDateIndex];
+	 	labelRowForLastDateIndex = ( LastDateUpdater.getLURow( sheet ) - 1 );
 
-		for (var _i = 0, sheetValuesLURow_length=sheetValuesLURow.length; _i<sheetValuesLURow_length; _i++) {
-			cell=sheetValuesLURow[_i];
-			if(moment.isDate(cell)){
-				sheetValues[labelRowForLastDateIndex][_i]=moment(cell).format(Config.lastUpdatedDateDBFormat);
-			}
+	 	sheetValuesLURow = sheetValues[ labelRowForLastDateIndex ];
+
+	 	for ( var _i = 0, sheetValuesLURow_length = sheetValuesLURow.length; _i < sheetValuesLURow_length; _i++ ) {
+	 		cell = sheetValuesLURow[ _i ];
+	 		if ( moment.isDate( cell ) ) {
+	 			sheetValues[ labelRowForLastDateIndex ][ _i ] = moment( cell ).format( Config.lastUpdatedDateDBFormat );
+	 		}
+	 	}
+
+	 	return sheetValues;
+	 };
+
+	/**
+	 * validate and reads the data of a sheet for saving in firebase
+	 * @param  {object} spreadsheet the spreadsheet
+	 * @param  {object} sheet       the sheet
+	 * @param  {string} sheetName   sheet's name
+	 * @return {array}             array of data of the sheet rightly formatted
+	 * @throws {InvalidSheetData}
+	 */
+	this.startSyncSheet = function( spreadsheet, sheet, sheetName ) {
+		var sheetValues;
+
+		Logger.log( sheetName );
+
+		sheetValues = sheet.getDataRange().getValues();
+		ForecastUtility.hideAllPreviousForecasts( sheet );
+
+		try {
+			ProtectionMaker.validateSheet( sheetValues, spreadsheet, sheet );
+		} catch ( e ) {
+			var ex = e;
+			throw "InvalidSheetData";
 		}
+
+		sheetValues = SyncMasterSheet.formatAllLastDate( sheetValues );
+
+
+		//SyncMasterSheet.syncMasterSheet(sheetValues,userToken,baseOfSaveNode, sheet);
+		SyncMasterSheet.setLastUpdate( sheet );
 
 		return sheetValues;
 	};
 
-  /**
-	* Saving Sheet Data function
-    * @param  {string} auth token
-    * @throws {InvalidSheetData} in case of non valid data in the sheet
-  */
-  this.startSync=function(userToken) {
-	var sheetValues,fmRanges,currRange;
-    //SyncMasterSheet.deleteSavedData();
-    //SyncMasterSheet.moveRangesCols('AC:AC',1);
+	/**
+	 * Saving Sheet Data function
+	 * @param  {string} userToken auth token
+	 * @throws {InvalidSheetData} in case of non valid data in the sheet
+	 */
+	this.startSync = function( userToken ) {
+		var baseOfSaveNode, spreadsheet, spreadsheetData = {},
+			that = this;
 
-    //hide old forecasts leaving only the last one
-    ForecastUtility.hideAllPreviousForecasts(userToken);
-    //hide new frc unactive columns
-    //ForecastUtility.hideAllPeriodUnactiveColumns(userToken);
+		spreadsheet = SpreadSheetCache.getActiveSpreadsheet();
 
-	try {
-		ProtectionMaker.validateSheet();
-	} catch (e) {
-		throw "InvalidSheetData"
-	}
+		baseOfSaveNode = JSON.parse( SyncMasterSheet.getAbsoluteDataSheetPath( userToken ) ) + '/' + JSON.parse( SyncMasterSheet.getNodeToWriteData( userToken ) ).dataSheetNode;
 
-    var baseOfSaveNode;
+		Utility.forEachSheet( null, /^(?!Template).*$/, function( sheet, sheetName ) {
+			spreadsheetData[ sheetName.toLowerCase() ] = that.startSyncSheet( spreadsheet, sheet, sheetName );
+		} );
 
-    var rangeFromConfig= SyncMasterSheet.getRangeToBeStored();
-    fmRanges = ForecastingMethodologies.getFMRanges();
-
-	//Get the currently active sheet
-	sheetValues=SpreadSheetCache.getActiveSheetValues();
-
-	sheetValues=SyncMasterSheet.formatAllLastDate(sheetValues);
-
-	// for (var p=0; p<rangeFromConfig.length;p++){
-	// 	currRange=rangeFromConfig[p];
-	// 	sheetValues=SyncMasterSheet.getRangeValuesToBeStored(sheetValues,currRange, fmRanges);
-	// }
+		FirebaseConnector.writeOnFirebase( spreadsheetData, baseOfSaveNode, userToken );
 
 
-    baseOfSaveNode= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/'+ JSON.parse(SyncMasterSheet.getNodeToWriteData(userToken)).dataSheetNode+ '/' + FirebaseConnector.getCommodityName();
-    SyncMasterSheet.syncMasterSheet(sheetValues,userToken,baseOfSaveNode);
-
-    // var commodityName = FirebaseConnector.getCommodityName();
+		Utility.toastInfo( 'Data successfully saved to the AMIS database', 'DATA SAVED' );
+	};
 
 
-    // var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);
 
-    Utility.toastInfo('Data successfully saved to the AMIS database', 'DATA SAVED');
-
-    //protect again the sheet
-    //ProtectRanges.protectCell(userToken);
-};
 
   /**
   * Saving Sheet Data function FOR SECRETARIET
@@ -385,18 +400,17 @@ var SyncMasterSheet=new function(){
     Utility.toastInfo('Data successfully saved to the AMIS database', 'DATA SAVED');
 };
 
-  //---------------------------------------------------------
   /**
   * logic for saving Excel on firebase
   *  @param  excel data
   *  @param  {string} auth token
+  *  @deprecated in favour of the new 'save all' system
   */
-  //---------------------------------------------------------
-  this.syncMasterSheet=function(excelData,userToken, saveNode) {
+  this.syncMasterSheet=function(excelData,userToken, saveNode, sheet) {
 
     FirebaseConnector.writeOnFirebase(excelData,saveNode,userToken);
 
-    SyncMasterSheet.setLastUpdate(userToken);
+    SyncMasterSheet.setLastUpdate(sheet);
 
 
 
@@ -453,14 +467,24 @@ var SyncMasterSheet=new function(){
 	  return Utility.getGoogleSheetID();
   };
 
-  this.setLastUpdate = function(){
-        var sheet = SpreadSheetCache.getActiveSheet();
-        var date = new Date();
+  /**
+   * set the current date to the lastUpdateCell in the sheet
+   * @param {object} sheet [optional] the sheet
+   * @return {void}
+   * @throws {InvalidArgument}
+   */
+   this.setLastUpdate = function( sheet ) {
+   	if ( sheet === null ) {
+   		throw "InvalidArgument";
+   	}
 
-        var lastUpdateCell= AmisNamedRanges.getCommodityNamedRanges().lastUpdateCell.cell;
+   	sheet = ( sheet || SpreadSheetCache.getActiveSheet() );
+   	var date = new Date();
 
-        sheet.getRange(lastUpdateCell).setValue(date);
-    };
+   	var lastUpdateCell = AmisNamedRanges.getCommodityNamedRanges().lastUpdateCell.cell;
+
+   	sheet.getRange( lastUpdateCell ).setValue( date );
+   };
 
 
 

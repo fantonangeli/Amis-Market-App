@@ -20,14 +20,14 @@ var ProtectionMaker = new function() {
 	 			ProtectionMaker.checkIfValueIsNotProtected(spreadsheet, sheet);
 
 	 			//forecast methodologies on edit
-	 			ForecastingMethodologies.fixAllFMRanges( sheetValues );
+	 			ForecastingMethodologies.fixAllFMRanges( sheetValues,sheet );
 	 		}
 	 	} catch ( e ) {
 	 		var ex = e;
 	 		if ( ex instanceof JavaException ) {
 	 			Browser.msgBox( "Error in " + sheet.getName() + " sheet: " + ex.message );
 	 		} else {
-	 			Browser.msgBox( "There is a problem with the sheet. Please contact the administrator." );
+	 			Browser.msgBox( "There is a problem with the sheet " + sheet.getName() + ". Please contact the administrator." );
 	 		}
 
 	 		throw e;
