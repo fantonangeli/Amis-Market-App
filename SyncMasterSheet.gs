@@ -315,15 +315,14 @@ var SyncMasterSheet=new function(){
 	 * @throws {InvalidSheetData} in case of non valid data in the sheet
 	 */
 	this.startSync = function( userToken ) {
-		var baseOfSaveNode, spreadsheet, spreadsheetData = {},
-			that = this;
+		var baseOfSaveNode, spreadsheet, spreadsheetData = {};
 
 		spreadsheet = SpreadSheetCache.getActiveSpreadsheet();
 
 		baseOfSaveNode = JSON.parse( SyncMasterSheet.getAbsoluteDataSheetPath( userToken ) ) + '/' + JSON.parse( SyncMasterSheet.getNodeToWriteData( userToken ) ).dataSheetNode;
 
 		Utility.forEachSheet( null, /^(?!Template).*$/, function( sheet, sheetName ) {
-			spreadsheetData[ sheetName.toLowerCase() ] = that.startSyncSheet( spreadsheet, sheet, sheetName );
+			spreadsheetData[ sheetName.toLowerCase() ] = SyncMasterSheet.startSyncSheet( spreadsheet, sheet, sheetName );
 		} );
 
 		FirebaseConnector.writeOnFirebase( spreadsheetData, baseOfSaveNode, userToken );

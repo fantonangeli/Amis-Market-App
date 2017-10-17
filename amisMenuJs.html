@@ -56,18 +56,18 @@
          //this protect the sheet and avoid script error
          google.script.run.withSuccessHandler(hideLoadingDiv).LIB_FUNC( "AmisMarketApp.protectSheet");
        };
-       
+
        hideLoadingWithLoadData = function() {
          //this protect the sheet and avoid script error
          google.script.run.withSuccessHandler(hideLoading).LIB_FUNC( "AmisMarketApp.SyncMasterSheet.startFetchMaster",'',true, $( "#countryName" ).val(),false);
        };
-       
+
          hideLoadingWithDeleteData = function() {
          //this protect the sheet and avoid script error
          google.script.run.withSuccessHandler(hideLoading).LIB_FUNC( "AmisMarketApp.SyncMasterSheet.startFetchMaster",'',true, $( "#countryName" ).val(),true);
        };
-       
-       
+
+
 
        /**
         * hide the loading spinner
@@ -210,9 +210,10 @@
       }
 
       /**
-       * save all the data in the current sheet to firebase
+       * save all the data in all sheets to firebase
+       * @return {void}
        */
-      function saveSheet() {
+      function saveAllSheet() {
           showLoading(["Saving data", "Sending data to the database", "Synchronizing the sheet"]);
           google.script.run
             .withSuccessHandler(hideLoading)
@@ -220,7 +221,7 @@
                 if (error.message==="InvalidSheetData") {
                     hideLoading();
                 } else {
-                    googleScriptRunFailureHandler(saveSheet)(error);
+                    googleScriptRunFailureHandler(saveAllSheet)(error);
                 }
             } )
             .LIB_FUNC( "AmisMarketApp.SyncMasterSheet.startSync", userToken );
@@ -347,7 +348,7 @@
            });
 
            //binding SAVE function with AMIS MARKET API
-           $( "#buttonSave" ).click(saveSheet);
+           $( "#buttonSave" ).click(saveAllSheet);
 
            $("#buttonVerify").click(verifySheet);
 
