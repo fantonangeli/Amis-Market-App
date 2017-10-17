@@ -96,7 +96,7 @@ var LastDateUpdater=new function(){
      */
      this.getLURowA1 = function( sheet ) {
      	sheet = ( sheet || SpreadSheetCache.getActiveSheet() );
-     	return AmisNamedRanges.getCommodityNamedRanges( sheet ).labelRowForLastDate.row;
+     	return AmisNamedRanges.getCommodityNamedRangesBySheet( sheet ).labelRowForLastDate.row;
      };
 
      /**

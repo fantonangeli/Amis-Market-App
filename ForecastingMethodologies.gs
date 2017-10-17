@@ -54,7 +54,7 @@ var ForecastingMethodologies = new( function() {
 
 	 	sheet = ( sheet || SpreadSheetCache.getActiveSheet() );
 
-	 	var ranges = AmisNamedRanges.getCommodityNamedRanges( sheet ).fm;
+	 	var ranges = AmisNamedRanges.getCommodityNamedRangesBySheet( sheet ).fm;
 
 	 	return ranges;
 	 };

@@ -56,11 +56,22 @@ AmisNamedRanges=new function() {
 
 	/**
 	 * return all namedRanges of the current commodity
+	 * @param {string} commodityName the commodity name
+	 * @return {object} an object representing the named ranges: {type: [index]}
+	 */
+	this.getCommodityNamedRanges=function(commodityName){
+		commodityName = commodityName || FirebaseConnector.getCommodityName();
+
+		return this.getAllNamedRanges()[commodityName];
+	};
+
+	/**
+	 * return all namedRanges of the current commodity
 	 * @param {object} sheet [optional] the sheet
 	 * @return {object} an object representing the named ranges: {type: [index]}
 	 * @throws {InvalidArgument}
 	 */
-	 this.getCommodityNamedRanges = function( sheet ) {
+	 this.getCommodityNamedRangesBySheet = function( sheet ) {
 	 	if ( sheet === null ) {
 	 		throw "InvalidArgument";
 	 	}
@@ -69,9 +80,7 @@ AmisNamedRanges=new function() {
 
 	 	var commodityName = FirebaseConnector.getCommodityName( sheet );
 
-	 	var namedRanges = this.getAllNamedRanges()[ commodityName ];
-
-	 	return namedRanges;
+	 	return this.getCommodityNamedRanges(commodityName);
 	 };
 
 
