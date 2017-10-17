@@ -9,9 +9,9 @@ var SyncMasterSheet=new function(){
 	 */
 	 this.lastDatefetcher=function(fbData, sheetValues, chosenSheet, isReset){
  		var labelRowForLastDateIndex,fbDataLURow,cell, sheetDate,range;
-       
-        labelRowForLastDateIndex=(LastDateUpdater.getLURow(chosenSheet.getName().toLowerCase())-1); 
-       
+
+        labelRowForLastDateIndex=(LastDateUpdater.getLURow(chosenSheet)-1);
+
  		chosenSheet = chosenSheet || SpreadSheetCache.getActiveSheet();
 
  		fbDataLURow=fbData[labelRowForLastDateIndex];
@@ -26,15 +26,15 @@ var SyncMasterSheet=new function(){
  			sheetDate=moment(sheetValues[labelRowForLastDateIndex][_i]).format(Config.lastUpdatedDateDBFormat);
 
 
-          
-          
+
+
  			//if fb cell different to sheetcell
  			if(cell!==sheetDate){
-                            
+
                 range=chosenSheet.getRange(labelRowForLastDateIndex+1, _i+1);
                 range.setValue(cell);
-                range.setNumberFormat(Config.lastUpdatedDateSheetFormat);              
- 				
+                range.setNumberFormat(Config.lastUpdatedDateSheetFormat);
+
             }else if(isReset){
                range=chosenSheet.getRange(labelRowForLastDateIndex+1, _i+1);
                range.setValue('');
@@ -73,7 +73,7 @@ var SyncMasterSheet=new function(){
 				//Get the currently active sheet
 				var sheetValues=SpreadSheetCache.getActiveSheetValues();
 
-				var rangeFromConfig= SyncMasterSheet.getRangeToBeStored(userToken);
+				var rangeFromConfig= SyncMasterSheet.getRangeToBeStored();
 
 				var fbData, fireBaseValues, baseOfSaveNode= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/'+ JSON.parse(SyncMasterSheet.getNodeToWriteData(userToken)).dataSheetNode+ '/' + FirebaseConnector.getCommodityName();
 
@@ -131,8 +131,8 @@ var SyncMasterSheet=new function(){
             SyncMasterSheet.startFetchLoadAllData(userToken, forceload, sheet, isReset, countrySelected);
         });
       }
-      
-      
+
+
       /**
 	    * Get the ALL data from firebase for each commodities by country
         * @param  {string} userToken auth token
@@ -154,50 +154,50 @@ var SyncMasterSheet=new function(){
 		try {
 			// if user wants to laod data
 			if (userChoise === 'yes' || userChoise === 'si') {
-              
+
                 //we take only NOT TEMPLATE_ sheets
-                if(sheet.getSheetName().indexOf(Config.templatePrefix)){                                    
-                  
+                if(sheet.getSheetName().indexOf(Config.templatePrefix)){
+
                   //Get the currently active sheet
                   var sheetValues=sheet.getSheetValues(1, 1, sheet.getLastRow(),sheet.getLastColumn());
-                  
+
                   var rangeFromConfig= SyncMasterSheet.getRangeToBeStored(sheetName);
-                  
+
                   var fbData, fireBaseValues, baseOfSaveNode= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/'+ countrySelected+'Data'+ '/' + sheet.getSheetName().toLowerCase();
-                  
+
                   fbData=FirebaseConnector.getFireBaseDataParsed(baseOfSaveNode, userToken);
-                  
+
                   //get lastDateUpdaterRow
                   SyncMasterSheet.lastDatefetcher(fbData, sheetValues, sheet, isReset);
-                  
+
                   //get all range to be stored
                   if (fbData) {
                     for (var i=0; i<rangeFromConfig.length;i++){
-                      
+
                       //get Firebase node name to be fetch
                       fireBaseValues=Utility.getRangeValuesFromArray(fbData, rangeFromConfig[i]);
-                      
+
                       //if data note IS NOT EMPTY
                       if(fireBaseValues){
                         //if isreset...empty all data
                         if(isReset){
                           sheet.getRange(rangeFromConfig[i]).setValue('');
                         }
-                        else{  
+                        else{
                           //set value into cells
                           sheet.getRange(rangeFromConfig[i]).setValues(fireBaseValues);
                         }
                       }
                     }
                   }
-                  
+
                   Utility.toastInfo('Data successfully loaded to the AMIS database', 'DATA LOADED');
-                  
+
                 }
-                  
-                
-          
-              
+
+
+
+
 
 			}
 		} catch (e) {

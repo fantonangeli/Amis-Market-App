@@ -121,7 +121,7 @@ var ForecastingMethodologies = new( function() {
 	 	sheet = ( sheet || SpreadSheetCache.getActiveSheet() );
 	 	var fmRanges;
 
-	 	fmRanges = this.getFMRanges();
+	 	fmRanges = this.getFMRanges(sheet);
 
 	 	for ( var i = 0, fmRanges_length = fmRanges.length, range; i < fmRanges_length; i++ ) {
 	 		range = fmRanges[ i ];
