@@ -127,10 +127,10 @@ var SyncMasterSheet=new function(){
 	  */
       this.startFetchMaster=function(userToken, forceload,countrySelected, isReset) {
         Utility.forEachSheet(null, /^[A-Za-z]+$/, function(sheet, sheetName){
-            //in the call back we load data for all the commodities
-            SyncMasterSheet.startFetchLoadAllData(userToken, forceload, sheet, isReset, countrySelected);
+			//in the call back we load data for all the commodities
+			SyncMasterSheet.startFetchLoadAllData(userToken, forceload, sheet, isReset, countrySelected);
         });
-      }
+		};
 
 
       /**
@@ -139,6 +139,7 @@ var SyncMasterSheet=new function(){
         * @param  {bool} forceload (default false) if true doesn't ask the user for loading data
         * @param  {string} the country selected
         * @param  {bool} true=clear data , false = set data
+        * @throws {InvalidFirebaseData}
 	  */
 	  this.startFetchLoadAllData=function(userToken, forceload,sheet, isReset, countrySelected) {
         userToken= userToken || FirebaseConnector.getToken();
@@ -166,6 +167,12 @@ var SyncMasterSheet=new function(){
                   var fbData, fireBaseValues, baseOfSaveNode= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/'+ countrySelected+'Data'+ '/' + sheet.getSheetName().toLowerCase();
 
                   fbData=FirebaseConnector.getFireBaseDataParsed(baseOfSaveNode, userToken);
+
+				  //exception if firebase data has not the same size of the sheet
+				  if (!isReset && ((!fbData) || (fbData.length!==sheetValues.length) || (fbData[0].length!==sheetValues[0].length))) {
+				  	Browser.msgBox("Firebase data has not the same size of the sheet "+sheetName);
+					throw "InvalidFirebaseData";
+				  }
 
                   //get lastDateUpdaterRow
                   SyncMasterSheet.lastDatefetcher(fbData, sheetValues, sheet, isReset);
@@ -210,10 +217,8 @@ var SyncMasterSheet=new function(){
 					"Internal error reading the data from the AMIS database.\\n"+
 					"The AMIS administrator has been notified.\\n"+
 					"You can contact them directly on amis-outlook@gmail.com");
-			}else{
-				//pass the error to the sidebar
-				throw e;
 			}
+			throw e;
 		}
 	}
 
