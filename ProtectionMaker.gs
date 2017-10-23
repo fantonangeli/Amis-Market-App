@@ -15,7 +15,7 @@ var ProtectionMaker = new function() {
 	 	sheetValues = ( sheetValues || SpreadSheetCache.getActiveSheetValues() );
 
 	 	try {
-	 		if ( !Utility.isTemplate() && !Utility.isMaster() ) {
+	 		if ( !Utility.isTemplate()  ) {
 
 	 			ProtectionMaker.checkIfValueIsNotProtected(spreadsheet, sheet);
 

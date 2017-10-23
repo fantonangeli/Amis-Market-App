@@ -126,9 +126,11 @@ var SyncMasterSheet=new function(){
         * @param  {bool} true=clear data , false = set data
 	  */
       this.startFetchMaster=function(userToken, forceload,countrySelected, isReset) {
+		var spreadsheet = SpreadSheetCache.getActiveSpreadsheet();
+
         Utility.forEachSheet(null, /^[A-Za-z]+$/, function(sheet, sheetName){
 			//in the call back we load data for all the commodities
-			SyncMasterSheet.startFetchLoadAllData(userToken, forceload, sheet, isReset, countrySelected);
+			SyncMasterSheet.startFetchLoadAllData(userToken, forceload, spreadsheet, sheet, sheetName, isReset, countrySelected);
         });
 		};
 
@@ -137,16 +139,23 @@ var SyncMasterSheet=new function(){
 	    * Get the ALL data from firebase for each commodities by country
         * @param  {string} userToken auth token
         * @param  {bool} forceload (default false) if true doesn't ask the user for loading data
-        * @param  {string} the country selected
-        * @param  {bool} true=clear data , false = set data
+		* @param {object} spreadsheet [optional] the spreadsheet
+   	 	* @param {object} sheet [optional] the sheet
+   	 	* @param  {string} sheetName   sheet's name*
+        * @param  {bool} isReset rue=clear data , false = set data
+		* @param  {string} countrySelected the country selected
+		* @return {void}
         * @throws {InvalidFirebaseData}
 	  */
-	  this.startFetchLoadAllData=function(userToken, forceload,sheet, isReset, countrySelected) {
+	  this.startFetchLoadAllData=function(userToken, forceload, spreadsheet, sheet, sheetName, isReset, countrySelected) {
         userToken= userToken || FirebaseConnector.getToken();
 	    forceload=(forceload || false);
         countrySelected = countrySelected || FirebaseConnector.getCountryNameFromSheet(userToken);
+		spreadsheet = spreadsheet || SpreadSheetCache.getActiveSpreadsheet();
 		var userChoise="yes";
-        var sheetName= sheet.getName().toLowerCase();
+        //var sheetName= sheet.getName().toLowerCase();
+        sheetName=sheetName.toLowerCase();
+
 
 		if (!forceload) {
 			userChoise = Browser.msgBox('DISCARD CHANGES', 'Discard your edits and overwrite the sheet with the data from the AMIS database?', Browser.Buttons.YES_NO);
@@ -197,6 +206,10 @@ var SyncMasterSheet=new function(){
                       }
                     }
                   }
+
+				  ProtectionMaker.validateSheet(sheetValues, spreadsheet, sheet);
+
+				  ForecastUtility.hideAllPreviousForecasts(sheet);
 
                   Utility.toastInfo('Data successfully loaded to the AMIS database', 'DATA LOADED');
 
