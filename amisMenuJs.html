@@ -187,8 +187,33 @@
            		var email = error.email;
            		// The firebase.auth.AuthCredential type that was used.
            		var credential = error.credential;
-           		// ...
+
+                var debugMailMsg=
+                "Google Login failed <br>"+
+                "<b>errorCode</b>: " + error.code+"<br>"+
+           		"<b>errorMessage</b>: " + error.message+"<br>"+
+           		"<b>email</b>: " + error.email+"<br>"+
+           		"<b>credential</b>: " + error.credential;
+
+                debugEmail(debugMailMsg);
+
            	} );
+       }
+
+       /**
+        * send a debug email with as much as info as possible
+        * @param  {string} msg detail to add to the email
+        * @return {void}
+        */
+       function debugEmail(msg) {
+           var emailMsg="";
+
+           emailMsg=msg+"<br>"+
+            "<b>User agent</b>: "+navigator.userAgent+"<br>"+
+            "<b>Sidebar Stacktrace</b>: "+(new Error()).stack;
+
+
+           google.script.run.LIB_FUNC( "AmisMarketApp.Utility.sendErrorEmails", emailMsg);
        }
 
 

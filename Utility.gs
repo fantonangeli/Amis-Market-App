@@ -1,4 +1,4 @@
-Utility=new AmisLib.UtilityClass(Config.devMode);
+Utility=new AmisLib.UtilityClass(Config.devMode, Config.errorEmail);
 
 /**
  * open amis Sidebar
