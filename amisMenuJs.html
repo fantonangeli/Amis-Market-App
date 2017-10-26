@@ -179,7 +179,7 @@
                 }
 
            		//alert("User "+error.email+" is not authorized!");
-                google.script.run.LIB_FUNC( "AmisMarketApp.Utility.popUpAlert",'Please ensure that popup lock is DISABLED. Then try again.');
+                google.script.run.LIB_FUNC( "AmisMarketApp.Utility.popUpAlert",'Something went wrong with the login or the network doen\'t work.\\nPlease ensure that popup lock is DISABLED. Then try again.');
            		// Handle Errors here.
            		var errorCode = error.code;
            		var errorMessage = error.message;
