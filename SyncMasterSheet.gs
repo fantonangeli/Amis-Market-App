@@ -43,184 +43,135 @@ var SyncMasterSheet=new function(){
  		}
  	};
 
-	  /**
-	    * Get the data from firebase
-        * @param  {string} userToken auth token
-        * @param  {bool} forceload (default false) if true doesn't ask the user for loading data
-	  */
-	  this.startFetch=function(userToken, forceload) {
-		  forceload=(forceload || false);
-		var userChoise="yes";
+	/**
+	 * show a confirm message to the user to ask confirmation to discard sheet data
+	 * @return {bool}           true if user said yes, false otherwise
+	 */
+	this.fetchConfirmMsg = function() {
+		var userChoise = "yes";
 
-		if (!forceload) {
-			userChoise = Browser.msgBox('DISCARD CHANGES', 'Discard your edits and overwrite the sheet with the data from the AMIS database?', Browser.Buttons.YES_NO);
+		userChoise = Browser.msgBox( 'DISCARD CHANGES', 'Discard your edits and overwrite the sheet with the data from the AMIS database?', Browser.Buttons.YES_NO );
+
+		return ( userChoise === "yes" );
+	};
+
+	/**
+	 * Get the data from firebase
+	 * @param  {string} userToken auth token
+	 * @param  {bool} forceload (default false) if true doesn't ask the user for loading data
+	 */
+	this.startFetch = function( userToken, forceload ) {
+		var spreadsheet, country;
+
+		spreadsheet = SpreadSheetCache.getActiveSpreadsheet();
+		country = FirebaseConnector.getCountryNameFromSheet( userToken );
+
+		if ( ( forceload !== true ) && ( !SyncMasterSheet.fetchConfirmMsg() ) ) {
+			return;
 		}
 
-		try {
-			// if user wants to laod data
-			if (userChoise === 'yes' || userChoise === 'si') {
-
-				//Get the currently active sheet
-				var sheet = SpreadsheetApp.getActiveSheet();
-
-				//hide old forecasts leaving only the last one
-				ForecastUtility.hideAllPreviousForecasts(sheet);
-
-				//hide new frc unactive columns
-				//ForecastUtility.hideAllPeriodUnactiveColumns(userToken);
-
-
-				//Get the currently active sheet
-				var sheetValues=SpreadSheetCache.getActiveSheetValues();
-
-				var rangeFromConfig= SyncMasterSheet.getRangeToBeStored();
-
-				var fbData, fireBaseValues, baseOfSaveNode= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/'+ JSON.parse(SyncMasterSheet.getNodeToWriteData(userToken)).dataSheetNode+ '/' + FirebaseConnector.getCommodityName();
-
-				fbData=FirebaseConnector.getFireBaseDataParsed(baseOfSaveNode, userToken);
-
-				//get lastDateUpdaterRow
-				SyncMasterSheet.lastDatefetcher(fbData, sheetValues);
-
-				//get all range to be stored
-				if (fbData) {
-					for (var i=0; i<rangeFromConfig.length;i++){
-
-						//get Firebase node name to be fetch
-						fireBaseValues=Utility.getRangeValuesFromArray(fbData, rangeFromConfig[i]);
-
-						//if data note IS NOT EMPTY
-						if(fireBaseValues){
-							//set value into cells
-							sheet.getRange(rangeFromConfig[i]).setValues(fireBaseValues);
-						}
-					}
-				}
-
-				Utility.toastInfo('Data successfully loaded to the AMIS database', 'DATA LOADED');
-
-			}
-		} catch (e) {
-			var ex=e;
-			if(e!=="Network401Error"){
-				Utility.sendErrorEmails(
-					"Firebase data wrong",
-					Config.errorEmail
-				);
-				Browser.msgBox(
-					"Internal error reading the data from the AMIS database.\\n"+
-					"The AMIS administrator has been notified.\\n"+
-					"You can contact them directly on amis-outlook@gmail.com");
-			}else{
-				//pass the error to the sidebar
-				throw e;
-			}
-		}
-	}
-
-        /**
-	    * Fetch or delete all data for the master template, for a chosen country (loop all the sheet of a spreadsheet)
-        * @param  {string} userToken auth token
-        * @param  {bool} forceload (default false) if true doesn't ask the user for loading data
-        * @param  {string} the country selected
-        * @param  {bool} true=clear data , false = set data
-	  */
-      this.startFetchMaster=function(userToken, forceload,countrySelected, isReset) {
-		var spreadsheet = SpreadSheetCache.getActiveSpreadsheet();
-
-        Utility.forEachSheet(null, /^[A-Za-z]+$/, function(sheet, sheetName){
+		Utility.forEachSheet( null, /^[A-Za-z]+$/, function( sheet, sheetName ) {
 			//in the call back we load data for all the commodities
-			SyncMasterSheet.startFetchLoadAllData(userToken, forceload, spreadsheet, sheet, sheetName, isReset, countrySelected);
-        });
-		};
+			SyncMasterSheet.startFetchLoadAllData( userToken, spreadsheet, sheet, sheetName, false, country );
+		} );
+
+		Utility.toastInfo( 'Data successfully loaded from the AMIS database', 'DATA SAVED' );
+
+	};
+
+	/**
+	 * Fetch or delete all data for the master template, for a chosen country (loop all the sheet of a spreadsheet)
+	 * @param  {string} userToken auth token
+	 * @param  {bool} forceload (default false) if true doesn't ask the user for loading data
+	 * @param  {string} the country selected
+	 * @param  {bool} true=clear data , false = set data
+	 */
+	this.startFetchMaster = function( userToken, forceload, countrySelected, isReset ) {
+		var spreadsheet;
+
+		spreadsheet = SpreadSheetCache.getActiveSpreadsheet();
+
+		if ( ( forceload !== true ) && ( !SyncMasterSheet.fetchConfirmMsg() ) ) {
+			return;
+		}
+
+		Utility.forEachSheet( null, /^[A-Za-z]+$/, function( sheet, sheetName ) {
+			//in the call back we load data for all the commodities
+			SyncMasterSheet.startFetchLoadAllData( userToken, spreadsheet, sheet, sheetName, isReset, countrySelected );
+		} );
+
+		Utility.toastInfo( 'Data successfully loaded from the AMIS database', 'DATA SAVED' );
+	};
 
 
       /**
 	    * Get the ALL data from firebase for each commodities by country
         * @param  {string} userToken auth token
-        * @param  {bool} forceload (default false) if true doesn't ask the user for loading data
 		* @param {object} spreadsheet [optional] the spreadsheet
    	 	* @param {object} sheet [optional] the sheet
    	 	* @param  {string} sheetName   sheet's name*
-        * @param  {bool} isReset rue=clear data , false = set data
+        * @param  {bool} isReset true=clear data , false = set data
 		* @param  {string} countrySelected the country selected
 		* @return {void}
         * @throws {InvalidFirebaseData}
 	  */
-	  this.startFetchLoadAllData=function(userToken, forceload, spreadsheet, sheet, sheetName, isReset, countrySelected) {
+	  this.startFetchLoadAllData=function(userToken, spreadsheet, sheet, sheetName, isReset, countrySelected) {
         userToken= userToken || FirebaseConnector.getToken();
-	    forceload=(forceload || false);
         countrySelected = countrySelected || FirebaseConnector.getCountryNameFromSheet(userToken);
 		spreadsheet = spreadsheet || SpreadSheetCache.getActiveSpreadsheet();
-		var userChoise="yes";
         //var sheetName= sheet.getName().toLowerCase();
         sheetName=sheetName.toLowerCase();
 
-
-		if (!forceload) {
-			userChoise = Browser.msgBox('DISCARD CHANGES', 'Discard your edits and overwrite the sheet with the data from the AMIS database?', Browser.Buttons.YES_NO);
-		}
-
 		try {
-			// if user wants to laod data
-			if (userChoise === 'yes' || userChoise === 'si') {
+			//we take only NOT TEMPLATE_ sheets
+			if(sheet.getSheetName().indexOf(Config.templatePrefix)){
 
-                //we take only NOT TEMPLATE_ sheets
-                if(sheet.getSheetName().indexOf(Config.templatePrefix)){
+			  //Get the currently active sheet
+			  var sheetValues=sheet.getSheetValues(1, 1, sheet.getLastRow(),sheet.getLastColumn());
 
-                  //Get the currently active sheet
-                  var sheetValues=sheet.getSheetValues(1, 1, sheet.getLastRow(),sheet.getLastColumn());
+			  var rangeFromConfig= SyncMasterSheet.getRangeToBeStored(sheetName);
 
-                  var rangeFromConfig= SyncMasterSheet.getRangeToBeStored(sheetName);
+			  var fbData, fireBaseValues, baseOfSaveNode= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/'+ countrySelected+'Data'+ '/' + sheet.getSheetName().toLowerCase();
 
-                  var fbData, fireBaseValues, baseOfSaveNode= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/'+ countrySelected+'Data'+ '/' + sheet.getSheetName().toLowerCase();
+			  fbData=FirebaseConnector.getFireBaseDataParsed(baseOfSaveNode, userToken);
 
-                  fbData=FirebaseConnector.getFireBaseDataParsed(baseOfSaveNode, userToken);
+			  //exception if firebase data has not the same size of the sheet
+			  if (!isReset && ((!fbData) || (fbData.length!==sheetValues.length) || (fbData[0].length!==sheetValues[0].length))) {
+				Browser.msgBox("Firebase data has not the same size of the sheet "+sheetName);
+				throw "InvalidFirebaseData";
+			  }
 
-				  //exception if firebase data has not the same size of the sheet
-				  if (!isReset && ((!fbData) || (fbData.length!==sheetValues.length) || (fbData[0].length!==sheetValues[0].length))) {
-				  	Browser.msgBox("Firebase data has not the same size of the sheet "+sheetName);
-					throw "InvalidFirebaseData";
+			  ProtectionMaker.validateSheet(sheetValues, spreadsheet, sheet);
+
+			  //get lastDateUpdaterRow
+			  SyncMasterSheet.lastDatefetcher(fbData, sheetValues, sheet, isReset);
+
+			  //get all range to be stored
+			  if (fbData) {
+				for (var i=0; i<rangeFromConfig.length;i++){
+
+				  //get Firebase node name to be fetch
+				  fireBaseValues=Utility.getRangeValuesFromArray(fbData, rangeFromConfig[i]);
+
+				  //if data note IS NOT EMPTY
+				  if(fireBaseValues){
+					//if isreset...empty all data
+					if(isReset){
+					  sheet.getRange(rangeFromConfig[i]).setValue('');
+					}
+					else{
+					  //set value into cells
+					  sheet.getRange(rangeFromConfig[i]).setValues(fireBaseValues);
+					}
 				  }
+				}
+			  }
 
-                  //get lastDateUpdaterRow
-                  SyncMasterSheet.lastDatefetcher(fbData, sheetValues, sheet, isReset);
-
-                  //get all range to be stored
-                  if (fbData) {
-                    for (var i=0; i<rangeFromConfig.length;i++){
-
-                      //get Firebase node name to be fetch
-                      fireBaseValues=Utility.getRangeValuesFromArray(fbData, rangeFromConfig[i]);
-
-                      //if data note IS NOT EMPTY
-                      if(fireBaseValues){
-                        //if isreset...empty all data
-                        if(isReset){
-                          sheet.getRange(rangeFromConfig[i]).setValue('');
-                        }
-                        else{
-                          //set value into cells
-                          sheet.getRange(rangeFromConfig[i]).setValues(fireBaseValues);
-                        }
-                      }
-                    }
-                  }
-
-				  ProtectionMaker.validateSheet(sheetValues, spreadsheet, sheet);
-
-				  ForecastUtility.hideAllPreviousForecasts(sheet);
-
-                  Utility.toastInfo('Data successfully loaded to the AMIS database', 'DATA LOADED');
-
-                }
-
-
-
-
+			  ForecastUtility.hideAllPreviousForecasts(sheet);
 
 			}
 		} catch (e) {
+			var ex=e;
 			if(e!=="Network401Error"){
 				Utility.sendErrorEmails(
 					"Firebase data wrong",

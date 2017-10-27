@@ -42,7 +42,6 @@
             </div>
        </div>
    <br/>
-   <br/>
 
     <div class="" id="devToolbar" <?= (devMode)?"":"hidden" ?> >
            <button onclick="loginWithGoogle()">loginWithGoogle()</button>
@@ -145,6 +144,22 @@
             <br>
         </div>
 
+        <div>
+            <div class="row">
+                <div class="col-xs-12 text-left">
+                    Undo changes and load data from the AMIS database:
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-xs-12 text-right">
+                    <button id="buttonFetch" class="btn btn-primary btn-lg">Undo <i class="mdi mdi-undo-variant"></i></button>
+                </div>
+            </div>
+            <br>
+            <br>
+        </div>
+
         <div class="row">
             <div class="col-xs-12 text-left">
                 Save data to the AMIS database:
@@ -156,24 +171,7 @@
                 <button id="buttonSave" class="btn btn-primary btn-lg">Save <i class="mdi mdi-cloud-upload"></i></button>
         	</div>
         </div>
-        <br>
-        <br>
 
-        <!-- <div class="isSecretariat" style="display:none">
-            <div class="row">
-                <div class="col-xs-12 text-left">
-                    Discard changes and load data from the AMIS database:
-                </div>
-            </div>
-            <br>
-            <div class="row">
-                <div class="col-xs-12 text-right">
-                    <button id="buttonFetch" class="btn btn-primary btn-lg">Discard <i class="mdi mdi-undo-variant"></i></button>
-                </div>
-            </div>
-            <br>
-            <br>
-        </div> -->
         <div class="">
             <div class="row">
                 <div class="col-xs-12 text-left">
