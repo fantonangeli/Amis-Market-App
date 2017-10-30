@@ -26,31 +26,35 @@
    </head>
 
    <body>
+   <div class="container">
        <div class="row">
-           <div class="col-xs-4 text-center">
-               <!-- AMIS LOGO -->
-               <?!= Utility.include('amisLogo'); ?>
-           </div>
-            <div class="col-xs-8">
-            	<br>
-                 <? if (!secretariatMode) { ?>
-            	<h4><b><?= countryCell ?></b></h4>
-            	<br><br>
-                <?= datasourceCell ?>
-                <? } ?>
-            	<br>
-            </div>
-       </div>
+              <div class="col-xs-5 text-center">
+                  <!-- AMIS LOGO -->
+                  <?!= Utility.include('amisLogo'); ?>
+              </div>
+               <div class="col-xs-7" style="padding-left: 0;">
+                   	<br>
+                   	<h4><b><?= countryCell ?></b></h4>
+                   	<br><br>
+                       <?= datasourceCell ?>
+                   	<br>
+               </div>
+          </div>
+   </div>
    <br/>
 
-    <div class="" id="devToolbar" <?= (devMode)?"":"hidden" ?> >
-           <button onclick="loginWithGoogle()">loginWithGoogle()</button>
-           <button onclick="logout()">logout()</button>
-           <button onclick="wrongToken()">wrongToken</button>
-           <button onclick="console.clear()">console.clear</button>
-           <button onclick="google.script.run.LIB_FUNC( 'AmisMarketApp.AmisDebugger.cellInfo')">cellInfo</button>
-           <button onclick="google.script.run.LIB_FUNC( 'AmisMarketApp.Utility.toggleTemplates', false)">hide templates</button>
-           <button onclick="google.script.run.LIB_FUNC( 'AmisMarketApp.Utility.toggleTemplates', true)">show templates</button>
+    <div class="container" id="devToolbar" <?= (devMode)?"":"hidden" ?> >
+        <div class="row">
+            <div class="col-xs-12">
+                <button onclick="loginWithGoogle()">loginWithGoogle()</button>
+                <button onclick="logout()">logout()</button>
+                <button onclick="wrongToken()">wrongToken</button>
+                <button onclick="console.clear()">console.clear</button>
+                <button onclick="google.script.run.LIB_FUNC( 'AmisMarketApp.AmisDebugger.cellInfo')">cellInfo</button>
+                <button onclick="google.script.run.LIB_FUNC( 'AmisMarketApp.Utility.toggleTemplates', false)">hide templates</button>
+                <button onclick="google.script.run.LIB_FUNC( 'AmisMarketApp.Utility.toggleTemplates', true)">show templates</button>
+            </div>
+        </div>
    </div>
    <!-- hidden part -->
     <!-- <div id="userActionsDiv" hidden class="container"> -->
@@ -98,16 +102,12 @@
         </div>
         <br>
         <div class="row">
-        	<div class="col-xs-12 text-right">
-        		<button id="addFrcA" class="btn btn-primary btn-lg btn-inl">2016/17 &nbsp; <i class="mdi mdi-table-column-plus-after"></i>
+        	<div class="col-xs-6 text-right">
+        		<button id="addFrcA" class="btn btn-primary btn-lg btn-block">2016/17 &nbsp; <i class="mdi mdi-table-column-plus-after"></i>
                 </button>
         	</div>
-        </div>
-
-
-        <div class="row" style="margin-top:10px">
-        	<div class="col-xs-12 text-right">
-        		<button id="addFrcB" class="btn btn-primary btn-lg btn-inl">2017/18 &nbsp; <i class="mdi mdi-table-column-plus-after"></i>
+        	<div class="col-xs-6 text-right">
+        		<button id="addFrcB" class="btn btn-primary btn-lg btn-block">2017/18 &nbsp; <i class="mdi mdi-table-column-plus-after"></i>
                 </button>
         	</div>
         </div>
@@ -121,9 +121,11 @@
         </div>
         <br>
         <div class="row">
-        	<div class="col-xs-12 text-right">
-                <button id="showHistoricalSeries" class="btn btn-primary btn-lg">Show <i class="mdi mdi-eye"></i></button>
-                <button id="hideHistoricalSeries" class="btn btn-primary btn-lg">Hide <i class="mdi mdi-eye-off"></i></button>
+        	<div class="col-xs-6 text-right">
+                <button id="showHistoricalSeries" class="btn btn-primary btn-lg btn-block">Show <i class="mdi mdi-eye"></i></button>
+        	</div>
+        	<div class="col-xs-6 text-right">
+                <button id="hideHistoricalSeries" class="btn btn-primary btn-lg btn-block">Hide <i class="mdi mdi-eye-off"></i></button>
         	</div>
         </div>
         <br/><br/>
