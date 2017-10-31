@@ -12,12 +12,8 @@ function onOpen() {
   //read all the named ranges and put in cache
   AmisNamedRanges.getAllNamedRanges();
 
-  //create Amis sidebar
-  //Utility.openSidebar();
-
-  //spreadSheetCache=new SpreadSheetCache(SpreadsheetApp.getActiveSpreadsheet(), ['Maize']);
-
-  // Browser.msgBox(JSON.parse(PropertiesService.getUserProperties().getProperty("tmpValues")));
+  //cache all cols with in each template.
+  ProtectionMaker.getTmplColsWidth();
 }
 
 

@@ -21,6 +21,9 @@ var ProtectionMaker = new function() {
 
 	 			//forecast methodologies on edit
 	 			ForecastingMethodologies.fixAllFMRanges( sheetValues,sheet );
+
+				//restore all column width getting the current size from template
+		   		ProtectionMaker.restoreColsWidth();
 	 		}
 	 	} catch ( e ) {
 	 		var ex = e;
@@ -106,6 +109,97 @@ var ProtectionMaker = new function() {
 
  	};
 
+
+	/**
+	 * get all row with in each template. Cache values will be used if present.
+	 * @return {array} an array in the form [sheetName][row number]=number
+	 */
+	this.getTmplRowsHeight = function() {
+		var rowsHeight = APPCache.get( "rowsHeight" );
+		if ( !rowsHeight ) {
+			rowsHeight = {};
+			Utility.forEachSheet( undefined, new RegExp( "^" + Config.templatePrefix ), function( s, sheetName ) {
+				rowsHeight[ sheetName ] = [];
+				Utility.forEachRow(s, function(s, rowNum){
+					rowsHeight[ sheetName ][ rowNum ] = s.getRowHeight( rowNum );
+				});
+			} );
+			APPCache.put( "rowsHeight", rowsHeight );
+		}
+		return rowsHeight;
+	};
+
+
+
+
+
+	/**
+	 * get all cols with in each template. Cache values will be used if present.
+	 * @return {array} an array in the form [sheetName][col number]=number
+	 */
+	this.getTmplColsWidth = function() {
+		var colsWidth = APPCache.get( "colsWidth" );
+		if ( !colsWidth ) {
+			colsWidth = {};
+			Utility.forEachSheet( undefined, new RegExp( "^" + Config.templatePrefix ), function( s, sheetName ) {
+				colsWidth[ sheetName ] = [];
+				Utility.forEachColumn(s, function(s, colNum){
+					colsWidth[ sheetName ][ colNum ] = s.getColumnWidth( colNum );
+				});
+			} );
+			APPCache.put( "colsWidth", colsWidth );
+		}
+		return colsWidth;
+	};
+
+
+	/**
+	 * restore all row height getting the current size from template. CAN BE USED ONLY FROM USER WITH ALL PERMISSIONS!
+	 * @return {void}
+	 * @throws "InvalidTemplateSizes" if no data from templates
+	 */
+	this.restoreRowsHeight=function(){
+		var rowsHeight=this.getTmplRowsHeight();
+
+		if(!rowsHeight){
+			throw "InvalidTemplateSizes";
+		}
+
+		Utility.forEachSheet( undefined, /^[A-Za-z]+$/, function( s, sheetName ) {
+			Utility.forEachRow(s, function(s, rowNum){
+				s.setRowHeight(rowNum, rowsHeight[ Config.templatePrefix+sheetName ][ rowNum ]);
+			});
+		} );
+	};
+
+
+	/**
+	 * restore all column width getting the current size from template
+	 * @return {void}
+	 * @throws "InvalidTemplateSizes" if no data from templates
+	 */
+	this.restoreColsWidth=function(){
+		var colsWidth=this.getTmplColsWidth();
+
+		if(!colsWidth){
+			throw "InvalidTemplateSizes";
+		}
+
+		Utility.forEachSheet( undefined, /^[A-Za-z]+$/, function( s, sheetName ) {
+			var nr, previusFc_number;
+
+			nr=AmisNamedRanges.getCommodityNamedRangesBySheet(s);
+
+			previusFc_number=ConvertA1.rangeA1ToIndex(nr.previousForecast.first, 1).left;
+
+			Utility.forEachColumn(s, function(s, colNum){
+				if (colNum<previusFc_number) {
+					return;
+				}
+				s.setColumnWidth(colNum, colsWidth[ Config.templatePrefix+sheetName ][ colNum ]);
+			});
+		} );
+	};
 
 
 
