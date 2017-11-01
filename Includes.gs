@@ -42,6 +42,34 @@ FirebaseConnector.getCommodityName = function( sheet ) {
 };
 
 /**
+ * very simple function to get the config sheet node path
+ * @param  {string} sheetId (optional) the sheetId, current spreadsheet will be used if undefined
+ * @return {string}         the config path
+ */
+FirebaseConnector.getSheetConfigNode=function(sheetId){
+	sheetId=(sheetId || SpreadSheetCache.getActiveSpreadsheet().getId());
+	return 'config/countries/'+sheetId;
+};
+
+/**
+ * get the sheet config from firebase
+ * @param  {[type]} sheetId   [description]
+ * @param  {string} userToken auth token
+ * @return {object}           the object of the firebase node
+ */
+FirebaseConnector.getSheetConfig=function(sheetId, userToken){
+	sheetId=(sheetId || SpreadSheetCache.getActiveSpreadsheet().getId());
+	var sheetConfigNode;
+
+	if (!userToken) {
+		throw "InvalidArgument";
+	}
+
+	sheetConfigNode=FirebaseConnector.getSheetConfigNode(sheetId, userToken);
+	return FirebaseConnector.getFireBaseDataParsed(sheetConfigNode,userToken);
+};
+
+/**
  * find the commodity name FOR SECRETARIAT
  * @return {string}  it return the commodation name (eg. maize )
  */
