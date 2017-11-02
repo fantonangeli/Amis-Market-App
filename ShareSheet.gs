@@ -12,6 +12,7 @@ var ShareSheet=new function(){
 
     //datanode from firebase
     var countryRegisterNode = 'config/countryRegister/'+ countryName;
+    var excelExportSheetId, newFileId;
 
     //retrive the country google sheet id stored
     var countryRegister = JSON.parse(FirebaseConnector.getFireBaseData(countryRegisterNode,userToken));
@@ -19,14 +20,19 @@ var ShareSheet=new function(){
     //if country google sheet id its FALSE... we have to create a google sheet for the country selected
     if(countryRegister ==='false'){
       var newFile = ShareSheet.cloneSheet(countryName);
+      newFileId=newFile.getId();
 
-	  ShareSheet.storeSheetId(countryName, newFile.getId(), userToken)
+	  ShareSheet.storeSheetId(countryName, newFileId, userToken)
 
 	  ShareSheet.shareSheet(newFile,countryAccount);
 
       //empty the template
-      MasterUtility.writeNoteAndDataForCountriesMaster(countryName,true)
+      MasterUtility.writeNoteAndDataForCountriesMaster(countryName,true);
 
+      //create an empty spreadsheet for the excel exportation
+      excelExportSheetId=ExcelExport.createExportSheet(Utility.ucfirst(countryName));
+
+      ExcelExport.storeExportSheetId(newFileId, excelExportSheetId,userToken);
 
       Utility.toastInfo('Sheet created', 'Sheet created and shared');
 
