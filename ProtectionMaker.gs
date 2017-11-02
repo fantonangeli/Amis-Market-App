@@ -37,6 +37,23 @@ var ProtectionMaker = new function() {
 	 	}
 	 };
 
+	 /**
+	  * validate all sheet in a spreadsheet, restore styles and formulas
+	  * @param {object} spreadsheet [optional] the spreadsheet
+	  * @return {void}
+	  */
+	 this.validateAllSheet=function(spreadsheet){
+		spreadsheet = ( spreadsheet || SpreadSheetCache.getActiveSpreadsheet() );
+
+	    Utility.forEachSheet(spreadsheet.getId(), Config.commoditySheetsRegex, function(sheet){
+			var sheetValues;
+
+			sheetValues=sheet.getDataRange().getValues();
+
+	    	ProtectionMaker.validateSheet(sheetValues, spreadsheet, sheet);
+	    });
+	 };
+
 
 
 	/**
