@@ -4,13 +4,17 @@ Utility=new AmisLib.UtilityClass(Config.devMode, Config.errorEmail);
  * open amis Sidebar
  */
 Utility.openSidebar = function() {
+	var sheet=SpreadSheetCache.getActiveSheet();
+	var spreadsheet=SpreadSheetCache.getActiveSpreadsheet();
+
 	dbName = Config.dbName;
 	apiKey = Config.apiKey;
-	countryCell = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( Config.Sheet.countryCell ).getValue();
-	datasourceCell = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getRange( Config.Sheet.datasourceCell ).getValue();
+	countryCell = sheet.getRange( Config.Sheet.countryCell ).getValue();
+	datasourceCell = sheet.getRange( Config.Sheet.datasourceCell ).getValue();
 	devMode = Config.devMode;
     secretariatMode = Utility.isSecretariat();
     spreadSheetId =  Utility.getGoogleSheetID();
+
 	var html = HtmlService.createTemplateFromFile( 'amisMenu' )
 		.evaluate()
 		.setTitle( 'Amis' )

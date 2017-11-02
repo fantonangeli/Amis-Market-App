@@ -69,6 +69,12 @@ var Config={
 	templatePrefix:"Template_",
 
 	/**
+	 * regex to find commodity sheet name ()
+	 * @type {RegExp}
+	 */
+	commoditySheetsRegex:/^[A-Za-z]+$/,
+
+	/**
 	 * Cache expiration in seconds. The minimum is 1 second and the maximum is 21600 seconds (6 hours).
 	 * @type {number}
 	 */
@@ -108,6 +114,18 @@ var Config={
 	 * Named ranges for forecast's notes
 	 * @type {[string]}
 	 */
-	notesNamedRanges:[ 'notesA','notesB']
+	notesNamedRanges:[ 'notesA','notesB'],
+
+	/**
+	 * excel exportation template filename
+	 * @type {String}
+	 */
+	excelExportSpreadSheetFileName:"AMIS {{country}} National Excel Export",
+
+	/**
+	 * excel exportation file id
+	 * @type {String}
+	 */
+	excelExportSpreadSheetMasterId:""
 
 };

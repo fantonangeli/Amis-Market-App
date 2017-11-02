@@ -357,6 +357,22 @@
           }
       }
 
+      /**
+       * start the excel exportation and download the generated excel file
+       * @return {void}
+       */
+      function excelExport() {
+          //prevent redirect actions
+          showLoading(["Creating the excel file", "writing data to the excel file", "Prepare the file to download"]);
+          google.script.run
+          .withSuccessHandler(function(spreadSheetId){
+              window.location='https://docs.google.com/spreadsheets/d/'+spreadSheetId+'/export?exportFormat=xlsx';
+              hideLoading();
+          })
+          .withFailureHandler( googleScriptRunFailureHandler(excelExport))
+          .LIB_FUNC("AmisMarketApp.ExcelExport.startExport",userToken);
+      }
+
 
 
        $( document ).ready( function() {
@@ -412,6 +428,9 @@
 
            //on change event on COUNTRY SELECTED
            $("#countryName").change(countryChange);
+
+           //start the excel exportation and download the generated excel file
+           $("#excelExportBtn").click(excelExport);
 
 
        } )
