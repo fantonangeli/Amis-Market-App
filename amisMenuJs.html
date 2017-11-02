@@ -22,7 +22,8 @@
        	projectId: "<?= dbName ?>",
        	storageBucket: "<?= dbName ?>.appspot.com",
        	messagingSenderId: "924659512730",
-        sidebarNetworkErrorMsg:"There is a problem with the network, please try again later."
+        sidebarNetworkErrorMsg:"There is a problem with the network, please try again later.",
+        devMode:<?= (devMode)?>
        };
        firebase.initializeApp( config );
        //-----------------------------------------------------------------
@@ -317,6 +318,7 @@
               } else {
                   alert( config.sidebarNetworkErrorMsg );
                   hideLoading();
+                  debugEmail(error);
               }
           };
       }
