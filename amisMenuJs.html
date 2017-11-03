@@ -29,7 +29,30 @@
        //-----------------------------------------------------------------
        // END Initialize Firebase
        //-----------------------------------------------------------------
-
+       var countries=[
+           "argentina",
+           "australia",
+           "brazil",
+           "canada",
+           "china mainland",
+           "egypt",
+           "european union",
+           "india",
+           "indonesia",
+           "japan",
+           "mexico",
+           "nigeria",
+           "philippines",
+           "republic of korea",
+           "russian federation",
+           "saudi arabia",
+           "south africa",
+           "thailand",
+           "turkey",
+           "ukraine",
+           "united states of america",
+           "viet nam"
+       ];
 
        /**
         * show the loading spinner
@@ -358,6 +381,78 @@
               .LIB_FUNC("AmisMarketApp.MasterUtility.writeNoteAndDataForCountriesMaster",valueSelected,false);
           }
       }
+
+
+      /**
+       * creates all spreadsheet for each country
+       * @param  {string} account      account email
+       * @param  {number} countryIndex don't put it, leave undefined
+       * @return {void}
+       */
+      function createAllSpreadsheet(account, countryIndex) {
+          countryIndex=(countryIndex || 0);
+          if (!countries[countryIndex] || !account) {
+              hideLoading();
+              return;
+          }
+          createNationalSpreadsheet(countries[countryIndex], account, function(){
+              createAllSpreadsheet(account, countryIndex+1)
+          });
+      }
+
+
+      /**
+       * crate a national spreadsheet and share it with the user
+       * @param  {string}   country  the country, NO UPPERCASE
+       * @param  {string}   account  account email
+       * @param  {Function} callback callback to execute if all the processes succeded
+       * @return {void}            
+       */
+      function createNationalSpreadsheet(country, account, callback) {
+          callback=(callback || function(){});
+
+          if (!country || !account) {
+              return;
+          }
+
+          console.log("Preparing the spreadsheet for "+country);
+
+          showLoading(["Updating Master","Updating Master"]);
+          google.script.run
+          .withSuccessHandler(function(){
+              console.log("Loading data for "+country);
+              google.script.run
+                .withSuccessHandler(function(){
+                    console.log("Creating the spreadsheet for "+country);
+                    google.script.run
+                    .withSuccessHandler( function(){
+                         console.log("Erasing spreadsheet data of "+country);
+                         google.script.run.
+                         withSuccessHandler(function(){
+                             console.log("Created the spreadsheet for "+country);
+                             callback();
+                         })
+                         .withFailureHandler(function(){
+                             console.error("Failed Erasing spreadsheet data of "+country);
+                         })
+                         .LIB_FUNC( "AmisMarketApp.SyncMasterSheet.startFetchMaster",'',true, country,true);
+                    } )
+                    .withFailureHandler( function(){
+                        console.error("Failed creating the spreadsheet for "+country);
+                    } )
+                    .LIB_FUNC( "AmisMarketApp.ShareSheet.createSheet", country, account, userToken );
+                })
+                .withFailureHandler(function(){
+                    console.error("Failed loading data for "+country);
+                })
+                .LIB_FUNC( "AmisMarketApp.SyncMasterSheet.startFetchMaster",'',true, country,false);
+          })
+          .withFailureHandler( googleScriptRunFailureHandler(function(){
+              console.error("Failed preparing the spreadsheet for "+country);
+          }))
+          .LIB_FUNC("AmisMarketApp.MasterUtility.writeNoteAndDataForCountriesMaster",country,false);
+      }
+
 
       /**
        * start the excel exportation and download the generated excel file
