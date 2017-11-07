@@ -29,30 +29,23 @@
        //-----------------------------------------------------------------
        // END Initialize Firebase
        //-----------------------------------------------------------------
+
+       /**
+        * list of countries
+        * @type {[string]}
+        */
        var countries=[
-           "argentina",
-           "australia",
-           "brazil",
-           "canada",
-           "china mainland",
-           "egypt",
-           "european union",
-           "india",
-           "indonesia",
-           "japan",
-           "mexico",
-           "nigeria",
-           "philippines",
-           "republic of korea",
-           "russian federation",
-           "saudi arabia",
-           "south africa",
-           "thailand",
-           "turkey",
-           "ukraine",
-           "united states of america",
-           "viet nam"
        ];
+
+       /**
+        * countryAccount firebase object
+        * @type {Object}
+        */
+       var countryAccount={};
+
+
+
+
 
        /**
         * show the loading spinner
@@ -100,7 +93,66 @@
          $('#loading').hide();
        };
 
+       /**
+        * reads all the countries in firebase
+        * @param  {function} onSuccess callback called with the countryRegister object
+        * @return {void}
+        */
+       function getAllCountries(onSuccess) {
+           firebase.database().ref('/config/countryRegister').once('value').then(function(value) {
+               onSuccess(value);
+           });
+       }
 
+       /**
+        * populate the countryName select and the countries global array from firebase
+        * @param  {Function} callback callback called on finish, no params
+        * @return {void}
+        */
+       function populateCountries(callback) {
+           getAllCountries(function(data){
+               var countryRegister=data.val();
+               for (var country in countryRegister) {
+                   if (countryRegister.hasOwnProperty(country)) {
+                       $('#countryName').append('<option value="'+ country +'">'+ country +'</option>');
+                       countries.push(country);
+                   }
+               }
+
+               callback();
+           });
+       }
+
+       /**
+        * gets the countryAccount in firebase
+        * @param  {Function} callback callback called on finish, taking countryAccount as param
+        * @return {void}
+        */
+       function getCountryAccount(callback) {
+           firebase.database().ref('/config/countryAccount').once('value').then(function(data) {
+               countryAccount=data.val();
+               callback(data.val());
+           });
+       }
+
+       /**
+        * populate the account select
+        * @param  {Function} callback callback called on finish, no params
+        * @return {void}
+        */
+       function populateAccount(callback) {
+           getCountryAccount(function(data){
+               var _email;
+               countryAccount=data;
+               for (var country in data) {
+                   if (data.hasOwnProperty(country) && data[country].toString()!=="false") {
+                       _email=data[country];
+                       $("#account").append('<option value="'+ _email +'">'+ _email +'</option>');
+                   }
+               }
+               callback();
+           })
+       }
 
 
        /**
@@ -132,17 +184,25 @@
 
              $(".isSecretariat").toggle(user_data.type==="secretariat");
 
+             //set user name into label
+             $( "#userLabel" ).text( user.email );
+
+
              if ( user_data.type==="admin" ) {
                  //show create country sheet
                  $( "#create-sheet-form" ).show();
+
+                 populateCountries(function(){
+                     populateAccount(function(){
+                         $( "#loading" ).hide();
+                     });
+                 })
              } else {
                  //show normal menu
                  $( "#userActionsDiv" ).show();
+                 $( "#loading" ).hide();
              }
 
-             //set user name into label
-             $( "#userLabel" ).text( user.email );
-             $( "#loading" ).hide();
 
              //----------------------------------
              //END --hide form show menu logged in
@@ -406,7 +466,7 @@
        * @param  {string}   country  the country, NO UPPERCASE
        * @param  {string}   account  account email
        * @param  {Function} callback callback to execute if all the processes succeded
-       * @return {void}            
+       * @return {void}
        */
       function createNationalSpreadsheet(country, account, callback) {
           callback=(callback || function(){});
@@ -415,17 +475,21 @@
               return;
           }
 
-          console.log("Preparing the spreadsheet for "+country);
-
           showLoading(["Updating Master","Updating Master"]);
+
+        //   Preparing the spreadsheet-------------------------
+          console.log("Preparing the spreadsheet for "+country);
           google.script.run
           .withSuccessHandler(function(){
+              //   Loading data-------------------------
               console.log("Loading data for "+country);
               google.script.run
                 .withSuccessHandler(function(){
+                    //Creating the spreadsheet-------------------------
                     console.log("Creating the spreadsheet for "+country);
                     google.script.run
                     .withSuccessHandler( function(){
+                        //Erasing spreadsheet data-------------------------
                          console.log("Erasing spreadsheet data of "+country);
                          google.script.run.
                          withSuccessHandler(function(){
