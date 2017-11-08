@@ -141,8 +141,6 @@ var SyncMasterSheet=new function(){
 				throw "InvalidFirebaseData";
 			  }
 
-			  ProtectionMaker.validateSheet(sheetValues, spreadsheet, sheet);
-
 			  //get lastDateUpdaterRow
 			  SyncMasterSheet.lastDatefetcher(fbData, sheetValues, sheet, isReset);
 
@@ -166,6 +164,8 @@ var SyncMasterSheet=new function(){
 				  }
 				}
 			  }
+			  
+			  ProtectionMaker.validateSheet(sheetValues, spreadsheet, sheet);
 
 			  ForecastUtility.hideAllPreviousForecasts(sheet);
 

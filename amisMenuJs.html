@@ -335,11 +335,16 @@
       function googleScriptRunFailureHandler( retryCalback ) {
           return function(error){
               error=(error || "");
+              console.log('ERROR', error);
+
               //token expired
               if ( error.hasOwnProperty( "message" ) && ( error.message === "Network401Error" ) ) {
                   loginWithGoogle(retryCalback);
-              } else {
+              } else if(error === "NetworkError: Connection failure due to HTTP 0") {
                   alert( config.sidebarNetworkErrorMsg );
+                  hideLoading();
+              } else {
+                  //error managed by the Library
                   hideLoading();
                   debugEmail(error);
               }
@@ -406,7 +411,7 @@
        * @param  {string}   country  the country, NO UPPERCASE
        * @param  {string}   account  account email
        * @param  {Function} callback callback to execute if all the processes succeded
-       * @return {void}            
+       * @return {void}
        */
       function createNationalSpreadsheet(country, account, callback) {
           callback=(callback || function(){});
