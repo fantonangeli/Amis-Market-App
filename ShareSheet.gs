@@ -1,6 +1,45 @@
 var ShareSheet=new function(){
 
 
+  this.getCountryAccounts=function(userToken){
+      var countryAccounts={};
+
+      countryAccounts=APPCache.get("countryAccounts");
+
+      if (countryAccounts) {
+          return countryAccounts;
+      }
+
+      countryAccounts=FirebaseConnector.getFireBaseDataParsed('/config/countryAccount', userToken);
+
+      APPCache.put("countryAccounts", countryAccounts);
+
+      return countryAccounts;
+  };
+
+
+
+  this.isInCountryAccount=function(account, userToken){
+      var countryAccounts;
+
+      if (!account || !userToken) {
+          throw "InvalidArgument";
+      }
+
+      countryAccounts=this.getCountryAccounts();
+
+
+      for (var country in countryAccounts) {
+          if (countryAccounts.hasOwnProperty(country) && (countryAccounts[country]===account)) {
+              return true;
+          }
+      }
+
+      return false;
+  };
+
+
+
   //---------------------------------------------------------
   /**
   * CREATE A NEW GOOGLE SHEET
