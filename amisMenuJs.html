@@ -400,8 +400,11 @@
               //token expired
               if ( error.hasOwnProperty( "message" ) && ( error.message === "Network401Error" ) ) {
                   loginWithGoogle(retryCalback);
-              } else {
+              } else if(error === "NetworkError: Connection failure due to HTTP 0") {
                   alert( config.sidebarNetworkErrorMsg );
+                  hideLoading();
+              } else {
+                  //error managed by the Library
                   hideLoading();
                   debugEmail(error);
               }
