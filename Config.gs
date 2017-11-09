@@ -63,6 +63,12 @@ var Config={
 	secretariatKeyword:"secretariat",
 
 	/**
+	 * accounts that can edit All spreadsheet
+	 * @type {String}
+	 */
+	secretariatAccount:"secretariat.amis@gmail.com",
+
+	/**
 	 * the keyword to recognize the template spreadsheet by the filename
 	 * @type {String}
 	 */

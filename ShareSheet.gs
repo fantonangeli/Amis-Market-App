@@ -1,6 +1,10 @@
 var ShareSheet=new function(){
 
-
+  /**
+   * get the countryAccount node from firebase
+   * @param  {string} userToken the token
+   * @return {object}           the object representing the node
+   */
   this.getCountryAccounts=function(userToken){
       var countryAccounts={};
 
@@ -18,7 +22,12 @@ var ShareSheet=new function(){
   };
 
 
-
+  /**
+   * check if an account is in the countryAccount fb node
+   * @param  {string} account   the email of the Account
+   * @param  {string} userToken the token
+   * @return {bool}           true if found, false otherwise
+   */
   this.isInCountryAccount=function(account, userToken){
       var countryAccounts;
 
@@ -63,7 +72,7 @@ var ShareSheet=new function(){
 
 	  ShareSheet.storeSheetId(countryName, newFileId, userToken)
 
-	  ShareSheet.shareSheet(newFile,countryAccount);
+	  ShareSheet.shareSheet(newFile,countryAccount, userToken);
 
       //empty the template
       MasterUtility.writeNoteAndDataForCountriesMaster(countryName,true);
@@ -81,7 +90,7 @@ var ShareSheet=new function(){
       try {
         //retrive the existing file
         var existingFileToBeShared = DriveApp.getFileById(countryRegister);
-        ShareSheet.shareSheet(existingFileToBeShared,countryAccount);
+        ShareSheet.shareSheet(existingFileToBeShared,countryAccount, userToken);
 
         //empty the template
         MasterUtility.writeNoteAndDataForCountriesMaster(countryName,true)
@@ -131,12 +140,17 @@ var ShareSheet=new function(){
 	 * SHARE SHEET
      * @param  {file} the new file cloned
      * @param  {string} google account of the country (email address)
-	 */
+     * @param  {string} userToken the token
+ 	 */
   //---------------------------------------------------------
-  this.shareSheet= function(newfile,countryAccount) {
+  this.shareSheet= function(newfile,countryAccount, userToken) {
 
 	  //share the new country sheet
 	  newfile.addEditor(countryAccount);
+
+      if(ShareSheet.isInCountryAccount(countryAccount,userToken)){
+          newfile.addEditor(Config.secretariatAccount);
+      }
 
       if (!Config.devMode) {
     	  DriveApp.getFileById(Config.amisMarketAppId).addViewer(countryAccount);
