@@ -35,7 +35,7 @@ var ShareSheet=new function(){
           throw "InvalidArgument";
       }
 
-      countryAccounts=this.getCountryAccounts();
+      countryAccounts=this.getCountryAccounts(userToken);
 
 
       for (var country in countryAccounts) {
