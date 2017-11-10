@@ -557,7 +557,7 @@
           showLoading(["Connecting to firebase","Reading data from firebase"]);
           google.script.run
           .withSuccessHandler(function(spreadSheetId){
-              var url='https://docs.google.com/spreadsheets/d/'+spreadSheetId+'/export?exportFormat=xlsx';
+              var url='https://docs.google.com/spreadsheets/d/'+spreadSheetId;
               window.open(url,'_blank');
               hideLoading();
           })
