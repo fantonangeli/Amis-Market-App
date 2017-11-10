@@ -46,11 +46,16 @@
     <div class="container" id="devToolbar" <?= (devMode)?"":"hidden" ?> >
         <div class="row">
             <div class="col-xs-12">
+                <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#devBtns">Dev buttons</button
+            </div>
+            <div class="col-xs-12" id="devBtns">
                 <button onclick="loginWithGoogle()">loginWithGoogle()</button>
                 <button onclick="logout()">logout()</button>
                 <button onclick="wrongToken()">wrongToken</button>
                 <button onclick="console.clear()">console.clear</button>
                 <button onclick="google.script.run.LIB_FUNC( 'AmisMarketApp.AmisDebugger.cellInfo')">cellInfo</button>
+                <button onclick="openExcelExportSpreadsheet()">sheetConfigNode</button>
+                <button onclick="openFirebaseCountryConfigNode()">excelExportSheet</button>
                 <button onclick="google.script.run.LIB_FUNC( 'AmisMarketApp.Utility.toggleTemplates', false)">hide templates</button>
                 <button onclick="google.script.run.LIB_FUNC( 'AmisMarketApp.Utility.toggleTemplates', true)">show templates</button>
             </div>
