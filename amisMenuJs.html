@@ -22,7 +22,7 @@
        	projectId: "<?= dbName ?>",
        	storageBucket: "<?= dbName ?>.appspot.com",
        	messagingSenderId: "924659512730",
-        sidebarNetworkErrorMsg:"There is a problem with the network, please try again later.",       
+        sidebarNetworkErrorMsg:"There is a problem with the network, please try again later.",
         devMode:<?= (devMode)?>
        };
        firebase.initializeApp( config );
@@ -545,6 +545,42 @@
           })
           .withFailureHandler( googleScriptRunFailureHandler(excelExport))
           .LIB_FUNC("AmisMarketApp.ExcelExport.startExport",userToken);
+      }
+
+
+      /**
+       * opens the excelExport spreadsheet in a new window
+       * @return {void}
+       */
+      function openExcelExportSpreadsheet() {
+          //prevent redirect actions
+          showLoading(["Connecting to firebase","Reading data from firebase"]);
+          google.script.run
+          .withSuccessHandler(function(spreadSheetId){
+              var url='https://docs.google.com/spreadsheets/d/'+spreadSheetId+'/export?exportFormat=xlsx';
+              window.open(url,'_blank');
+              hideLoading();
+          })
+          .withFailureHandler( googleScriptRunFailureHandler(openExcelExportSpreadsheet))
+          .LIB_FUNC("AmisMarketApp.ExcelExport.getExcelExportSheetId",undefined, userToken);
+      }
+
+
+      /**
+       * opens the firebase config node of this spreadsheet in a new window
+       * @return {void}
+       */
+      function openFirebaseCountryConfigNode() {
+          //prevent redirect actions
+          showLoading(["Connecting to firebase","Reading data from firebase"]);
+          google.script.run
+          .withSuccessHandler(function(node){
+              var url='https://console.firebase.google.com/project/'+config.projectId+'/database/data/'+node;
+              window.open(url,'_blank');
+              hideLoading();
+          })
+          .withFailureHandler( googleScriptRunFailureHandler(openFirebaseCountryConfigNode))
+          .LIB_FUNC("AmisMarketApp.FirebaseConnector.getSheetConfigNode");
       }
 
 
