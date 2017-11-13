@@ -42,6 +42,56 @@ FirebaseConnector.getCommodityName = function( sheet ) {
 };
 
 /**
+ * get the countryLabel node from firebase
+ * @param  {string} userToken the token
+ * @return {object}           the object representing the node
+ * @throws {InvalidArgument}
+ */
+FirebaseConnector.getCountryLabels = function( userToken ) {
+	var countryLabels = {};
+
+	if (!userToken) {
+		throw "InvalidArgument";
+	}
+
+	countryLabels = APPCache.get( "countryLabels" );
+
+	if ( countryLabels ) {
+		return countryLabels;
+	}
+
+	countryLabels = FirebaseConnector.getFireBaseDataParsed( '/config/countryLabels', userToken );
+
+	APPCache.put( "countryLabels", countryLabels );
+
+	return countryLabels;
+};
+
+
+/**
+ * get a countryLabel from firebase
+ * @param  {string} countryName the countryName to find
+ * @param  {string} userToken   the token
+ * @return {string}             the label
+ * @throws {InvalidArgument}
+ */
+FirebaseConnector.getCountryLabel=function(countryName, userToken){
+	var countryLabel;
+
+	if (!countryName || !userToken) {
+		throw "InvalidArgument";
+	}
+
+	countryLabel=FirebaseConnector.getCountryLabels(userToken)[countryName];
+
+	if (!countryLabel) {
+		throw "CountryLabelNotFound";
+	}
+
+	return countryLabel;
+};
+
+/**
  * very simple function to get the config sheet node path
  * @param  {string} sheetId (optional) the sheetId, current spreadsheet will be used if undefined
  * @return {string}         the config path

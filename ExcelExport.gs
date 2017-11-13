@@ -4,14 +4,14 @@
 var ExcelExport = new function() {
 	/**
 	 * create an empty spreadsheet for the excel exportation (copy a spreadsheet from the export master file)
-	 * @param  {string} country the country name. Eg. "Argentina"
+	 * @param  {string} countryLabel label of the country
 	 * @return {string} id of the file
 	 * @throws {InvalidArgument}
 	 */
-	 this.createExportSheet = function(country) {
+	 this.createExportSheet = function(countryLabel) {
  		var master, filename, newfile;
 
- 		if (!country) {
+ 		if (!countryLabel) {
  			throw "InvalidArgument";
  		}
 
@@ -19,7 +19,7 @@ var ExcelExport = new function() {
  		master = DriveApp.getFileById( Config.excelExportSpreadSheetMasterId );
 
  		filename = Utility.interpolate( Config.excelExportSpreadSheetFileName, {
- 			country: country
+ 			country: countryLabel
  		} );
 
  		newfile= master.makeCopy( filename );

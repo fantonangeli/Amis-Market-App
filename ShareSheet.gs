@@ -47,6 +47,30 @@ var ShareSheet=new function(){
       return false;
   };
 
+  /**
+   * removes all spreadsheet from firebase: empty countries node and set all countryRegister property to 'false'. This function doesn't erase the data node
+   * @param  {string} userToken the token
+   * @return {void}
+   */
+  this.removeAllSpreadsheetsFromFb=function(userToken){
+      var countryRegister, countryRegisterNode="/config/countryRegister";
+
+      if (!userToken) {
+          throw "InvalidArgument";
+      }
+
+      FirebaseConnector.writeOnFirebase({}, "/config/countries", userToken);
+      countryRegister=FirebaseConnector.getFireBaseDataParsed(countryRegisterNode, userToken);
+
+      for (var country in countryRegister) {
+          if (countryRegister.hasOwnProperty(country)) {
+              countryRegister[country]="false";
+          }
+      }
+
+      FirebaseConnector.writeOnFirebase(countryRegister, countryRegisterNode, userToken);
+  };
+
 
 
   //---------------------------------------------------------
@@ -60,14 +84,15 @@ var ShareSheet=new function(){
 
     //datanode from firebase
     var countryRegisterNode = 'config/countryRegister/'+ countryName;
-    var excelExportSheetId, newFileId;
+    var excelExportSheetId, newFileId, countryLabel;
 
     //retrive the country google sheet id stored
     var countryRegister = JSON.parse(FirebaseConnector.getFireBaseData(countryRegisterNode,userToken));
 
     //if country google sheet id its FALSE... we have to create a google sheet for the country selected
     if(countryRegister ==='false'){
-      var newFile = ShareSheet.cloneSheet(countryName);
+      countryLabel=FirebaseConnector.getCountryLabel(countryName, userToken);
+      var newFile = ShareSheet.cloneSheet(countryLabel, userToken);
       newFileId=newFile.getId();
 
 	  ShareSheet.storeSheetId(countryName, newFileId, userToken)
@@ -78,7 +103,7 @@ var ShareSheet=new function(){
       MasterUtility.writeNoteAndDataForCountriesMaster(countryName,true);
 
       //create an empty spreadsheet for the excel exportation
-      excelExportSheetId=ExcelExport.createExportSheet(Utility.ucfirst(countryName));
+      excelExportSheetId=ExcelExport.createExportSheet(countryLabel);
 
       ExcelExport.storeExportSheetId(newFileId, excelExportSheetId,userToken);
 
@@ -117,10 +142,11 @@ var ShareSheet=new function(){
 
   /**
 	 * CLONE THE MASTER TEMPLATE
-	 * @param  {string} countryName google account of the country (email address)
+     * @param  {string} countryLabel label of the country
+     * @param  {string} userToken   the token
 	 * @return  {file} the new sheet
 	 */
-  this.cloneSheet = function(countryName){
+  this.cloneSheet = function(countryLabel, userToken){
 	  //get current folder id
 	  var ss = SpreadsheetApp.getActive(); //current spreadsheet
 
@@ -128,7 +154,7 @@ var ShareSheet=new function(){
 	  var file = DriveApp.getFileById(ss.getId());
 
       var filename=Utility.interpolate(Config.nationalSheetFilename, {
-          country:Utility.ucfirst(countryName)
+          country:countryLabel
       });
 
 	  return file.makeCopy(filename);

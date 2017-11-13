@@ -105,16 +105,27 @@
        }
 
        /**
+        * get the countryLabel node from firebase
+        * @param  {function} onSuccess callback called with the countryRegister object
+        * @return {void}
+        */
+       function getCountryLabels(onSuccess) {
+           firebase.database().ref('/config/countryLabels').once('value').then(function(value) {
+               onSuccess(value);
+           });
+       }
+
+       /**
         * populate the countryName select and the countries global array from firebase
         * @param  {Function} callback callback called on finish, no params
         * @return {void}
         */
        function populateCountries(callback) {
-           getAllCountries(function(data){
-               var countryRegister=data.val();
-               for (var country in countryRegister) {
-                   if (countryRegister.hasOwnProperty(country)) {
-                       $('#countryName').append('<option value="'+ country +'">'+ country +'</option>');
+           getCountryLabels(function(data){
+               var countryLabels=data.val();
+               for (var country in countryLabels) {
+                   if (countryLabels.hasOwnProperty(country)) {
+                       $('#countryName').append('<option value="'+ country +'">'+ countryLabels[country] +'</option>');
                        countries.push(country);
                    }
                }
@@ -584,6 +595,24 @@
       }
 
 
+      /**
+       * removes all spreadsheet from firebase: empty countries node and set all countryRegister property to 'false'. This function doesn't erase the data node
+       * @return {void}
+       */
+      function removeAllSpreadsheetsFromFb() {
+          //prevent redirect actions
+          showLoading(["Connecting to firebase","Removing data from firebase"]);
+          google.script.run
+          .withSuccessHandler(function(){
+              hideLoading();
+          })
+          .withFailureHandler( googleScriptRunFailureHandler(removeAllSpreadsheetsFromFb))
+          .LIB_FUNC("AmisMarketApp.ShareSheet.removeAllSpreadsheetsFromFb", userToken);
+
+          return false;
+      }
+
+
 
        $( document ).ready( function() {
            var unsubOnAuthStateChanged=firebase.auth().onAuthStateChanged(function(user) {
@@ -641,6 +670,8 @@
 
            //start the excel exportation and download the generated excel file
            $("#excelExportBtn").click(excelExport);
+
+           $("#removeAllSpreadsheetsBtn").click(removeAllSpreadsheetsFromFb);
 
 
        } )
