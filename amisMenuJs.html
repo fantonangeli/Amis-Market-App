@@ -612,6 +612,23 @@
           return false;
       }
 
+     /**
+      * update the mapping on firebase (batchRowArray & batchRowColumn)
+      * @return {void}
+      */
+     function updateFbMapping() {
+         //prevent redirect actions
+         showLoading(["Connecting to firebase","Updating data to firebase"]);
+         google.script.run
+         .withSuccessHandler(function(){
+             hideLoading();
+         })
+         .withFailureHandler( googleScriptRunFailureHandler(removeAllSpreadsheetsFromFb))
+         .LIB_FUNC("AmisMarketApp.AmisNamedRanges.DbMapping.updateFbMapping", userToken);
+
+         return false;
+     }
+
 
 
        $( document ).ready( function() {
@@ -673,6 +690,6 @@
 
            $("#removeAllSpreadsheetsBtn").click(removeAllSpreadsheetsFromFb);
 
-
+           $("#updateFbMappingBtn").click(updateFbMapping);
        } )
 </script>

@@ -3,6 +3,7 @@
  * @return {class}
  */
 AmisNamedRanges=new function() {
+	var that=this;
 
 
 	/**
@@ -82,6 +83,118 @@ AmisNamedRanges=new function() {
 
 	 	return this.getCommodityNamedRanges(commodityName);
 	 };
+
+
+
+
+	 /**
+	  * Class to manage the mapping of data between firebase and the db
+	  * @return {object}
+	  */
+	 this.DbMapping = new (function() {
+	   this.parent = that;
+
+	   /**
+	   	 * reads and parse all the rowMap namedRanges of the Spreadsheet
+	   	 * @return {object} the object in the same shape of firebase
+	    */
+	   this.readRows = function() {
+	     var com, namedRanges, retVal;
+	     namedRanges = this.parent.getAllNamedRanges();
+	     retVal = {};
+	     for (com in namedRanges) {
+	       if (namedRanges[com]) {
+	         retVal[com] = this.readCommodityRows(com, namedRanges[com].rowMap);
+	       }
+	     }
+	     return retVal;
+	   };
+
+	   /**
+	   	 * reads and parse all the rowMap namedRanges of a sheet
+	   	 * @param  {string} commodity   the commodity
+	   	 * @param  {object} namedRanges the namedRanges of the commodity (returned from getAllNamedRanges())
+	   	 * @return {array}             array in this form [id]=rowNumber
+	   	 * @throws  "InvalidArgument"
+	    */
+	   this.readCommodityRows = function(commodity, namedRanges) {
+	     var nr, range, retVal, rowNumRegEx;
+	     retVal = {};
+	     rowNumRegEx = /[A-Z]*(\d+):.*/;
+	     if (!commodity || !namedRanges) {
+	       throw "InvalidArgument";
+	     }
+	     for (nr in namedRanges) {
+	       range = namedRanges[nr];
+	       if (range) {
+	         retVal[nr] = Number(range.replace(rowNumRegEx, "$1"));
+	       }
+	     }
+	     return retVal;
+	   };
+
+	   /**
+	   	 * reads and parse all the colMap namedRanges of the Spreadsheet
+	   	 * @return {object} the object in the same shape of firebase
+	    */
+	   this.readCols = function() {
+	     var com, namedRanges, retVal;
+	     namedRanges = this.parent.getAllNamedRanges();
+	     retVal = {};
+	     for (com in namedRanges) {
+	       if (namedRanges[com]) {
+	         retVal[com] = this.readCommodityCols(com, namedRanges[com].colMap);
+	       }
+	     }
+	     return retVal;
+	   };
+
+	   /**
+	   	 * reads and parse all the colMap namedRanges of a sheet
+	   	 * @param  {string} commodity   the commodity
+	   	 * @param  {object} namedRanges the namedRanges of the commodity (returned from getAllNamedRanges())
+	   	 * @return {array}             array in this form [year]=columnLetter
+	   	 * @throws  "InvalidArgument"
+	    */
+	   this.readCommodityCols = function(commodity, namedRanges) {
+	     var colLetRegEx, nr, range, retVal;
+	     retVal = {};
+	     colLetRegEx = /([A-Z]+)\d*:.*/;
+	     if (!commodity || !namedRanges) {
+	       throw "InvalidArgument";
+	     }
+	     for (nr in namedRanges) {
+	       range = namedRanges[nr];
+	       if (range) {
+	         retVal[nr] = range.replace(colLetRegEx, "$1");
+	       }
+	     }
+	     return retVal;
+	   };
+
+	   /**
+	   	 * update the mapping on firebase (batchRowArray & batchRowColumn)
+	   	 * @param  {sting} userToken firebase token
+	   	 * @return {void}
+	   	 * @throws  "InvalidArgument"
+	   	 * @throws  "NamedRangesParsingErr" if error parsing namedRanges
+	    */
+	   this.updateFbMapping = function(userToken) {
+	     var batchRowArray, batchRowColumn;
+	     if (!userToken) {
+	       throw "InvalidArgument";
+	     }
+	     batchRowArray = AmisNamedRanges.DbMapping.readRows();
+	     batchRowColumn = AmisNamedRanges.DbMapping.readCols();
+	     if (!batchRowColumn || !batchRowArray) {
+	       throw "NamedRangesParsingErr";
+	     }
+	     FirebaseConnector.writeOnFirebase(batchRowArray, "/config/batchRowArray", userToken);
+	     FirebaseConnector.writeOnFirebase(batchRowColumn, "/config/batchRowColumn", userToken);
+	   };
+	 });
+
+
 
 
 };
