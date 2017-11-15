@@ -600,6 +600,11 @@
        * @return {void}
        */
       function removeAllSpreadsheetsFromFb() {
+
+          if (!confirm("Want to removes all spreadsheet from firebase?")) {
+              return false;
+          }
+
           //prevent redirect actions
           showLoading(["Connecting to firebase","Removing data from firebase"]);
           google.script.run
