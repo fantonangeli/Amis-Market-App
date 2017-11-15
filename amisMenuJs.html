@@ -623,11 +623,31 @@
          .withSuccessHandler(function(){
              hideLoading();
          })
-         .withFailureHandler( googleScriptRunFailureHandler(removeAllSpreadsheetsFromFb))
+         .withFailureHandler( googleScriptRunFailureHandler(updateFbMapping))
          .LIB_FUNC("AmisMarketApp.AmisNamedRanges.DbMapping.updateFbMapping", userToken);
 
          return false;
      }
+
+    /**
+     * reads All NamedRanges and print them in console
+     * @return {void}
+     */
+    function getAllNamedRanges() {
+        //prevent redirect actions
+        showLoading(["Reading"]);
+        google.script.run
+        .withSuccessHandler(function(data){
+            console.log('namedRanges', data);
+            hideLoading();
+        })
+        .LIB_FUNC("AmisMarketApp.AmisNamedRanges.getAllNamedRanges");
+
+        return false;
+    }
+
+
+
 
 
 

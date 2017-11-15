@@ -49,7 +49,7 @@ AmisNamedRanges=new function() {
 	this.getAllNamedRanges=function() {
 		var namedRanges=APPCache.get("namedRanges");
 		if (!namedRanges) {
-			namedRanges=this.parseAllNamedRanges();
+			namedRanges=AmisNamedRanges.parseAllNamedRanges();
 			APPCache.put("namedRanges", namedRanges);
 		}
 		return namedRanges;
