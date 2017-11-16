@@ -267,12 +267,12 @@
            	} ).catch( function( error ) {
                 console.log('ERROR', error);
 
-                if (error.hasOwnProperty("code") && error.code==="auth/operation-not-supported-in-this-environment") {
+                if (error.code && error.code==="auth/operation-not-supported-in-this-environment") {
                     google.script.run.LIB_FUNC("AmisMarketApp.Utility.popUpAlert", "Your browser is not supported. Please use Chrome or Firefox.");
                     google.script.host.close();
                     return;
-                } else if(error.code && error.code==="auth/popup-closed-by-user"){
-                    google.script.run.LIB_FUNC("AmisMarketApp.Utility.popUpAlert","Something went wrong with the login or the network doesn\'t work.\\nPlease try to reopen the sidebar.");
+                } else if(error.code && /^auth\/.*/.test(error.code)){
+                    google.script.run.LIB_FUNC("AmisMarketApp.Utility.popUpAlert",error.message+"\\nPlease try to reopen the sidebar.");
                     google.script.host.close();
                     return;
                 }
