@@ -271,7 +271,7 @@
                     google.script.run.LIB_FUNC("AmisMarketApp.Utility.popUpAlert", "Your browser is not supported. Please use Chrome or Firefox.");
                     google.script.host.close();
                     return;
-                } else if(error.code && /^auth\/.*/.test(error.code)){
+                } else if(error.code && /^auth\/.*/.test(error.code) && error.code!=="auth/popup-blocked"){
                     google.script.run.LIB_FUNC("AmisMarketApp.Utility.popUpAlert",error.message+"\\nPlease try to reopen the sidebar.");
                     google.script.host.close();
                     return;
