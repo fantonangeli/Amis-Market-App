@@ -232,6 +232,9 @@
 
                  onSuccess();
              } );
+         }, function(error){
+             google.script.run.LIB_FUNC( "AmisMarketApp.Utility.popUpAlert", "User "+user.email+" is not authorized!");
+             google.script.host.close();
          });
        }
 
