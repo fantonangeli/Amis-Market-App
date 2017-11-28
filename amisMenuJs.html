@@ -182,7 +182,7 @@
            //hide form show menu logged in
            //----------------------------------
            //google.script.run.hideShow();
-           firebase.database().ref('/users_data/' + user.uid).once('value').then(function(snapshot) {
+           firebase.database().ref('/users_data/' + user.email.replace(/\./g, "%")).once('value').then(function(snapshot) {
              user_data = snapshot.val();
 
              if(!user_data){
