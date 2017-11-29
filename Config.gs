@@ -48,7 +48,7 @@ var Config={
 	 * email address for errors informations
 	 * @type {String}
 	 */
-	errorEmail:"amis.outlook.fao@gmail.com",
+	errorEmail:"",
 
 	/**
 	 * the keyword to recognize the master spreadsheet by the filename
@@ -66,7 +66,7 @@ var Config={
 	 * accounts that can edit All spreadsheet
 	 * @type {String}
 	 */
-	secretariatAccount:"secretariat.amis@gmail.com",
+	secretariatAccount:"",
 
 	/**
 	 * the keyword to recognize the template spreadsheet by the filename
