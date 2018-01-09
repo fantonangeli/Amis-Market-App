@@ -56,6 +56,14 @@ var ProtectionMaker = new function() {
 
 
 
+
+
+
+
+
+
+
+
 	/**
 	 * restore the styles, formulas, values and the formatting from the template
 	 * @param {object} spreadsheet [optional] the spreadsheet

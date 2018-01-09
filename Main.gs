@@ -33,6 +33,8 @@ function onEdit(e){
     if( !Utility.isTemplate() && !Utility.isMaster() ) {
       activeRangeA1=e.range.getA1Notation();
 
+
+
       //forecast methodologies on edit
       ForecastingMethodologies.onEdit(e);
 

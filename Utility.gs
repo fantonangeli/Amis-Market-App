@@ -88,11 +88,21 @@ Utility.toggleTemplates=function(show){
 
 /**
  * get Template sheet by commodities
- * @param {string} name of commodity (eg. 'maize')
+ * @param {string} commodity name of commodity (eg. 'maize')
  * @return {SHEET} template sheet
  */
 Utility.getTemplateByCommodity = function(commodity) {
   return SpreadsheetApp.getActiveSpreadsheet().getSheetByName(Config.templatePrefix+commodity);
+};
+
+/**
+ * get Template sheet by sheetName
+ * @param {string} spreadsheetName (optional) the spreadsheet name
+ * @return {SHEET} template sheet
+ */
+Utility.getTemplateBySpreadSheetName=function(spreadsheetName){
+    spreadsheetName=(spreadsheetName || SpreadSheetCache.getActiveSheetName());
+    return SpreadsheetApp.getActiveSpreadsheet().getSheetByName(Config.templatePrefix+spreadsheetName);
 };
 
 
