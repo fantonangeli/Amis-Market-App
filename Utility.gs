@@ -100,9 +100,32 @@ Utility.getTemplateByCommodity = function(commodity) {
  * @param {string} spreadsheetName (optional) the spreadsheet name
  * @return {SHEET} template sheet
  */
-Utility.getTemplateBySpreadSheetName=function(spreadsheetName){
+Utility.getTemplateBySheetName=function(spreadsheetName){
     spreadsheetName=(spreadsheetName || SpreadSheetCache.getActiveSheetName());
     return SpreadsheetApp.getActiveSpreadsheet().getSheetByName(Config.templatePrefix+spreadsheetName);
+};
+
+/**
+ * @deprecated use Utility.getTemplateBySheetName
+ */
+Utility.getTemplateBySpreadSheetName=Utility.getTemplateBySheetName;
+
+/**
+ * get the template object for a shee:
+ * @param  {SHEET} sheet the sheet
+ * @return {SHEET}       the template
+ * @throws {InvalidArgument}
+ */
+Utility.getTemplateBySheetObj=function(sheet){
+    var sheetName;
+
+    if (!sheet) {
+        throw "InvalidArgument";
+    }
+
+    sheetName=sheet.getName();
+
+    return Utility.getTemplateBySheetName(sheetName);
 };
 
 

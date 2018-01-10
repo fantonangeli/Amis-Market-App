@@ -25,15 +25,21 @@ function openSidebar(){
 /**
  * function called on the onEdit event
  * @param  {object} e the event
+ * @return {void}
  */
 function onEdit(e){
-    var activeRangeA1;
+    var activeRangeA1, sheetName, template, sheet;
 
     //IF user is NOT editing a Template Sheet. Do normal logic.
     if( !Utility.isTemplate() && !Utility.isMaster() ) {
+
+      sheet=SpreadSheetCache.getActiveSheet();
+      template=Utility.getTemplateBySheetObj(sheet);
       activeRangeA1=e.range.getA1Notation();
 
-
+      if (!ProtectionMaker.validateColumnNumber(sheet, template)) {
+          return;
+      }
 
       //forecast methodologies on edit
       ForecastingMethodologies.onEdit(e);

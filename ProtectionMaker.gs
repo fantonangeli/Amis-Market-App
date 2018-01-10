@@ -1,5 +1,41 @@
 var ProtectionMaker = new function() {
 
+
+    /**
+     * check if user added or removed a column and shows an error and send an email to amis.outlook
+	 * @param {object} sheet the sheet
+	 * @param {object} template the template sheet
+	 * @param {string} sheetName (optional) the sheetName
+     * @return {bool}              true if ok, false otherwise
+	 * @throws {InvalidArgument}
+     */
+    this.validateColumnNumber=function(sheet, template, sheetName){
+        var scn, tcn;
+
+        if (!sheet, !template) {
+            throw "InvalidArgument";
+        }
+
+
+        scn=sheet.getLastColumn();
+        tcn=template.getLastColumn();
+
+        if(scn===tcn){
+            return true;
+        }
+
+
+        sheetName=(sheetName || sheet.getName());
+
+        //if column differs ask user for confirmation to restore the sheet from the database and fix the error.
+        Browser.msgBox("The column number of the "+sheetName+" sheet differs from the original, please click on the 'Edit' menu, then the 'Undo' button.\\nThen try to click on the 'Validate' button.");
+
+        return false;
+    };
+
+
+
+
 	/**
 	 * validate the current sheet, restore styles and formulas
 	 * @param  {array} sheetValues [optional] sheet's data
