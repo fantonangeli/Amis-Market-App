@@ -71,8 +71,11 @@ var SyncMasterSheet=new function(){
 		}
 
 		Utility.forEachSheet( null, /^[A-Za-z]+$/, function( sheet, sheetName ) {
-			//in the call back we load data for all the commodities
+			//fetch lastupdate date
+            SyncMasterSheet.getLastUpdate(sheet);
+            //in the call back we load data for all the commodities
 			SyncMasterSheet.startFetchLoadAllData( userToken, spreadsheet, sheet, sheetName, false, country );
+          
 		} );
 
 		Utility.toastInfo( 'Data successfully loaded from the AMIS database', 'DATA SAVED' );
@@ -269,11 +272,12 @@ var SyncMasterSheet=new function(){
 			throw "InvalidSheetData";
 		}
 
+      	SyncMasterSheet.setLastUpdate( sheet );
 		sheetValues = SyncMasterSheet.formatAllLastDate( sheetValues );
 
 
 		//SyncMasterSheet.syncMasterSheet(sheetValues,userToken,baseOfSaveNode, sheet);
-		SyncMasterSheet.setLastUpdate( sheet );
+		//SyncMasterSheet.setLastUpdate( sheet );
 
 		return sheetValues;
 	};
@@ -426,6 +430,36 @@ var SyncMasterSheet=new function(){
    	sheet.getRange( lastUpdateCell ).setValue( date );
    };
 
+  
+  /**
+   * get from Database the current lastUpdateCell in the current sheet
+   * @param {object} sheet [optional] the sheet
+   * @return {void}
+   * @throws {InvalidArgument}
+   */
+   this.getLastUpdate = function( sheet ) {
+   	if ( sheet === null ) {
+   		throw "InvalidArgument";
+   	}
+
+   	sheet = ( sheet || SpreadSheetCache.getActiveSheet() );
+   	
+     var userToken= userToken || FirebaseConnector.getToken();
+     var countrySelected = countrySelected || FirebaseConnector.getCountryNameFromSheet(userToken);
+     var fbData, fireBaseDate, baseOfSaveNode= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/'+ countrySelected+'Data'+ '/' + sheet.getSheetName().toLowerCase();
+     
+     fbData=FirebaseConnector.getFireBaseDataParsed(baseOfSaveNode, userToken); 
+     
+     var lastUpdateCell = AmisNamedRanges.getCommodityNamedRanges().lastUpdateCell.cell;
+     //get Firebase node name to be fetch
+     fireBaseDate=Utility.getRangeValuesFromArray(fbData, lastUpdateCell+':'+lastUpdateCell);
+     var fireBaseDateFormatted = moment(new Date(fireBaseDate).toISOString()).utc().format(Config.lastUpdatedDateDBFormat);
+     
+     if (fbData) {       
+       sheet.getRange(lastUpdateCell).setValue(fireBaseDateFormatted);
+       sheet.getRange(lastUpdateCell).setNumberFormat(Config.lastUpdatedDateSheetFormat);
+     }    
+   };
 
 
    /**
