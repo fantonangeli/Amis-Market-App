@@ -1,6 +1,7 @@
 var ProtectionMaker = new function() {
 
 
+
     /**
      * check if user added or removed a column and shows an error and send an email to amis.outlook
 	 * @param {object} sheet the sheet

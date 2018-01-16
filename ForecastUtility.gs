@@ -1,11 +1,66 @@
 var ForecastUtility=new function(){
 
-  //------------------------------------------------------------------------------------------------------------------
+    /**
+     * check if the activeRange is in the first column of a period
+     * @param  {string} activeRangeA1 the active range in A1A1Notation
+	 * @param {string} commodityName (optional) the commodity name
+     * @return {bool}               true if edited, false otherwise
+	 * @throws {InvalidArgument}
+     */
+    this.editedWrongForecast=function(activeRangeA1, commodity){
+        var blockedRanges=[], isCell=false, isRange=false;
+
+        commodity=(commodity || FirebaseConnector.getCommodityName());
+
+        if (!activeRangeA1) {
+            throw "InvalidArgument";
+        }
+
+        blockedRanges=[].concat(
+            ForecastUtility.getFirstFcOfPeriod(0),
+            ForecastUtility.getFirstFcOfPeriod(1)
+        );
+
+        isRange=Utility.isRange(activeRangeA1);
+        isCell=Utility.isCell(activeRangeA1);
+
+        for (var i = 0, blockedRanges_length=blockedRanges.length, r; r=blockedRanges[i], i<blockedRanges_length; i++) {
+            if (isRange && Utility.isRangesOverlap(r, activeRangeA1)) {
+                return true;
+            }else if (isCell && Utility.isInRange(r, activeRangeA1)) {
+                return true;
+            }
+        }
+
+        return false;
+
+    };
+
+
+
+    /**
+     * get the first forecast of a period
+     * @param  {int} periodIndex period you want (EG.  0 for periodA , 1 periodB )
+	 * @param {string} commodityName (optional) the commodity name
+     * @return {[string]}             array of ranges of the column
+     */
+    this.getFirstFcOfPeriod = function( periodIndex, commodity ) {
+       if ( !periodIndex && periodIndex!==0 ) {
+          throw "InvalidArgument";
+       }
+
+       var periodNR = Config.addNewForecastNamedRange[ periodIndex ];
+
+       if ( !periodNR ) {
+          throw "InvalidPeriod";
+       }
+
+       return AmisNamedRanges.getCommodityNamedRanges(commodity)[ periodNR[ 0 ] ];
+    };
   /**
   * ADD A NEW FORECAST on the google sheet
   * @param  {int} the period you want (EG.  0 for periodA , 1 periodB )
   */
-  //------------------------------------------------------------------------------------------------------------------
   this.addNewForecast= function(zeroOrOne){
 
     //get from config the named ranges
@@ -20,12 +75,10 @@ var ForecastUtility=new function(){
 
   };
 
-   //------------------------------------------------------------------------------------------------------------------
   /**
   * copy values of the last forecast
   * @param  {Range}
   */
-  //------------------------------------------------------------------------------------------------------------------
   this.copyValuesBetweenForecasts= function(rangesFrom,rangesTo){
 
     var length = rangesTo.length;
@@ -36,12 +89,10 @@ var ForecastUtility=new function(){
     }
   };
 
-   //------------------------------------------------------------------------------------------------------------------
   /**
   * blank a forecast
   * @param  {Range}
   */
-  //------------------------------------------------------------------------------------------------------------------
   this.blankForecast= function(rangesToBeBlanked){
 
     var length = rangesToBeBlanked.length;
@@ -87,77 +138,57 @@ var ForecastUtility=new function(){
   };
 
 
-  //------------------------------------------------------------------------------------------------------------------
   /**
   * ADD A NEW FORECAST on the google sheet
   * @param  {string} the period you want
   */
-  //------------------------------------------------------------------------------------------------------------------
   this.addForecastByPeriod= function(period){
     SpreadSheetCache.getActiveSheet().getRange('V10:V31').copyTo( SpreadSheetCache.getActiveSheet().getRange('U10:U31'), {contentsOnly:true});
 
   };
-  //------------------------------------------------------------------------------------------------------------------
   // END --   ADD A NEW FORECAST on the google sheet
-  //------------------------------------------------------------------------------------------------------------------
 
-  //------------------------------------------------------------------------------------------------------------------
   /**
   * TODO_ delete... DEPRECATED! ADD A NEW FORECAST on the google sheet
   * @param  {string} auth token
   */
-  //------------------------------------------------------------------------------------------------------------------
   this.addForecast16_17= function(userToken){
     var period = '16-17';
     ForecastUtility.addForecast(period,userToken);
   };
-  //------------------------------------------------------------------------------------------------------------------
   // END --   ADD A NEW FORECAST on the google sheet
-  //------------------------------------------------------------------------------------------------------------------
 
-  //------------------------------------------------------------------------------------------------------------------
   /**
   * TODO_ delete... DEPRECATED! ADD A NEW FORECAST 17-18
   * @param  {string} auth token
   */
-  //------------------------------------------------------------------------------------------------------------------
   this.addForecast17_18= function(userToken){
     var period = '17-18';
     ForecastUtility.addForecast(period,userToken);
   };
-  //------------------------------------------------------------------------------------------------------------------
   // END --   ADD A NEW FORECAST on the google sheet
-  //------------------------------------------------------------------------------------------------------------------
 
-    //------------------------------------------------------------------------------------------------------------------
   /**
   * ADD A NEW FORECAST on the google sheet FOR SECRETARIET
   * @param  {string} auth token
   */
-  //------------------------------------------------------------------------------------------------------------------
   this.addForecast16_17_Secretariet= function(userToken,chosenCountry){
     chosenCountry = getSecretariatCountry();
     var period = '16-17';
     ForecastUtility.addForecastSecretariet(period,userToken,chosenCountry);
   };
-  //------------------------------------------------------------------------------------------------------------------
   // END --   ADD A NEW FORECAST on the google sheet FOR SECRETARIET
-  //------------------------------------------------------------------------------------------------------------------
 
-  //------------------------------------------------------------------------------------------------------------------
   /**
   * ADD A NEW FORECAST 17-18 FOR SECRETARIET
   * @param  {string} auth token
   */
-  //------------------------------------------------------------------------------------------------------------------
   this.addForecast17_18_Secretariet= function(userToken, chosenCountry){
     chosenCountry = getSecretariatCountry();
     var period = '17-18';
     ForecastUtility.addForecastSecretariet(period,userToken,chosenCountry);
   };
-  //------------------------------------------------------------------------------------------------------------------
   // END --   ADD A NEW FORECAST on the google sheet FOR SECRETARIET
-  //------------------------------------------------------------------------------------------------------------------
 
   /**
    * hide period's unactive columns for ALL period
@@ -264,12 +295,10 @@ var ForecastUtility=new function(){
   };
 
 
-  //------------------------------------------------------------------------------------------------------------------
   /**
 	 * ADD A NEW FORECAST on the google sheet
      * @param  {string} auth token
 	 */
-  //------------------------------------------------------------------------------------------------------------------
   this.addForecast= function(period,userToken){
 
     var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);
@@ -309,16 +338,12 @@ var ForecastUtility=new function(){
     ForecastUtility.hideColumnForNewForecasts(firstForecastColumnPosition,lastForecastColumnPosition, actualForecastColumnPosition);
 
   };
-  //------------------------------------------------------------------------------------------------------------------
   // END --   ADD A NEW FORECAST on the google sheet
-  //------------------------------------------------------------------------------------------------------------------
 
-  //------------------------------------------------------------------------------------------------------------------
   /**
 	 * ADD A NEW FORECAST on the google sheet FOR SECRETARIET
      * @param  {string} auth token
 	 */
-  //------------------------------------------------------------------------------------------------------------------
   this.addForecastSecretariet = function(period,userToken,chosenCountry){
 
     var countryName =  chosenCountry;
@@ -504,7 +529,6 @@ var ForecastUtility=new function(){
   /**
 	 * function called to hide all the forecast for previus year except the last one FOR SECRETARIAT
 	 */
-  //------------------------------------------------------------------------------------------------------------------
   this.hideAllPreviousForecastsSecretariat = function (userToken, isNeedingCommodityName, sheetChosenCommodityName){
     var sheet;
     var config=AmisNamedRanges.getCommodityNamedRanges().previousForecast;
@@ -528,9 +552,7 @@ var ForecastUtility=new function(){
     }
 
   };
-  //------------------------------------------------------------------------------------------------------------------
   // END -- function called to hide all the forecast for previus year except the last one FOR SECRETARIAT
-  //------------------------------------------------------------------------------------------------------------------
 
   this.hideColumnForNewForecasts= function (firstForecastColumnPosition,lastForecastColumnPosition, actualForecastColumnPosition){
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
