@@ -10,11 +10,11 @@ var ForecastUtility=new function(){
     this.editedWrongForecast=function(activeRangeA1, commodity){
         var blockedRanges=[], isCell=false, isRange=false;
 
-        commodity=(commodity || FirebaseConnector.getCommodityName());
-
         if (!activeRangeA1) {
             throw "InvalidArgument";
         }
+        
+        commodity=(commodity || FirebaseConnector.getCommodityName());
 
         blockedRanges=[].concat(
             ForecastUtility.getFirstFcOfPeriod(0),

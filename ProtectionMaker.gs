@@ -1,5 +1,25 @@
 var ProtectionMaker = new function() {
 
+    /**
+     * protect the first column of a period
+     * @param  {string} activeRangeA1 the active range in A1A1Notation
+     * @return {bool}              true if ok, false otherwise
+     */
+    this.protectWrongForecast = function( activeRangeA1 ) {
+       if ( !activeRangeA1 ) {
+          return true;
+       }
+
+       if ( ForecastUtility.editedWrongForecast( activeRangeA1 ) ) {
+
+          Browser.msgBox( "You are trying to edit a wrong column of a forecasting period.\\nPlease click on the 'Undo' button of the sidebar on the right.");
+
+          return false;
+       }
+
+       return true;
+    };
+
 
 
     /**

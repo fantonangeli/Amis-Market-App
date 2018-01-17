@@ -28,7 +28,7 @@ function openSidebar(){
  * @return {void}
  */
 function onEdit(e){
-    var activeRangeA1, template, sheet, token;
+    var activeRangeA1, template, sheet;
 
     //IF user is NOT editing a Template Sheet. Do normal logic.
     if( !Utility.isTemplate() && !Utility.isMaster() ) {
@@ -41,10 +41,10 @@ function onEdit(e){
           return;
       }
 
-      if(ProtectionMaker.editedWrongForecast(activeRangeA1)){
-          token=FirebaseConnector.getToken();
-          AmisMarketApp.SyncMasterSheet.startFetch(token,false);
+      if (!ProtectionMaker.protectWrongForecast(activeRangeA1)) {
+          return;
       }
+
 
       //forecast methodologies on edit
       ForecastingMethodologies.onEdit(e);
