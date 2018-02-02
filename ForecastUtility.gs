@@ -1,5 +1,36 @@
 var ForecastUtility=new function(){
 
+
+
+    /**
+     * gets the historical columns number
+	 * @param {string} commodityName the commodity name
+     * @return {object} object with the columns number {first, last}
+	 * @throws {InvalidArgument}
+     * @throws {SheetNotFound} if the given sheet is not found
+     */
+    this.getHistoricalColNum=function(commodityName){
+        var config, firstCol, lastCol, previousForecast;
+
+        if (!commodityName) {
+            throw "InvalidArgument";
+        }
+
+        config = AmisNamedRanges.getCommodityNamedRanges(commodityName);
+
+        if (!config) {
+            throw "SheetNotFound";
+        }
+
+        previousForecast=config.previousForecast;
+
+        firstCol=ConvertA1.colA1ToIndex(previousForecast.first.split(":")[0],1);
+        lastCol=ConvertA1.colA1ToIndex(previousForecast.last.split(":")[0],1);
+
+        return {first:firstCol, last:lastCol};
+    };
+
+
     /**
      * check if the activeRange is in the first column of a period
      * @param  {string} activeRangeA1 the active range in A1A1Notation
@@ -13,7 +44,7 @@ var ForecastUtility=new function(){
         if (!activeRangeA1) {
             throw "InvalidArgument";
         }
-        
+
         commodity=(commodity || FirebaseConnector.getCommodityName());
 
         blockedRanges=[].concat(
@@ -427,11 +458,7 @@ var ForecastUtility=new function(){
     var sheet = SpreadSheetCache.getActiveSheet();
     //var userToken=FirebaseConnector.getToken();
 
-    config = AmisNamedRanges.getCommodityNamedRanges().previousForecast;
-
-    firstCol=ConvertA1.colA1ToIndex(config.first.split(":")[0],1);
-    lastCol=ConvertA1.colA1ToIndex(config.last.split(":")[0],1);
-
+y
     //ForecastUtility.hideAllPeriodUnactiveColumns(userToken);
 
     sheet.showColumns(firstCol, lastCol-firstCol);

@@ -110,12 +110,6 @@ var Config={
 	 */
 	addNewForecastNamedRange:[ ['addFrcA1','addFrcA2'],['addFrcB1','addFrcB2'] ],
 
-     /**
-	 * range of restoring stylesheet
-	 * @type {string}
-	 */
-	rangeOfRestoreSheetStyle: 'C:AE',
-
     /**
 	 * Named ranges for forecast's notes
 	 * @type {[string]}

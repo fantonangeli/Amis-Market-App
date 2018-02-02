@@ -656,6 +656,23 @@
 
 
 
+    /**
+     * change the seasons of the forecasts by adding a new year
+     * @return {void}
+     */
+    function addYear(){
+         //prevent redirect actions
+        showLoading(["Reading database", "Switching forecasts", "Creating new season", "Saving data"]);
+        google.script.run
+        .withSuccessHandler(function(data){
+            console.log('namedRanges', data);
+            hideLoading();
+        })
+        .withFailureHandler( googleScriptRunFailureHandler(addYear))
+        .LIB_FUNC("AmisMarketApp.Seasons.changeSeason", userToken);
+
+        return false;
+    }
 
 
 
@@ -719,5 +736,7 @@
            $("#removeAllSpreadsheetsBtn").click(removeAllSpreadsheetsFromFb);
 
            $("#updateFbMappingBtn").click(updateFbMapping);
+
+           $("#addYear").click(addYear);
        } )
 </script>

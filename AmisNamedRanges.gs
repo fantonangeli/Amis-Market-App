@@ -55,6 +55,16 @@ AmisNamedRanges=new function() {
 		return namedRanges;
 	};
 
+
+	/**
+	 * Removes all named range from the cache.
+	 * @return {void}
+	 */
+	this.clearNamedRanges=function() {
+        APPCache.remove("namedRanges");
+	};
+
+
 	/**
 	 * return all namedRanges of the current commodity
 	 * @param {string} commodityName the commodity name

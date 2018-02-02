@@ -9,6 +9,7 @@ ConvertA1 = new AmisLib.ConvertA1Class();
 SpreadSheetCache = new AmisLib.SpreadSheetCache();
 APPCache=new AmisLib.APPCache(Config.cacheExpirationInSeconds);
 moment=AmisLib.moment;
+AmisRange=AmisLib.AmisRange;
 
 
 /**
@@ -89,6 +90,41 @@ FirebaseConnector.getCountryLabel=function(countryName, userToken){
 	}
 
 	return countryLabel;
+};
+
+
+/**
+ * gets the templateCompiler node path for a country
+ *
+ * @param {string} country the country
+ * @returns {string} the node path
+ * @throws {InvalidArgument}
+ */
+FirebaseConnector.getSpreadSheetTemplateCompilerNode=function(country){
+    if (!country) {
+        throw "InvalidArgument";
+    }
+            
+	return 'config/templateCompiler/'+country;
+};
+
+/**
+ * gets the templateCompiler node from firebase
+ *
+ * @param {string} country the country
+ * @param  {string} userToken auth token
+ * @return {object}           the object of the firebase node
+ * @throws {InvalidArgument}
+ */
+FirebaseConnector.getSpreadSheetTemplateCompiler=function(country, userToken){
+	var sheetConfigNode;
+
+	if (!country || !userToken) {
+		throw "InvalidArgument";
+	}
+
+	sheetConfigNode=FirebaseConnector.getSpreadSheetTemplateCompilerNode(country);
+	return FirebaseConnector.getFireBaseDataParsed(sheetConfigNode,userToken);
 };
 
 /**

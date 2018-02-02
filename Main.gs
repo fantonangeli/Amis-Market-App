@@ -51,6 +51,10 @@ function onEdit(e){
 
       //set the last date on edit event
       LastDateUpdater.onEditSetLastUpdateDate(e, activeRangeA1);
+
+      //sets the B4 cell
+      SyncMasterSheet.setLastUpdate();
+
     }
 }
 

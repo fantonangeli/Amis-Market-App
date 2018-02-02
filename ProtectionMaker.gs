@@ -138,7 +138,7 @@ var ProtectionMaker = new function() {
    	 	}
 
  		var ss = sheet;
-         var rangeToBeRestored = Config.rangeOfRestoreSheetStyle;
+        var rangeToBeRestored = AmisNamedRanges.getCommodityNamedRangesBySheet(ss).rangeOfRestoreSheetStyle[0];
 
 
  		ss.getRange( rangeToBeRestored ).setDataValidation( null );

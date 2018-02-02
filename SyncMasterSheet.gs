@@ -75,7 +75,7 @@ var SyncMasterSheet=new function(){
             SyncMasterSheet.getLastUpdate(sheet);
             //in the call back we load data for all the commodities
 			SyncMasterSheet.startFetchLoadAllData( userToken, spreadsheet, sheet, sheetName, false, country );
-          
+
 		} );
 
 		Utility.toastInfo( 'Data successfully loaded from the AMIS database', 'DATA SAVED' );
@@ -167,7 +167,7 @@ var SyncMasterSheet=new function(){
 				  }
 				}
 			  }
-			  
+
 			  ProtectionMaker.validateSheet(sheetValues, spreadsheet, sheet);
 
 			  ForecastUtility.hideAllPreviousForecasts(sheet);
@@ -272,12 +272,11 @@ var SyncMasterSheet=new function(){
 			throw "InvalidSheetData";
 		}
 
-      	SyncMasterSheet.setLastUpdate( sheet );
+      	//SyncMasterSheet.setLastUpdate( sheet );
 		sheetValues = SyncMasterSheet.formatAllLastDate( sheetValues );
 
 
 		//SyncMasterSheet.syncMasterSheet(sheetValues,userToken,baseOfSaveNode, sheet);
-		//SyncMasterSheet.setLastUpdate( sheet );
 
 		return sheetValues;
 	};
@@ -304,71 +303,6 @@ var SyncMasterSheet=new function(){
 		Utility.toastInfo( 'Data successfully saved to the AMIS database', 'DATA SAVED' );
 	};
 
-
-
-
-  /**
-  * Saving Sheet Data function FOR SECRETARIET
-  * @param  {string} auth token
-  * @deprecated not used. Reason: chenged implementation for secretariat to access directly to sheets
-  */
-  this.startSyncSecretariet=function(userToken,chosenCountry) {
-    chosenCountry = getSecretariatCountry();
-    //hide old forecasts leaving only the last one
-    ForecastUtility.hideAllPreviousForecastsSecretariat(userToken);
-    //hide new frc unactive columns
-    ForecastUtility.hideAllPeriodUnactiveColumnsSecretariat(userToken);
-
-    //Get the currently active sheet
-    var sheetValues=SpreadSheetCache.getActiveSheetValues();
-
-    var dataToBeStored={},currRange, saveNode,baseOfSaveNode, fmRanges;
-
-    var rangeFromConfig= SyncMasterSheet.getRangeToBeStored(userToken);
-    fmRanges = ForecastingMethodologies.getFMRanges();
-
-    //loop all the ranges stored in firebase
-    for (var p=0; p<rangeFromConfig.length;p++){
-      currRange=rangeFromConfig[p];
-      dataToBeStored[currRange]=SyncMasterSheet.getRangeValuesToBeStored(sheetValues,currRange, fmRanges);
-    }
-
-    baseOfSaveNode= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/'+ SyncMasterSheet.getNodeToWriteDataSecretariat(userToken,chosenCountry)+ '/' + FirebaseConnector.getCommodityName();
-    SyncMasterSheet.syncMasterSheet(dataToBeStored,userToken,baseOfSaveNode);
-
-    var commodityName = FirebaseConnector.getCommodityName();
-
-
-    var countryName =  FirebaseConnector.getCountryNameFromSheet(userToken);
-
-    Utility.toastInfo('Data successfully saved to the AMIS database', 'DATA SAVED');
-};
-
-  /**
-  * logic for saving Excel on firebase
-  *  @param  excel data
-  *  @param  {string} auth token
-  *  @deprecated in favour of the new 'save all' system
-  */
-  this.syncMasterSheet=function(excelData,userToken, saveNode, sheet) {
-
-    FirebaseConnector.writeOnFirebase(excelData,saveNode,userToken);
-
-    SyncMasterSheet.setLastUpdate(sheet);
-
-
-
-
-    };
-  //---------------------------------------------------------
-  // END --- logic for saving Excel on firebase
-  //---------------------------------------------------------
-
-  //---------------------------------------------------------
-  //---------------------------------------------------------
-  // TODO functions that retrives values
-  //---------------------------------------------------------
-  //---------------------------------------------------------
 
   /**
 	 *  retrive the absolute firebase node where write data
@@ -430,7 +364,7 @@ var SyncMasterSheet=new function(){
    	sheet.getRange( lastUpdateCell ).setValue( date );
    };
 
-  
+
   /**
    * get from Database the current lastUpdateCell in the current sheet
    * @param {object} sheet [optional] the sheet
@@ -443,22 +377,22 @@ var SyncMasterSheet=new function(){
    	}
 
    	sheet = ( sheet || SpreadSheetCache.getActiveSheet() );
-   	
+
      var userToken= userToken || FirebaseConnector.getToken();
      var countrySelected = countrySelected || FirebaseConnector.getCountryNameFromSheet(userToken);
      var fbData, fireBaseDate, baseOfSaveNode= JSON.parse(SyncMasterSheet.getAbsoluteDataSheetPath(userToken))+ '/'+ countrySelected+'Data'+ '/' + sheet.getSheetName().toLowerCase();
-     
-     fbData=FirebaseConnector.getFireBaseDataParsed(baseOfSaveNode, userToken); 
-     
+
+     fbData=FirebaseConnector.getFireBaseDataParsed(baseOfSaveNode, userToken);
+
      var lastUpdateCell = AmisNamedRanges.getCommodityNamedRanges().lastUpdateCell.cell;
      //get Firebase node name to be fetch
      fireBaseDate=Utility.getRangeValuesFromArray(fbData, lastUpdateCell+':'+lastUpdateCell);
      var fireBaseDateFormatted = moment(new Date(fireBaseDate).toISOString()).utc().format(Config.lastUpdatedDateDBFormat);
-     
-     if (fbData) {       
+
+     if (fbData) {
        sheet.getRange(lastUpdateCell).setValue(fireBaseDateFormatted);
        sheet.getRange(lastUpdateCell).setNumberFormat(Config.lastUpdatedDateSheetFormat);
-     }    
+     }
    };
 
 
