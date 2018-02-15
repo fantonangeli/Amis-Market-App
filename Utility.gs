@@ -14,7 +14,8 @@ Utility.openSidebar = function() {
 	devMode = Config.devMode;
     secretariatMode = Utility.isSecretariat();
     spreadSheetId =  Utility.getGoogleSheetID();
-
+    isMaster=Utility.isMaster(spreadsheet);
+    
 	var html = HtmlService.createTemplateFromFile( 'amisMenu' )
 		.evaluate()
 		.setTitle( 'Amis' )

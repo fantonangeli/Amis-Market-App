@@ -194,6 +194,8 @@ var Seasons=new function(){
  			throw "InvalidArgument";
  		}
 
+        year++;
+
  		sheetConfigNode=FirebaseConnector.getSheetConfigNode(spreadSheetId)+"/year";
 
  		FirebaseConnector.writeOnFirebase(year,sheetConfigNode,userToken);
@@ -321,32 +323,93 @@ var Seasons=new function(){
 
         
         spreadSheet=(spreadSheet || SpreadsheetApp.getActiveSpreadsheet());
+        
 
         spreadSheetId=spreadSheet.getId();
         ssYear=Seasons.getCurrentYearOfSeason(spreadSheetId, token);
         country=FirebaseConnector.getCountryNameFromSheet(token);
 
-        //validate the user request: ssYear==(currYear-1)
+        // validate the user request: ssYear==(currYear-1)
         if (ssYear>=(moment().year())) {
+            Browser.msgBox("The year of season is already "+ssYear+"!");
             throw "InvalidSpreadSheetYear";
         }
-
-        Seasons.moveOldForecastToHistoricalDataAllSheets(spreadSheet, ssYear);
-
-        //refresh all namedRange
-        AmisNamedRanges.clearNamedRanges();
-
-        //add new period
-        Seasons.newYearPeriodsAllSheets(spreadSheet, ssYear);
-
-        Seasons.newYearUpdateTemplateCompiler(spreadSheet, country, token);
-
-        //update notes
-        Seasons.newYearUpdateDb(spreadSheetId, ssYear, token);
         
-        //TODO refresh of the notes
-        //TODO save the spreadsheet
-        //TODO write the year on spreadSheet creation
-        //TODO in case of exception show a error 
+        ProtectionMaker.validateAllSheet(spreadSheet);
+
+        try{
+            Seasons.moveOldForecastToHistoricalDataAllSheets(spreadSheet, ssYear);
+
+            //cache flush
+            APPCache.removeAll();
+
+            //add new period
+            Seasons.newYearPeriodsAllSheets(spreadSheet, ssYear);
+
+            if (!Utility.isMaster()) {
+                Seasons.newYearUpdateTemplateCompiler(spreadSheet, country, token);
+            }
+
+            //update notes
+            Seasons.newYearUpdateDb(spreadSheetId, ssYear, token);
+
+
+            if (!Utility.isMaster()) {
+                //save the spreadsheet
+                SyncMasterSheet.startSync(token);
+            }
+            
+        }catch(e){
+            Utility.sendErrorEmails(
+                "ChangeSeason Error",
+                Config.errorEmail
+            );
+            Browser.msgBox(
+                "Internal error during the change of season!\\n"+
+                "The AMIS administrator has been notified.");
+            throw e;
+
+        }
     };
+
+
+    
+    /**
+     * Check if a spredsheet has the correct year (the same of master)
+     *
+     * @param {string} userToken the firebase token
+     * @param {string} sheetId (optional)the spreadSheet id
+     * @returns {bool} true if valid, false otherwise
+     * @throws {InvalidDbData}
+     * @throws {InvalidArgument}
+     */
+    this.isValidSpreadSheetYear=function(userToken, sheetId){
+        var masterConfig, sheetConfig, countryRegisterNode, countryRegister;
+
+
+        if (!userToken) {
+            throw "InvalidArgument";
+        }
+                
+        sheetId=(sheetId || SpreadSheetCache.getActiveSpreadsheet().getId());
+
+        countryRegisterNode = 'config/countryRegister';
+        countryRegister=FirebaseConnector.getFireBaseDataParsed(countryRegisterNode,userToken);
+        
+        masterConfig=FirebaseConnector.getSheetConfig(countryRegister.master, userToken);
+        sheetConfig=FirebaseConnector.getSheetConfig(sheetId, userToken);
+
+        if(!masterConfig || !sheetConfig){
+            throw "InvalidDbData";
+        }
+
+        if(masterConfig.year!==sheetConfig.year){
+            return false;
+        }
+
+        return true;
+    };
+    
+
+
 };

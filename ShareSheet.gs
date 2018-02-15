@@ -49,17 +49,28 @@ var ShareSheet=new function(){
 
   /**
    * removes all spreadsheet from firebase: empty countries node and set all countryRegister property to 'false'. This function doesn't erase the data node
+   * Runnable only from the master spreadsheet
    * @param  {string} userToken the token
    * @return {void}
+   * @throws {IsNotMaster} if the active spreadsheet is not the master
    */
   this.removeAllSpreadsheetsFromFb=function(userToken){
-      var countryRegister, countryRegisterNode="/config/countryRegister";
+      var countryRegister, countryRegisterNode="/config/countryRegister", countriesNode="/config/countries", countries, masterId, emptyCountries={};
 
       if (!userToken) {
           throw "InvalidArgument";
       }
 
-      FirebaseConnector.writeOnFirebase({}, "/config/countries", userToken);
+      if (!Utility.isMaster()) {
+              throw "IsNotMaster";
+      }
+
+      masterId=SpreadSheetCache.getActiveSpreadsheet().getId();
+      countries=FirebaseConnector.getFireBaseDataParsed(countriesNode, userToken);
+      emptyCountries[masterId]=countries[masterId];
+      FirebaseConnector.writeOnFirebase(emptyCountries, countriesNode, userToken);
+
+      
       countryRegister=FirebaseConnector.getFireBaseDataParsed(countryRegisterNode, userToken);
 
       for (var country in countryRegister) {
@@ -78,6 +89,7 @@ var ShareSheet=new function(){
   * CREATE A NEW GOOGLE SHEET
   * @param  {string} name of the new file
   * @param  {string} google account of the country (email address)
+  * @throws {InvalidMasterDbData}
   */
   //---------------------------------------------------------
   this.createSheet=function(countryName,countryAccount,userToken) {
@@ -89,13 +101,20 @@ var ShareSheet=new function(){
     //retrive the country google sheet id stored
     var countryRegister = JSON.parse(FirebaseConnector.getFireBaseData(countryRegisterNode,userToken));
 
+    var masterConfig=FirebaseConnector.getSheetConfig(undefined, userToken);
+
+    if (!masterConfig) {
+        throw "InvalidMasterDbData";
+    }
+            
+
     //if country google sheet id its FALSE... we have to create a google sheet for the country selected
     if(countryRegister ==='false'){
       countryLabel=FirebaseConnector.getCountryLabel(countryName, userToken);
       var newFile = ShareSheet.cloneSheet(countryLabel, userToken);
       newFileId=newFile.getId();
 
-	  ShareSheet.storeSheetId(countryName, newFileId, userToken)
+	  ShareSheet.storeSheetId(countryName, newFileId, masterConfig.year, userToken);
 
 	  ShareSheet.shareSheet(newFile,countryAccount, userToken);
 
@@ -190,10 +209,11 @@ var ShareSheet=new function(){
   // END -- SHARE SHEET
   //---------------------------------------------------------
 
-  this.storeSheetId = function (countryName, fileId, userToken){
+  this.storeSheetId = function (countryName, fileId, year, userToken){
 	  var data={
 		  "name":countryName,
-		  "dataSheetNode":countryName+'Data'
+		  "dataSheetNode":countryName+'Data',
+          "year": year
 	  }
 
 	  //path of the new country

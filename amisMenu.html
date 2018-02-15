@@ -60,6 +60,7 @@
                 <button onclick="google.script.run.LIB_FUNC( 'AmisMarketApp.Utility.toggleTemplates', true)">show templates</button>
                 <button onclick='$("#userActionsDiv,#create-sheet-form").toggle()'>Usr/Admin btn</button>
                 <button onclick='getAllNamedRanges()'>getAllNamedRanges</button>
+                <button onclick="google.script.run.LIB_FUNC( 'AmisMarketApp.AmisNamedRanges.clearNamedRanges')">clearNamedRanges</button>
                 <br>
                 DB:<?= dbName ?>
                 <br>
@@ -105,22 +106,6 @@
     </select>
     <br/>
     <? } ?>
-
-        <div class="container" class="isSecretariat" >
-            <div class="row">
-                <div class="col-xs-12">
-                    <button type="button" class="btn btn-primary btn-xs collapsed" data-toggle="collapse" data-target="#secretariatBtns">Secretariat buttons</button>
-                </div>
-                <div class="col-xs-12 collapse" id="secretariatBtns">
-                    <div class="row">
-                        <div class="col-xs-8 text-right">
-                            <button id="addYear" class="btn btn-primary btn-lg btn-block">Add a new year of season<i class="mdi mdi-table-column-plus-after"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-       </div>
 
         <div class="row">
             <div class="col-xs-12 text-left">
@@ -233,66 +218,83 @@
 
    <!-- Begin # create sheet form -->
     <form id="create-sheet-form" hidden class="container">
+        <div class="isMaster">
+            <div class="row">
+                <div class="col-xs-12 text-left">
+                    Create and share the sheet:
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-xs-12 text-center">
+                    <div class="">
+                        <div id="div-login-msg">
+                            <div id="icon-login-msg"></div>
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="">
+                        <div id="div-login-msg">
+                            <div id="icon-login-msg"></div>
+                        </div>
+
+                        <!-- <input id="countryName" class="form-control" type="text" placeholder="Country Name" required> -->
+                        <select class="form-control" id="countryName">
+                            <option value="">Choose a Country</option>
+                            <option value="all">All countries</option>
+                        </select>
+                        <br/>
+                        <!-- <input id="account" class="form-control" type="text" placeholder="Account" required> -->
+                        <select class="form-control" id="account">
+                            <option value="">Choose an Account</option>
+                            <? if (devMode) { ?>
+                                <option value="fabrizio.antonangeli@gmail.com">fabrizio.antonangeli@gmail.com</option>
+                                <option value="sabbadini.misael@gmail.com">sabbadini.misael@gmail.com</option>
+                            <? } ?>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <br>
+
+            <div class="row">
+                <div class="col-xs-12 text-right">
+                    <button id="createSheetButton" class="btn btn-primary btn-lg">Create Sheet <span class="glyphicon glyphicon-share"></span></button>
+                </div>
+            </div>
+            <br>
+            <br>
+
+            <div class="row">
+                <div class="col-xs-12 text-right">
+                    <button id="removeAllSpreadsheetsBtn" class="btn btn-primary btn-lg">Remove all Spreadsheets <span class="glyphicon glyphicon-share"></span></button>
+                </div>
+            </div>
+            <br>
+            <br>
+
+            <div class="row">
+                <div class="col-xs-12 text-right">
+                    <button id="updateFbMappingBtn" class="btn btn-primary btn-lg">Update fb mapping <span class="glyphicon glyphicon-share"></span></button>
+                </div>
+            </div>
+            <br>
+            <br>
+        </div>
+
         <div class="row">
             <div class="col-xs-12 text-left">
-                Create and share the sheet:
+                Add a new year of season:
             </div>
         </div>
         <br>
         <div class="row">
-            <div class="col-xs-12 text-center">
-                <div class="">
-                    <div id="div-login-msg">
-                        <div id="icon-login-msg"></div>
-                    </div>
-                </div>
-                <br/>
-                <div class="">
-                    <div id="div-login-msg">
-                        <div id="icon-login-msg"></div>
-                    </div>
-
-                    <!-- <input id="countryName" class="form-control" type="text" placeholder="Country Name" required> -->
-                    <select class="form-control" id="countryName">
-                        <option value="">Choose a Country</option>
-                        <option value="all">All countries</option>
-                    </select>
-                    <br/>
-                    <!-- <input id="account" class="form-control" type="text" placeholder="Account" required> -->
-                    <select class="form-control" id="account">
-                        <option value="">Choose an Account</option>
-                        <? if (devMode) { ?>
-                            <option value="fabrizio.antonangeli@gmail.com">fabrizio.antonangeli@gmail.com</option>
-                            <option value="sabbadini.misael@gmail.com">sabbadini.misael@gmail.com</option>
-                        <? } ?>
-                    </select>
-                </div>
+            <div class="col-xs-12 text-right">
+                <button id="addYear" class="btn btn-primary btn-lg">Change of season</button>
             </div>
         </div>
-        <br>
-        <br>
 
-        <div class="row">
-        	<div class="col-xs-12 text-right">
-                <button id="createSheetButton" class="btn btn-primary btn-lg">Create Sheet <span class="glyphicon glyphicon-share"></span></button>
-        	</div>
-        </div>
-        <br>
-        <br>
-
-        <div class="row">
-        	<div class="col-xs-12 text-right">
-                <button id="removeAllSpreadsheetsBtn" class="btn btn-primary btn-lg">Remove all Spreadsheets <span class="glyphicon glyphicon-share"></span></button>
-        	</div>
-        </div>
-        <br>
-        <br>
-
-        <div class="row">
-        	<div class="col-xs-12 text-right">
-                <button id="updateFbMappingBtn" class="btn btn-primary btn-lg">Update fb mapping <span class="glyphicon glyphicon-share"></span></button>
-        	</div>
-        </div>
     </form>
    <!-- End # Login Form -->
 

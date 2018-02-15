@@ -23,7 +23,8 @@
        	storageBucket: "<?= dbName ?>.appspot.com",
        	messagingSenderId: "924659512730",
         sidebarNetworkErrorMsg:"There is a problem with the network, please try again later.",
-        devMode:<?= (devMode)?>
+        devMode:<?= (devMode)?>,
+        isMaster:(<?=isMaster?>==='true')
        };
        firebase.initializeApp( config );
        //-----------------------------------------------------------------
@@ -194,6 +195,10 @@
              console.log('USER_DATA', user_data);
 
              $(".isSecretariat").toggle(user_data.type==="secretariat");
+             $(".isAdmin").toggle(user_data.type==="admin");
+             $(".isAdmin.isSecretariat").toggle(user_data.type==="secretariat" || user_data.type==="admin");
+             $(".isMaster").toggle(config.isMaster);
+             $(".isNotMaster").toggle(!config.isMaster);
 
              //set user name into label
              $( "#userLabel" ).text( user.email );
@@ -205,13 +210,17 @@
 
                  populateCountries(function(){
                      populateAccount(function(){
-                         $( "#loading" ).hide();
+                         checkIfValidSpreadSheetYear(function(){
+                             $( "#loading" ).hide();
+                         });
                      });
                  })
              } else {
                  //show normal menu
                  $( "#userActionsDiv" ).show();
-                 $( "#loading" ).hide();
+                 checkIfValidSpreadSheetYear(function(){
+                     $( "#loading" ).hide();
+                 });
              }
 
 
@@ -362,7 +371,7 @@
        * verify the data on the sheet
        */
       function verifySheet() {
-          showLoading(["Verifying the sheet", "Doing a style check", "Rastoring the formulas", "Checking the values"]);
+          showLoading(["Verifying the sheet", "Doing a style check", "Restoring the formulas", "Checking the values"]);
 
           google.script.run
             .withSuccessHandler(hideLoading)
@@ -655,21 +664,49 @@
     }
 
 
+    /**
+     * che if the year of season is correct
+     *
+     * @param {function} callback callback to run
+     * @returns {void}
+     */
+    function checkIfValidSpreadSheetYear(callback){
+          //prevent redirect actions
+          google.script.run
+          .withSuccessHandler(function(valid){
+                if (!valid) {
+                    google.script.run.LIB_FUNC("AmisMarketApp.Utility.popUpAlert","The year of seasons seems to be outdated.\\nThe AMIS administrator has been notified.");
+                    debugEmail("Year of season invalid");
+                    google.script.host.close();
+                    return;
+                }
+                callback();
+          })
+          .withFailureHandler(function(){
+             googleScriptRunFailureHandler(checkIfValidSpreadSheetYear)(userToken);
+          })
+          .LIB_FUNC("AmisMarketApp.Seasons.isValidSpreadSheetYear", userToken);
+    }
 
     /**
      * change the seasons of the forecasts by adding a new year
      * @return {void}
      */
     function addYear(){
-         //prevent redirect actions
+        //prevent redirect actions
         showLoading(["Reading database", "Switching forecasts", "Creating new season", "Saving data"]);
         google.script.run
-        .withSuccessHandler(function(data){
-            console.log('namedRanges', data);
-            hideLoading();
-        })
-        .withFailureHandler( googleScriptRunFailureHandler(addYear))
-        .LIB_FUNC("AmisMarketApp.Seasons.changeSeason", userToken);
+            .withSuccessHandler(function(data){
+                hideLoading();
+            })
+            .withFailureHandler(function(error){
+                if (error.message==="InvalidSpreadSheetYear") {
+                    hideLoading();
+                } else {
+                    googleScriptRunFailureHandler(addYear)(error);
+                }
+            } )
+            .LIB_FUNC("AmisMarketApp.Seasons.changeSeason", userToken);
 
         return false;
     }

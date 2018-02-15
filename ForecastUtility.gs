@@ -458,7 +458,11 @@ var ForecastUtility=new function(){
     var sheet = SpreadSheetCache.getActiveSheet();
     //var userToken=FirebaseConnector.getToken();
 
-y
+    config = AmisNamedRanges.getCommodityNamedRanges().previousForecast;
+
+    firstCol=ConvertA1.colA1ToIndex(config.first.split(":")[0],1);
+    lastCol=ConvertA1.colA1ToIndex(config.last.split(":")[0],1);
+
     //ForecastUtility.hideAllPeriodUnactiveColumns(userToken);
 
     sheet.showColumns(firstCol, lastCol-firstCol);

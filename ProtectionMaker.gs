@@ -62,14 +62,18 @@ var ProtectionMaker = new function() {
 	 * @param  {array} sheetValues [optional] sheet's data
 	 * @param {object} spreadsheet [optional] the spreadsheet
 	 * @param {object} sheet [optional] the sheet
+	 * @param {string} sheetName (optional) the sheetName
 	 * @return {void}
 	 * @throws {InvalidArgument}
 	 * @throws {JavaException} in case of non valid data in the sheet
 	 */
-	 this.validateSheet = function( sheetValues, spreadsheet, sheet ) {
+	 this.validateSheet = function( sheetValues, spreadsheet, sheet, sheetName ) {
 	 	spreadsheet = ( spreadsheet || SpreadSheetCache.getActiveSpreadsheet() );
 	 	sheet = ( sheet || SpreadSheetCache.getActiveSheet() );
 	 	sheetValues = ( sheetValues || SpreadSheetCache.getActiveSheetValues() );
+        sheetName=(sheetName || sheet.getName());
+        
+        
 
 	 	try {
 	 		if ( !Utility.isTemplate()  ) {
@@ -80,7 +84,9 @@ var ProtectionMaker = new function() {
 	 			ForecastingMethodologies.fixAllFMRanges( sheetValues,sheet );
 
 				//restore all column width getting the current size from template
-		   		ProtectionMaker.restoreColsWidth();
+                if (/^[A-Za-z]+$/.test(sheetName)) {
+                    ProtectionMaker.restoreColsWidth(sheet, sheetName);
+                }
 	 		}
 	 	} catch ( e ) {
 	 		var ex = e;
@@ -102,12 +108,12 @@ var ProtectionMaker = new function() {
 	 this.validateAllSheet=function(spreadsheet){
 		spreadsheet = ( spreadsheet || SpreadSheetCache.getActiveSpreadsheet() );
 
-	    Utility.forEachSheet(spreadsheet.getId(), Config.commoditySheetsRegex, function(sheet){
+	    Utility.forEachSheet(spreadsheet.getId(), Config.commoditySheetsRegex, function(sheet, sheetName){
 			var sheetValues;
 
 			sheetValues=sheet.getDataRange().getValues();
 
-	    	ProtectionMaker.validateSheet(sheetValues, spreadsheet, sheet);
+	    	ProtectionMaker.validateSheet(sheetValues, spreadsheet, sheet, sheetName);
 	    });
 	 };
 
@@ -258,29 +264,41 @@ var ProtectionMaker = new function() {
 	/**
 	 * restore all column width getting the current size from template
 	 * @return {void}
-	 * @throws "InvalidTemplateSizes" if no data from templates
+	 * @throws {InvalidTemplateSizes} if no data from templates
+	 * @throws {InvalidArgument}
 	 */
-	this.restoreColsWidth=function(){
-		var colsWidth=this.getTmplColsWidth();
+	this.restoreColsWidth=function( sheet, sheetName ){
+        var colsWidth=this.getTmplColsWidth(), s=sheet;
 
-		if(!colsWidth){
-			throw "InvalidTemplateSizes";
-		}
+        if (!sheet || !sheetName) {
+            throw "InvalidArgument";
+        }
 
-		Utility.forEachSheet( undefined, /^[A-Za-z]+$/, function( s, sheetName ) {
-			var nr, previusFc_number;
 
-			nr=AmisNamedRanges.getCommodityNamedRangesBySheet(s);
+        if(!colsWidth){
+            throw "InvalidTemplateSizes";
+        }
 
-			previusFc_number=ConvertA1.rangeA1ToIndex(nr.previousForecast.first, 1).left;
+        var nr, previusFc_number;
 
-			Utility.forEachColumn(s, function(s, colNum){
-				if (colNum<previusFc_number) {
-					return;
-				}
-				s.setColumnWidth(colNum, colsWidth[ Config.templatePrefix+sheetName ][ colNum ]);
-			});
-		} );
+        nr=AmisNamedRanges.getCommodityNamedRangesBySheet(s);
+
+        previusFc_number=ConvertA1.rangeA1ToIndex(nr.previousForecast.first, 1).left;
+
+        Utility.forEachColumn(s, function(s, colNum){
+            var templateWidths=colsWidth[ Config.templatePrefix+sheetName ];
+
+            if (colNum<previusFc_number) {
+                return;
+            }
+
+            if (!templateWidths[ colNum ]) {
+                throw "InvalidTemplateSizes";
+            } 
+
+            s.setColumnWidth(colNum, templateWidths[ colNum ]);
+        });
+
 	};
 
 
