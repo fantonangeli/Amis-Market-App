@@ -72,7 +72,7 @@ var ForecastUtility=new function(){
     /**
      * get the first forecast of a period
      * @param  {int} periodIndex period you want (EG.  0 for periodA , 1 periodB )
-	 * @param {string} commodityName (optional) the commodity name
+     * @param {string} commodityName (optional) the commodity name
      * @return {[string]}             array of ranges of the column
      */
     this.getFirstFcOfPeriod = function( periodIndex, commodity ) {
