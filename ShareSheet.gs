@@ -126,6 +126,8 @@ var ShareSheet=new function(){
 
       ExcelExport.storeExportSheetId(newFileId, excelExportSheetId,userToken);
 
+      ShareSheet.givePermissionsToAmisSecretariat(newFileId);
+      
       Utility.toastInfo('Sheet created', 'Sheet created and shared');
 
     }else{
@@ -224,6 +226,18 @@ var ShareSheet=new function(){
 	  //update the country register --- if FALSE means that for a country has not been created and share the sheet
 	  FirebaseConnector.writeOnFirebase(fileId,'config/countryRegister/'+countryName,userToken);
 
+  }
+  
+  this.givePermissionsToAmisSecretariat= function (fileId){    
+    Utility.forEachSheet( fileId, new RegExp( "."), function( s, sheetName ) {      
+      var sheet = s;
+      var protections = sheet.getProtections(SpreadsheetApp.ProtectionType.SHEET);    
+      for (var i = 0; i < protections.length; i++) {
+        //adding permission to secretariat        
+        protections[i].addEditor(Config.secretariatAccount);      
+      }      
+    });
+    Utility.toggleTemplates(false, fileId);    
   }
 
 }
