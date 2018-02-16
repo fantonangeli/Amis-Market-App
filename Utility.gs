@@ -69,9 +69,10 @@ Utility.isSecretariat = function() {
 /**
  * show/hide all templates in the spreadsheet
  * @param  {bool} show true to show all templates, false to hide
+ * @param  {string} SpreadSheet ID
  */
-Utility.toggleTemplates=function(show){
-	var sheets=SpreadSheetCache.getActiveSpreadsheet().getSheets(),s;
+Utility.toggleTemplates=function(show,spreadSheetId){
+  var sheets=spreadSheetId? SpreadsheetApp.openById(spreadSheetId).getSheets() : SpreadSheetCache.getActiveSpreadsheet().getSheets(),s;
 
 	for (var _i = 0, sheets_length=sheets.length; _i<sheets_length; _i++) {
 		s=sheets[_i];
