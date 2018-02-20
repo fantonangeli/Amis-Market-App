@@ -120,12 +120,5 @@ var Config={
 	 * excel exportation template filename
 	 * @type {String}
 	 */
-	excelExportSpreadSheetFileName:"{{country}} AMIS forecasts",
-
-	/**
-	 * excel exportation file id
-	 * @type {String}
-	 */
-	excelExportSpreadSheetMasterId:""
-
+	excelExportSpreadSheetFileName:"{{country}} AMIS forecasts"
 };

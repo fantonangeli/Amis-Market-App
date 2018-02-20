@@ -1,6 +1,26 @@
 var ForecastUtility=new function(){
 
 
+    /**
+     * gets the historical columns number
+	 * @param {Object} sheet the sheeet
+     * @return {object} object with the columns number {first, last}
+	 * @throws {InvalidArgument}
+     * @throws {SheetNotFound} if the given sheet is not found
+     */
+    this.getHistoricalColNumBySheet=function(sheet){
+        var commodity;
+        
+        if (!sheet) {
+            throw "InvalidArgument";
+        }
+                
+
+        commodity=FirebaseConnector.getCommodityName(sheet);
+        
+        return ForecastUtility.getHistoricalColNum(commodity);
+
+    };
 
     /**
      * gets the historical columns number

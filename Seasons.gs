@@ -4,7 +4,37 @@
  */
 var Seasons=new function(){
 
+    
+    /**
+     * add a new historical column to the excel export spredsheet
+     * @param  {object} excelExportSheetId         the sheet
+     * @param  {object}   spreadSheetId the spreadSheet
+     * @return {void}
+     * @throws {InvalidArgument}
+     */
+    this.addNewHistoricalCol2Excel=function(spreadSheetId, excelExportSheetId){
+        var excelSS;
 
+        excelSS=SpreadsheetApp.openById(excelExportSheetId);
+
+        Utility.forEachSheet( spreadSheetId, Config.commoditySheetsRegex, function( sheet,sheetName) {
+            var historicalCol, excelSheet;
+
+            historicalCol=ForecastUtility.getHistoricalColNumBySheet(sheet);
+
+            excelSheet=excelSS.getSheetByName(sheetName);
+
+            //add the new col to the historical data
+            excelSheet.insertColumnBefore(historicalCol.last);
+
+
+            ForecastUtility.hideOldForecasts( historicalCol.first,historicalCol.last, 0, excelSheet );
+        } );
+        
+    };
+    
+
+    
     /**
      * add a new historical column and move the oldest forecast data to the historical data
      * @param  {object} sheet         the sheet
@@ -13,15 +43,14 @@ var Seasons=new function(){
      * @throws {InvalidArgument}
      */
     this.moveOldForecastToHistoricalData=function(sheet,spreadSheetYear){
-        var from, lastHistoricalCol, to, commodity, namedRanges;
+        var from, lastHistoricalCol, to, namedRanges;
 
         if (!sheet || !spreadSheetYear) {
             throw "InvalidArgument";
         }
 
-        commodity=FirebaseConnector.getCommodityName(sheet);
         namedRanges=AmisNamedRanges.getCommodityNamedRangesBySheet(sheet);
-        lastHistoricalCol=ForecastUtility.getHistoricalColNum(commodity).last;
+        lastHistoricalCol=ForecastUtility.getHistoricalColNumBySheet(sheet).last;
 
         //add the new col to the historical data
         sheet.insertColumnBefore(lastHistoricalCol);
@@ -315,7 +344,7 @@ var Seasons=new function(){
      * @throws {InvalidArgument}
      */
     this.changeSeason=function(token, spreadSheet ){
-        var ssYear, spreadSheetId, country;
+        var ssYear, spreadSheetId, country, spreadSheetConfig;
 
         if (!token) {
             throw "InvalidArgument";
@@ -326,7 +355,8 @@ var Seasons=new function(){
         
 
         spreadSheetId=spreadSheet.getId();
-        ssYear=Seasons.getCurrentYearOfSeason(spreadSheetId, token);
+        spreadSheetConfig=FirebaseConnector.getSheetConfig(spreadSheetId, token);
+        ssYear=spreadSheetConfig.year;
         country=FirebaseConnector.getCountryNameFromSheet(token);
 
         // validate the user request: ssYear==(currYear-1)
@@ -334,17 +364,29 @@ var Seasons=new function(){
             Browser.msgBox("The year of season is already "+ssYear+"!");
             throw "InvalidSpreadSheetYear";
         }
+
         
         ProtectionMaker.validateAllSheet(spreadSheet);
 
+
         try{
             Seasons.moveOldForecastToHistoricalDataAllSheets(spreadSheet, ssYear);
+
+
+            Seasons.addNewHistoricalCol2Excel(spreadSheetId, spreadSheetConfig.excelExportSheetId);
+
 
             //cache flush
             APPCache.removeAll();
 
             //add new period
             Seasons.newYearPeriodsAllSheets(spreadSheet, ssYear);
+
+            //cache flush
+            APPCache.removeAll();
+
+            //hide historical series
+            ForecastUtility.hideOldAndUnactiveForecast();
 
             if (!Utility.isMaster()) {
                 Seasons.newYearUpdateTemplateCompiler(spreadSheet, country, token);
@@ -358,8 +400,11 @@ var Seasons=new function(){
                 //save the spreadsheet
                 SyncMasterSheet.startSync(token);
             }
+
+            Browser.msgBox("The new year of seasons is "+(ssYear+1)+".");
             
         }catch(e){
+            var ex=e;
             Utility.sendErrorEmails(
                 "ChangeSeason Error",
                 Config.errorEmail

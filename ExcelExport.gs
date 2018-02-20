@@ -5,18 +5,22 @@ var ExcelExport = new function() {
 	/**
 	 * create an empty spreadsheet for the excel exportation (copy a spreadsheet from the export master file)
 	 * @param  {string} countryLabel label of the country
+	 * @param  {string} userToken auth token
 	 * @return {string} id of the file
 	 * @throws {InvalidArgument}
 	 */
-	 this.createExportSheet = function(countryLabel) {
- 		var master, filename, newfile;
+	 this.createExportSheet = function(countryLabel,token) {
+ 		var master, filename, newfile, spreadSheetConfig;
 
  		if (!countryLabel) {
  			throw "InvalidArgument";
  		}
 
+
+        spreadSheetConfig=FirebaseConnector.getSheetConfig(SpreadSheetCache.getActiveSpreadsheet().getId(), token);
+
  		//get current file master file to be cloned
- 		master = DriveApp.getFileById( Config.excelExportSpreadSheetMasterId );
+ 		master = DriveApp.getFileById( spreadSheetConfig.excelExportSheetId );
 
  		filename = Utility.interpolate( Config.excelExportSpreadSheetFileName, {
  			country: countryLabel

@@ -122,7 +122,7 @@ var ShareSheet=new function(){
       MasterUtility.writeNoteAndDataForCountriesMaster(countryName,true);
 
       //create an empty spreadsheet for the excel exportation
-      excelExportSheetId=ExcelExport.createExportSheet(countryLabel);
+      excelExportSheetId=ExcelExport.createExportSheet(countryLabel, userToken);
 
       ExcelExport.storeExportSheetId(newFileId, excelExportSheetId,userToken);
 
