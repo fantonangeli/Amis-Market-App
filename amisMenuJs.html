@@ -209,18 +209,12 @@
                  $( "#create-sheet-form" ).show();
 
                  populateCountries(function(){
-                     populateAccount(function(){
-                         checkIfValidSpreadSheetYear(function(){
-                             $( "#loading" ).hide();
-                         });
+                     populateAccount(function() {
                      });
-                 })
+                 });
              } else {
                  //show normal menu
                  $( "#userActionsDiv" ).show();
-                 checkIfValidSpreadSheetYear(function(){
-                     $( "#loading" ).hide();
-                 });
              }
 
 
@@ -239,6 +233,10 @@
                  // Store in session the token
                  google.script.run.LIB_FUNC( "AmisMarketApp.onLogin" );
 
+                 checkIfValidSpreadSheetYear(function(){
+                     $( "#loading" ).hide();
+                 });
+                 
                  onSuccess();
              } );
          }, function(error){
@@ -682,8 +680,8 @@
                 }
                 callback();
           })
-          .withFailureHandler(function(){
-             googleScriptRunFailureHandler(checkIfValidSpreadSheetYear)(userToken);
+          .withFailureHandler(function(error){
+             googleScriptRunFailureHandler(checkIfValidSpreadSheetYear)(error);
           })
           .LIB_FUNC("AmisMarketApp.Seasons.isValidSpreadSheetYear", userToken);
     }
