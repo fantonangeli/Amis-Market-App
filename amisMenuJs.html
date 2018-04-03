@@ -25,7 +25,7 @@
         sidebarNetworkErrorMsg:"There is a problem with the network, please try again later.",
         devMode:<?= (devMode)?>,
         isMaster:(<?=isMaster?>==='true'),
-        spreadSheetId= "<?= spreadSheetId ?>" 
+        spreadSheetId: "<?= spreadSheetId ?>" 
        };
        firebase.initializeApp( config );
        //-----------------------------------------------------------------
@@ -102,7 +102,7 @@
         * @return {Promise}
         * @throws {InvalidArgument}
         */
-       function getSheetConfig(sheetId, donSuccess) {
+       function getSheetConfig(sheetId, onSuccess) {
            if (!sheetId) {
                throw "InvalidArgument";
            }
@@ -243,6 +243,8 @@
              $.when(user.getToken(), getSheetConfig(config.spreadSheetId))
              .then( function( data, sheetConfig ) {
                  userToken=data;
+                 sheetConfig=sheetConfig.val();
+                 sYear=sheetConfig.year;
 
                  console.log( 'gettoken', data );
                  google.script.run.LIB_FUNC( "AmisMarketApp.FirebaseConnector.setToken", data );
@@ -251,7 +253,8 @@
                  google.script.run.LIB_FUNC( "AmisMarketApp.onLogin" );
 
                  //sets fc button labels
-                 console.log("sheetConfig", sheetConfig);                 
+                 $("#addFrcA .season-label").text(sYear-1+"/"+(sYear-2000));
+                 $("#addFrcB .season-label").text(sYear+"/"+(sYear+1-2000));
 
                  checkIfValidSpreadSheetYear(function(){
                      $( "#loading" ).hide();
