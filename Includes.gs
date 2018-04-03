@@ -139,7 +139,7 @@ FirebaseConnector.getSheetConfigNode=function(sheetId){
 
 /**
  * get the sheet config from firebase
- * @param  {[type]} sheetId   [description]
+ * @param  {string} sheetId (optional) the sheetId, current spreadsheet will be used if undefined
  * @param  {string} userToken auth token
  * @return {object}           the object of the firebase node
  */

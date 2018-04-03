@@ -24,7 +24,8 @@
        	messagingSenderId: "924659512730",
         sidebarNetworkErrorMsg:"There is a problem with the network, please try again later.",
         devMode:<?= (devMode)?>,
-        isMaster:(<?=isMaster?>==='true')
+        isMaster:(<?=isMaster?>==='true'),
+        spreadSheetId= "<?= spreadSheetId ?>" 
        };
        firebase.initializeApp( config );
        //-----------------------------------------------------------------
@@ -93,6 +94,21 @@
        hideLoadingDiv = function() {
          $('#loading').hide();
        };
+
+       /**
+        * get the sheet config from firebase
+        * @param  {string} sheetId the sheetId, current spreadsheet will be used if undefined
+        * @param  {function} onSuccess callback called with the countryRegister object
+        * @return {Promise}
+        * @throws {InvalidArgument}
+        */
+       function getSheetConfig(sheetId, donSuccess) {
+           if (!sheetId) {
+               throw "InvalidArgument";
+           }
+                   
+           return firebase.database().ref('config/countries/'+sheetId).once('value');
+       }
 
        /**
         * reads all the countries in firebase
@@ -224,7 +240,8 @@
 
              console.info( 'user', user.uid );
              //.then is used to get the token value
-             user.getToken().then( function( data ) {
+             $.when(user.getToken(), getSheetConfig(config.spreadSheetId))
+             .then( function( data, sheetConfig ) {
                  userToken=data;
 
                  console.log( 'gettoken', data );
@@ -232,6 +249,9 @@
 
                  // Store in session the token
                  google.script.run.LIB_FUNC( "AmisMarketApp.onLogin" );
+
+                 //sets fc button labels
+                 console.log("sheetConfig", sheetConfig);                 
 
                  checkIfValidSpreadSheetYear(function(){
                      $( "#loading" ).hide();
