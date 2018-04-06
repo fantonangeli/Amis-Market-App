@@ -399,6 +399,9 @@ var Seasons=new function(){
             if (!Utility.isMaster()) {
                 //save the spreadsheet
                 SyncMasterSheet.startSync(token);
+            }else{
+              //update ETLconfigs
+              Seasons.newYearUpdateETLSConfigurations(token);
             }
 
             Browser.msgBox("The new year of seasons is "+(ssYear+1)+".");
@@ -454,7 +457,174 @@ var Seasons=new function(){
 
         return true;
     };
+  
+  /**
+     * update all the configuration for ETLS and FB configurations
+     *          
+     * @param  {string} userToken auth token
+     * @returns {void}
+     * @throws {InvalidArgument}
+     */
+    this.newYearUpdateETLSConfigurations=function(userToken){
+      if (!userToken) {
+        throw "InvalidArgument";
+      }
+      Seasons.newYearUpdateNationalCsvUploaderConfig(userToken);
+      Seasons.newYearUpdatebatchConfig(userToken);
+      Seasons.newYearUpdateETLConfig(userToken);
+      AmisNamedRanges.DbMapping.updateFbMapping(userToken);
+      Seasons.newYearUpdateBatchRowColumn(userToken);
+    };
+  
+  /**
+     * update all the National Csv Uploader configurations
+     *          
+     * @param  {string} userToken auth token
+     * @returns {void}
+     * @throws {InvalidArgument}
+     */
+    this.newYearUpdateNationalCsvUploaderConfig=function(userToken){
+      if (!userToken) {
+        throw "InvalidArgument";
+      }
+      Seasons.newYearUpdateSliderFrc(userToken);
+      Seasons.newYearUpdateBatchKindOfFrc(userToken);
+    };
+  
+  /**
+  * update sliderFrc FB node
+  *          
+  * @param  {string} userToken auth token
+  * @returns {void}
+  * @throws {InvalidArgument}
+  */
+  this.newYearUpdateSliderFrc=function(userToken){
+    if (!userToken) {
+      throw "InvalidArgument";
+    }
+    var sliderFrc;
+    var sliderFrcNode = 'config/sliderFrc';        
     
+    sliderFrc=FirebaseConnector.getFireBaseDataParsed(sliderFrcNode, userToken);                
+    
+    sliderFrc.sliderFrcA.from= ConvertA1.indexToColA1(Utility.letterToColumn(sliderFrc.sliderFrcA.from)+1)
+    sliderFrc.sliderFrcA.to= ConvertA1.indexToColA1(Utility.letterToColumn(sliderFrc.sliderFrcA.to)+1)
+    
+    sliderFrc.sliderFrcB.from= ConvertA1.indexToColA1(Utility.letterToColumn(sliderFrc.sliderFrcB.from)+1)
+    sliderFrc.sliderFrcB.to= ConvertA1.indexToColA1(Utility.letterToColumn(sliderFrc.sliderFrcB.to)+1)   
+    
+    FirebaseConnector.writeOnFirebase(sliderFrc,sliderFrcNode,userToken);
+    
+  };
+  
+   /**
+  * update BatchKindOfFrc FB node
+  *          
+  * @param  {string} userToken auth token
+  * @returns {void}
+  * @throws {InvalidArgument}
+  */
+  this.newYearUpdateBatchKindOfFrc=function(userToken){
+    if (!userToken) {
+      	throw "InvalidArgument";
+    }
+    var batchKindOfFrc;
+    var batchKindOfFrcNode = 'config/batchKindOfFrc';        
+    
+    batchKindOfFrc=FirebaseConnector.getFireBaseDataParsed(batchKindOfFrcNode, userToken);                    
+    batchKindOfFrc.A= moment().year() - 1; 
+    batchKindOfFrc.B= moment().year();   
+    FirebaseConnector.writeOnFirebase(batchKindOfFrc,batchKindOfFrcNode,userToken);
+    
+  };
 
+  
+  /**
+  * update batchConfig FB node
+  *          
+  * @param  {string} userToken auth token
+  * @returns {void}
+  * @throws {InvalidArgument}
+  */
+  this.newYearUpdatebatchConfig=function(userToken){
+    if (!userToken) {
+      throw "InvalidArgument";
+    }
+    var batchConfig;
+    var currentYear = moment().year();
+    var batchConfigNode = '/config/batchConfig/xccbs/CSVMappingOrderFields/'+ currentYear;        
+    batchConfig=FirebaseConnector.getFireBaseDataParsed(batchConfigNode, userToken);                
+    
+    var batchConfigNodeNewYear = '/config/batchConfig/xccbs/CSVMappingOrderFields/'+(currentYear+1);
+       
+    FirebaseConnector.writeOnFirebase(batchConfig+1,batchConfigNodeNewYear,userToken);
+    
+  };
+  
+   /**
+  * update ETLConfig FB node
+  *          
+  * @param  {string} userToken auth token
+  * @returns {void}
+  * @throws {InvalidArgument}
+  */
+  this.newYearUpdateETLConfig=function(userToken){
+     if (!userToken) {
+            throw "InvalidArgument";
+     }
+    var etlConfig;
+    var currentYear = moment().year();
+    var etlConfigNode = '/config/ETLConfig';        
+    etlConfig=FirebaseConnector.getFireBaseDataParsed(etlConfigNode, userToken);                
+    
+    for (var commodity in etlConfig){
+      
+      var columnsContainingData = etlConfig[commodity].columnsContainingData;
+      var length= columnsContainingData.length-1;
+      for(var i=length;i>length-4;i--){
+        columnsContainingData[i]= ConvertA1.indexToColA1(Utility.letterToColumn(columnsContainingData[i])+1);
+      }
+      //adding the new period that become now historical 
+      columnsContainingData.splice(length-3,0,ConvertA1.indexToColA1(Utility.letterToColumn(columnsContainingData[length-4])+1));
+      
+      etlConfig[commodity].columnsContainingData= columnsContainingData;
+      
+      etlConfig[commodity].flagColumnA=ConvertA1.indexToColA1(Utility.letterToColumn(etlConfig[commodity].flagColumnA)+1);
+      etlConfig[commodity].flagColumnB=ConvertA1.indexToColA1(Utility.letterToColumn(etlConfig[commodity].flagColumnB)+1);
+      
+      etlConfig[commodity].noteColumnA=ConvertA1.indexToColA1(Utility.letterToColumn(etlConfig[commodity].noteColumnA)+1);
+      etlConfig[commodity].noteColumnB=ConvertA1.indexToColA1(Utility.letterToColumn(etlConfig[commodity].noteColumnB)+1);
+    }
+        
+    //writing on FB the new node
+    FirebaseConnector.writeOnFirebase(etlConfig,etlConfigNode,userToken);
+    
+  };
+  
+   /**
+  * update BatchRowColumn FB node
+  *          
+  * @param  {string} userToken auth token
+  * @returns {void}
+  * @throws {InvalidArgument}
+  */
+  this.newYearUpdateBatchRowColumn = function(userToken){
+    if (!userToken) {
+      throw "InvalidArgument";
+    }
+    var batchRowColumn;
+    var currentYear = moment().year();
+    var batchRowColumnNode = '/config/batchRowColumn';        
+    batchRowColumn=FirebaseConnector.getFireBaseDataParsed(batchRowColumnNode, userToken);                
+    
+    for (var commodity in batchRowColumn){
+      
+      batchRowColumn[commodity][currentYear]= ConvertA1.indexToColA1(Utility.letterToColumn(batchRowColumn[commodity][currentYear])+1);
+      batchRowColumn[commodity][currentYear-1]=ConvertA1.indexToColA1(Utility.letterToColumn(batchRowColumn[commodity][currentYear-1])+1);
+    }
+    
+    //writing on FB the new node
+    FirebaseConnector.writeOnFirebase(batchRowColumn,batchRowColumnNode,userToken);
+  };
 
 };
