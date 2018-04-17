@@ -470,7 +470,7 @@ var Seasons=new function(){
         throw "InvalidArgument";
       }
       Seasons.newYearUpdateNationalCsvUploaderConfig(userToken);
-      Seasons.newYearUpdatebatchConfig(userToken);
+      
       Seasons.newYearUpdateETLConfig(userToken);
       AmisNamedRanges.DbMapping.updateFbMapping(userToken);
       Seasons.newYearUpdateBatchRowColumn(userToken);
